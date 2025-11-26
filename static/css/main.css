@@ -149,7 +149,7 @@ body {
    INTRO SECTION – MOBILE SCROLL VERSION
 ---------------------------------------- */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .intro-section {
     max-height: 55vh;          /* Shorter so it *has* to overflow */
     overflow-y: scroll;        /* Always show a scrollable area   */
