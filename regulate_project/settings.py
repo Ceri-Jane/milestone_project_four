@@ -76,7 +76,7 @@ ROOT_URLCONF = 'regulate_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # so we can use global templates folder
+        'DIRS': [BASE_DIR / 'templates'],  # so I can use global templates folder
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
