@@ -3,6 +3,7 @@
 
 {% block content %}
 
+<!-- HERO SECTION -->
 <div class="hero-wrapper">
     <div class="video-container">
 
@@ -18,7 +19,67 @@
         <div class="logo-overlay">
             <img src="{% static 'images/regulate-logo.png' %}" alt="Regulate Logo">
         </div>
+
     </div>
+</div>
+
+
+<!-- INTRO SECTION -->
+<div class="intro-section">
+    
+    {% if not user.is_authenticated %}
+        <!-- ==================================
+             VERSION FOR UNAUTHORISED USERS
+        =================================== -->
+        <h1 class="intro-title">Welcome to Regulate.</h2>
+        <p class="intro-text">
+        Regulate is your personal space to check in with how you’re feeling, 
+        without the pressure of daily streaks or perfect records.
+
+        </p>
+        <p class="intro-text">
+        Whether you want to make a quick note, choose a mood colour, or add
+        more detail, everything is optional — you decide how much or how
+        little to share each time
+        </p>
+
+        <p class="intro-text">
+        Built with ADHD and BPD in mind, Regulate avoids overwhelming
+        calendars and long-form journaling. Instead, it focuses on
+        simplicity, calm design, and the ability to search your entries
+        when you want to reflect.
+        </p>
+
+        <p class="intro-text">
+
+        Your feelings are valid here. Regulate is here to help you notice
+        patterns, release pressure, and take care of your mental health —
+        at your own pace.
+        </p>
+
+        <div class="intro-actions">
+            <a href="{% url 'account_login' %}" class="btn regulate-btn me-2">Sign In</a>
+            <a href="{% url 'account_signup' %}" class="btn regulate-btn">Create an Account</a>
+        </div>
+
+    {% else %}
+        <!-- ==================================
+             VERSION FOR LOGGED-IN USERS
+        =================================== -->
+        <h1 class="intro-title">Welcome back, {{ user.username }}.</h2>
+        <p class="intro-text">
+            How are you feeling today? Take a moment and check in with yourself.
+        </p>
+        <p class="intro-text">
+            Your emotional entries will gradually reveal patterns that can help
+            you understand your triggers, needs, and self-regulation.
+        </p>
+
+        <div class="intro-actions">
+            <a href="#" class="btn regulate-btn">Start a New Entry</a>
+        </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}
