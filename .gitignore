@@ -1,0 +1,18 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# SQLite DB
+db.sqlite3
+
+# Environment variables
+.env
+
+# Static files (collected for deployment)
+staticfiles/
+
+# VS Code
+.vscode/
