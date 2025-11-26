@@ -2,35 +2,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Login | Regulate</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
 
-<form method="post">
-    {% csrf_token %}
+<div class="auth-wrapper">
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    <div class="auth-card">
 
-    <label>Username or Email:</label>
-    <input type="text"
-           name="username"
-           value="{{ request.COOKIES.username|default:'' }}"
-           required>
+        <h1 class="auth-title">Welcome Back</h1>
 
-    <label>Password:</label>
-    <input type="password"
-           name="password"
-           required>
+        {% if error %}
+            <p style="color: red; text-align:center;">{{ error }}</p>
+        {% endif %}
 
-    <label>
-        <input type="checkbox" name="remember_me">
-        Remember me
-    </label>
+        <form method="post">
+            {% csrf_token %}
 
-    <button type="submit">Sign In</button>
-</form>
+            <label for="username">Username or Email</label>
+            <input type="text"
+                   id="username"
+                   name="username"
+                   value="{{ request.COOKIES.username|default:'' }}"
+                   required>
+
+            <label for="password">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   required>
+
+            <label style="margin-top: 0.7rem;">
+                <input type="checkbox" name="remember_me">
+                Remember me
+            </label>
+
+            <button type="submit" class="auth-btn">Sign In</button>
+
+        </form>
+
+        <div class="auth-extra">
+            <p>Don't have an account? <a href="/accounts/signup/">Create one</a></p>
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
