@@ -1,5 +1,103 @@
-<nav>
-    <div class="nav-container">
-        <a href="/">Regulate</a>
+{% load static %}
+
+<nav class="navbar navbar-expand nav-color regulate-navbar"
+     role="navigation"
+     aria-label="Main navigation">
+
+    <div class="container d-flex justify-content-between align-items-center">
+
+        <!-- Logo / Home link -->
+        <a class="navbar-brand d-flex align-items-center"
+           href="/"
+           aria-label="Go to Regulate home page">
+
+            <img src="{% static 'images/bug-logo.png' %}"
+                 alt="Regulate Logo"
+                 class="nav-logo me-2">
+        </a>
+
+        <div class="d-flex align-items-center">
+
+            {% if user.is_authenticated %}
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-outline dropdown-toggle regulate-btn"
+                        type="button"
+                        id="profileDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        aria-label="Open profile options menu">
+                    My Account
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end regulate-dropdown"
+                    aria-labelledby="profileDropdown"
+                    role="menu">
+
+                    <li role="none">
+                        <a class="dropdown-item"
+                           href="#"
+                           role="menuitem"
+                           aria-label="View your dashboard">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li role="none">
+                        <a class="dropdown-item"
+                           href="#"
+                           role="menuitem"
+                           aria-label="Create a new mood entry">
+                            New Entry
+                        </a>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li role="none">
+                        <a class="dropdown-item"
+                           href="{% url 'account_change_password' %}"
+                           role="menuitem"
+                           aria-label="Change your password">
+                            Change Password
+                        </a>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li role="none">
+                        <form method="post"
+                              action="{% url 'account_logout' %}"
+                              class="px-3 py-2">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-danger w-100 regulate-logout-btn">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+            </div>
+
+            {% else %}
+
+            <a class="btn btn-outline regulate-btn me-2"
+               href="{% url 'account_login' %}"
+               aria-label="Sign in to Regulate">
+                Sign In
+            </a>
+
+            <a class="btn btn-outline regulate-btn"
+               href="{% url 'account_signup' %}"
+               aria-label="Create a Regulate account">
+                Sign Up
+            </a>
+
+            {% endif %}
+
+        </div>
     </div>
 </nav>
