@@ -7,18 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regulate</title>
 
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Main site CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
-
 <body>
 
-    <!-- Navbar placeholder -->
     {% include 'partials/navbar.html' %}
 
-    <!-- Page content -->
-    {% block content %}
-    {% endblock %}
+    <!-- Main content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
 </body>
 </html>
