@@ -3,21 +3,22 @@
 
 {% block content %}
 
-<div class="video-container">
+<div class="hero-wrapper">
+    <div class="video-container">
 
-    <!-- Video -->
-    <video autoplay muted loop playsinline>
-        <source src="{% static 'videos/phone-in-bed.mp4' %}" type="video/mp4">
-    </video>
+        <!-- Video -->
+        <video autoplay muted loop playsinline>
+            <source src="{% static 'videos/phone-in-bed.mp4' %}" type="video/mp4">
+        </video>
 
-    <!-- White transparent overlay -->
-    <div class="video-overlay"></div>
+        <!-- White transparent overlay -->
+        <div class="video-overlay"></div>
 
-    <!-- Logo overlay -->
-    <div class="logo-overlay">
-        <img src="{% static 'images/regulate-logo.png' %}" alt="Regulate Logo">
+        <!-- Logo overlay -->
+        <div class="logo-overlay">
+            <img src="{% static 'images/regulate-logo.png' %}" alt="Regulate Logo">
+        </div>
     </div>
-
 </div>
 
 {% endblock %}

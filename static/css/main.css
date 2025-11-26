@@ -64,6 +64,13 @@ body {
 
 /* HERO SECTION */
 
+/* Wraps the entire hero section and keeps it centred */
+.hero-wrapper {
+  width: 95%;
+  display: flex;
+  justify-content: center;
+}
+
 .video-container {
   position: relative;
   width: 100%;
@@ -100,4 +107,3 @@ body {
   width: 100%;
   height: auto;
 }
-
