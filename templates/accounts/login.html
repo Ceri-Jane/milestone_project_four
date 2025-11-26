@@ -1,14 +1,11 @@
+{% extends "base.html" %}
+
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login | Regulate</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-</head>
-<body>
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
 
 <div class="auth-wrapper">
-
     <div class="auth-card">
 
         <h1 class="auth-title">Welcome Back</h1>
@@ -32,10 +29,10 @@
                    id="password"
                    name="password"
                    required>
-
-            <label style="margin-top: 0.7rem;">
-                <input type="checkbox" name="remember_me">
+          
+            <label class="auth-remember">
                 Remember me
+            <input type="checkbox" name="remember_me">
             </label>
 
             <button type="submit" class="auth-btn">Sign In</button>
@@ -47,8 +44,5 @@
         </div>
 
     </div>
-
 </div>
-
-</body>
-</html>
+{% endblock %}
