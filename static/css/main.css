@@ -98,7 +98,7 @@ body {
 .logo-overlay {
   position: absolute;
   top: 70%;
-  left: 80%;
+  left: 78%;
   transform: translate(-50%, -50%);
   width: 45%;
   pointer-events: none;
@@ -115,6 +115,7 @@ body {
 
 .intro-section {
   width: 95%;
+  max-width: 1000px;
   margin: 2rem auto 4rem auto;
   padding: 2rem;
   text-align: center;
@@ -140,8 +141,34 @@ body {
 }
 
 .intro-actions .btn {
-    font-size: 1rem;
+    font-size: 0.8rem;
     padding: 0.6rem 1.8rem;
 }
+
+/* ----------------------------------------
+   INTRO SECTION – MOBILE SCROLL VERSION
+---------------------------------------- */
+
+@media (max-width: 768px) {
+  .intro-section {
+    max-height: 55vh;          /* Shorter so it *has* to overflow */
+    overflow-y: scroll;        /* Always show a scrollable area   */
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Make text a bit smaller + tighter */
+  .intro-text {
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  /* Smaller buttons on mobile */
+  .intro-actions .btn {
+    font-size: 0.75rem;
+    padding: 0.45rem 1.3rem;
+  }
+}
+
 
 
