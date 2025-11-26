@@ -1,0 +1,1 @@
+web: gunicorn regulate_project.wsgi:application
