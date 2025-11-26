@@ -9,15 +9,19 @@
 <form method="post">
     {% csrf_token %}
 
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
     <label>Username or Email:</label>
     <input type="text"
-           name="{{ form.username.name }}"
+           name="username"
            value="{{ request.COOKIES.username|default:'' }}"
            required>
 
     <label>Password:</label>
     <input type="password"
-           name="{{ form.password.name }}"
+           name="password"
            required>
 
     <label>
@@ -26,8 +30,6 @@
     </label>
 
     <button type="submit">Sign In</button>
-
-    {{ form.errors }}
 </form>
 
 </body>

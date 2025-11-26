@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 
     'core',
+    'accounts',
 ]
 
 # Authentication backends for Django + Allauth
@@ -153,3 +154,8 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+# Override Allauth login with custom view
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
