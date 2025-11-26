@@ -155,11 +155,15 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-# Allauth configuration
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 600
+# Allauth modern configuration (2025+)
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "username*",
+    "password1*",
+    "password2*"
+]
+
+ACCOUNT_RATE_LIMITS = {
+    "login_failed": "5/10m",
+}
