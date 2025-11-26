@@ -1,0 +1,46 @@
+/* Global */
+body {
+  background-color: #c2e4d2;
+  margin: 0;
+  font-family: "Shantell Sans", sans-serif;
+}
+
+/* HERO SECTION ---------------------------------------- */
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.video-container video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Soft white overlay with transparency */
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+/* Logo positioned over the video like your draft */
+.logo-overlay {
+  position: absolute;
+  top: 70%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  pointer-events: none;
+}
+
+.logo-overlay img {
+  width: 100%;
+  height: auto;
+}
+

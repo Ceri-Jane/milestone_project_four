@@ -3,18 +3,21 @@
 
 {% block content %}
 
-<section class="hero">
+<div class="video-container">
 
-    <!-- Background video -->
-    <video class="hero-video" autoplay muted loop playsinline>
+    <!-- Video -->
+    <video autoplay muted loop playsinline>
         <source src="{% static 'videos/phone-in-bed.mp4' %}" type="video/mp4">
     </video>
 
-    <!-- Overlay content -->
-    <div class="hero-overlay">
-        <img src="{% static 'images/regulate-logo.png' %}" class="hero-logo" alt="Regulate Logo">
+    <!-- White transparent overlay -->
+    <div class="video-overlay"></div>
+
+    <!-- Logo overlay -->
+    <div class="logo-overlay">
+        <img src="{% static 'images/regulate-logo.png' %}" alt="Regulate Logo">
     </div>
 
-</section>
+</div>
 
 {% endblock %}
