@@ -3,6 +3,18 @@
 
 {% block content %}
 
-<h1>Regulate Landing Page</h1>
+<section class="hero">
+
+    <!-- Background video -->
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="{% static 'videos/phone-in-bed.mp4' %}" type="video/mp4">
+    </video>
+
+    <!-- Overlay content -->
+    <div class="hero-overlay">
+        <img src="{% static 'images/regulate-logo.png' %}" class="hero-logo" alt="Regulate Logo">
+    </div>
+
+</section>
 
 {% endblock %}
