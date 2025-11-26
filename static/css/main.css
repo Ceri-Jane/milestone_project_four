@@ -7,6 +7,7 @@
   --body-background-color: #c2e4d2;
   --video-overlay-color: #ffffff63;
   --primary-color: #2a5e4f;
+  --primary-color-transparent: #ffffff8c; 
   --seconday-color: #ffffff;
 }
 
@@ -107,3 +108,40 @@ body {
   width: 100%;
   height: auto;
 }
+
+/* ----------------------------------------
+   INTRO SECTION
+---------------------------------------- */
+
+.intro-section {
+  width: 95%;
+  margin: 2rem auto 4rem auto;
+  padding: 2rem;
+  text-align: center;
+  background: var(--primary-color-transparent);
+  border-radius: 12px;
+}
+
+.intro-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-style: italic;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.intro-actions {
+  margin-top: 1.5rem;
+}
+
+.intro-actions .btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.8rem;
+}
+
+
