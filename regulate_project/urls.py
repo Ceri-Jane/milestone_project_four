@@ -21,10 +21,7 @@ from core import views as core_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', core_views.home, name='home'),
-    
-    # Custom login, signup, etc
-    path('accounts/', include('accounts.urls')),  
-    
+       
     # Allauth fallback (password reset, email verify, etc)
     path('accounts/', include('allauth.urls')),
 ]
