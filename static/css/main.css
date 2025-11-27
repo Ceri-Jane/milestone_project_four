@@ -12,23 +12,54 @@
 }
 
 
-/* Global */
+/* ----------------------------------------
+   GLOBAL STYLES
+---------------------------------------- */
 
-/* Make page fill height so footer stays at bottom */
+/*
+    Ensure the whole page fills the full viewport height.
+    Needed so flexbox can push the footer to the bottom.
+*/
 html, body {
     height: 100%;
+    margin: 0;
 }
+
+/*
+    page-container acts as the parent flexbox.
+    Everything inside (navbar → content → footer)
+    flows vertically.
+*/
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+}
+
+/*
+    .content fills all remaining space between navbar and footer.
+    This prevents the footer from floating halfway up the page.
+*/
+.content {
+    flex: 1; /* This pushes the footer down */
+    display: flex; 
+    justify-content: center; /* Centers auth pages horizontally */
+    align-items: center;     /* Centers auth pages vertically */
+    flex-direction: column;  /* Allows normal stacking of content */
+}
+
+/*
+    The body background + global styling
+*/
 
 body {
     background-color: var(--body-background-color);
-    margin: 0;
     font-family: var(--primary-font);
-    display: flex;
-    flex-direction: column;
 }
 
+/* main grows to fill space between navbar and footer */
 main {
-    flex: 1 0 auto; /* main grows to fill space between navbar and footer */
+    flex: 1 0 auto;
 }
 
 /* ----------------------------------------
@@ -74,8 +105,9 @@ main {
     color: #ffffff;
 }
 
-
-/* HERO SECTION */
+/* ----------------------------------------
+   HERO SECTION
+---------------------------------------- */
 
 /* Wraps the entire hero section and keeps it centred */
 .hero-wrapper {
@@ -106,7 +138,7 @@ main {
   pointer-events: none;
 }
 
-/* Logo positioned over the video like your draft */
+/* Logo positioned over the video */
 .logo-overlay {
   position: absolute;
   top: 70%;
@@ -158,11 +190,14 @@ main {
 }
 
 /* ----------------------------------------
-   GLOBAL FOOTER
+   FOOTER
 ---------------------------------------- */
 
+/*
+    Footer no longer needs margin-top hacks.
+    It naturally sticks to the bottom because .content flexes above it.
+*/
 .reg-footer {
-  margin-top: auto;
   padding: 1.5rem 1rem;
   background: var(--primary-color);
   backdrop-filter: blur(6px);
@@ -178,7 +213,6 @@ main {
 .reg-footer-brand {
   font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 0.3rem;
 }
 
 .reg-footer-note,
@@ -225,28 +259,28 @@ main {
     font-size: 0.5em;
   }
 
-.reg-footer {
-  padding: 0.2rem 0.1rem;
-}
+  /* Smaller footer innards on mobile */
+  .reg-footer {
+    padding: 0.2rem 0.1rem;
+  }
 
-.reg-footer-brand {
-  font-size: 0.8rem;
-}
+  .reg-footer-brand {
+    font-size: 0.8rem;
+  }
 
-.reg-footer-note,
-.reg-footer-disclaimer {
-  font-size: 0.5rem;
-  margin: 0.1rem 0;
-}
+  .reg-footer-note,
+  .reg-footer-disclaimer {
+    font-size: 0.5rem;
+    margin: 0.1rem 0;
+  }
 
-.reg-footer-links {
-  margin-top: 0.3rem;
-}
+  .reg-footer-links {
+    margin-top: 0.3rem;
+  }
 
-.reg-footer-links a {
+  .reg-footer-links a {
     font-weight: 200;
     font-size: 0.8rem;
-}
-
+  }
 }
 

@@ -16,11 +16,11 @@
 }
 
 .auth-wrapper {
-  min-height: calc(100vh - 80px);
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 1.5rem;
+  align-items: center; /* Actual centering happens via main.css */
+  padding: 2rem 1rem;
 }
 
 .auth-card {
@@ -77,7 +77,7 @@
 
 .auth-card .auth-remember input[type="checkbox"] {
   margin-top: -0.1px;     /* ← tiny nudge to align perfectly */
-  transform: translateY(-0.1px);  /* ← optional micro-adjust */
+  transform: translateY(-0.1px);  /* micro-adjust */
 }
 
 .auth-btn {
@@ -131,7 +131,7 @@
   height: 20px;
 }
 
-/* Optional: change look when password is visible */
+/* Change look when password is visible */
 .toggle-password-btn.is-visible svg {
   opacity: 0.7;
 }
