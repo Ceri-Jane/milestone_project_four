@@ -20,8 +20,13 @@ from core import views as core_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Home / dashboard
     path('', core_views.home, name='home'),
-       
-    # Allauth fallback (password reset, email verify, etc)
+
+    # Core app routes (new entry, lists, etc)
+    path('', include('core.urls')),  # include all core routes
+
+    # Account system (login, signup, reset, etc)
     path('accounts/', include('allauth.urls')),
 ]

@@ -190,6 +190,27 @@ main {
 }
 
 /* ----------------------------------------
+   SELECT BUTTON
+---------------------------------------- */
+
+.select-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: var(--seconday-color);
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: var(--primary-font);
+}
+
+.select-btn:hover {
+  background-color: #234c41;
+}
+
+/* ----------------------------------------
    FOOTER
 ---------------------------------------- */
 
