@@ -80,7 +80,7 @@
   transform: translateY(-0.1px);  /* micro-adjust */
 }
 
-.auth-btn {
+.select-btn {
   width: 100%;
   margin-top: 1.5rem;
   padding: 0.8rem;
@@ -93,7 +93,7 @@
   font-family: var(--primary-font);
 }
 
-.auth-btn:hover {
+.select-btn:hover {
   background-color: #234c41;
 }
 
