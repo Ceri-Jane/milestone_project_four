@@ -167,3 +167,6 @@ ACCOUNT_SIGNUP_FIELDS = [
 ACCOUNT_RATE_LIMITS = {
     "login_failed": "5/10m",
 }
+
+# Development email backend (print emails to console instead of sending)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
