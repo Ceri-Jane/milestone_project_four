@@ -25,10 +25,23 @@
                    required>
 
             <label for="id_password">Password</label>
-            <input type="password"
-                   id="id_password"
-                   name="password"
-                   required>
+            <div class="password-field">
+                <input type="password"
+                id="id_password"
+                name="password"
+                required>
+                
+                <!-- Eye icon toggle -->
+                <button type="button"
+                class="toggle-password-btn"
+                data-target="id_password"
+                aria-label="Show password">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                    <circle cx="12" cy="12" r="2.5"/>
+                </svg>
+            </button>
+        </div>
 
             <label class="auth-remember">
                 Remember me
