@@ -45,8 +45,8 @@
                     <div class="emotion-list" id="emotion-list">
                         {% for word in emotions %}
                         <label class="emotion-item">
-                            <input type="checkbox" name="emotion_words" value="{{ word }}">
-                            <span>{{ word }}</span>
+                            <input type="checkbox" name="emotion_words" value="{{ word.word }}">
+                            <span>{{ word.word }}</span>
                         </label>
                         {% endfor %}
                     </div>
