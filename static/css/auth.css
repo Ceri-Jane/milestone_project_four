@@ -15,11 +15,6 @@
   --secondary-color-transparent: #ffffff8c
 }
 
-.form-card .auth-remember input[type="checkbox"] {
-  margin-top: -0.1px;     /* ← tiny nudge to align perfectly */
-  transform: translateY(-0.1px);  /* micro-adjust */
-}
-
 .auth-extra {
   text-align: center;
   margin-top: 1rem;
