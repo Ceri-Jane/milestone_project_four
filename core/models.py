@@ -2,6 +2,23 @@ from django.db import models
 from django.contrib.auth.models import User  # built-in user model
 
 
+class EmotionWord(models.Model):
+    """
+    Stores a single emotion word used as an option
+    in the Emotion Words checkbox list on the entry form.
+    """
+
+    word = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        ordering = ["word"]
+        verbose_name = "Emotion word"
+        verbose_name_plural = "Emotion words"
+
+    def __str__(self):
+        return self.word
+
+
 class Entry(models.Model):
     """Single emotional entry for a logged-in user."""
 
