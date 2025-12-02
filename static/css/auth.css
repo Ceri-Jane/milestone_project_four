@@ -1,5 +1,5 @@
 /* ----------------------------------------
-   AUTH PAGES (Login + Signup)
+   AUTH SECTIONS ONLY
 ---------------------------------------- */
 
 /* Google fonts import */
@@ -54,4 +54,3 @@
 .toggle-password-btn.is-visible svg {
   opacity: 0.7;
 }
-

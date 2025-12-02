@@ -1,0 +1,54 @@
+/* ----------------------------------------
+   ENTRY PAGE
+----------------------------------------- */
+
+/* Google fonts import */
+@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+/* CSS Variables */
+:root {
+  --primary-font: "Shantell Sans", sans-serif;
+  --body-background-color: #c2e4d2;
+  --video-overlay-color: #ffffff63;
+  --primary-color: #2a5e4f;
+  --seconday-color: #ffffff;
+  --secondary-color-transparent: #ffffff8c;
+  --error-color: #ff0000;
+}
+
+/* Hue slider wrapper spacing */
+.hue-slider-wrapper {
+  margin-top: 1rem;
+}
+
+/* Hue slider bar */
+.hue-slider {
+  width: 100%;
+  appearance: none;
+  height: 12px;
+  background: linear-gradient(to right, #a5dfc6, #2a5e4f);
+  border-radius: 6px;
+  outline: none;
+}
+
+.hue-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Emotion checkbox layout */
+.emotion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem 1rem;
+  margin-top: 1rem;
+}
+
+/* Notes textarea spacing */
+.notes-box {
+  margin-top: 1rem;
+}
