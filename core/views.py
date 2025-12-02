@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.contrib import messages   # ← NEW
 
 from .models import Entry, EmotionWord  # import both models
 
@@ -33,7 +34,7 @@ def new_entry(request):
     if request.method == "POST":
         # Get form values from POST
         hue = request.POST.get("hue")                 # range slider value (0–100)
-        hue_notes = request.POST.get("hue_notes")     # NEW: meaning of hue
+        hue_notes = request.POST.get("hue_notes")     # meaning of hue
         notes = request.POST.get("notes")
 
         selected_emotions = request.POST.getlist("emotion_words")
@@ -66,6 +67,9 @@ def new_entry(request):
             emotion_words=emotion_words,
             notes=combined_notes,
         )
+
+        # SUCCESS MESSAGE
+        messages.success(request, "Your entry has been saved.")
 
         return redirect("home")  # dashboard for now
 

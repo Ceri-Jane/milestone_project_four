@@ -19,19 +19,25 @@
 </head>
 
 <body>
-    <!-- 
-        Moved everything inside .page-container, use flexbox 
-        to push the footer to the bottom of the viewport.
-    -->
+
     <div class="page-container">
 
         {% include 'partials/navbar.html' %}
 
-        <!-- 
-            Main content is wrapped in .content so it can flex and fill 
-            the remaining height between navbar and footer.
-        -->
         <main class="content">
+
+            <!-- SUCCESS / ERROR MESSAGE DISPLAY -->
+            {% if messages %}
+                <div class="messages mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-success text-center mx-auto" role="alert" style="max-width: 800px;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- END MESSAGES -->
+
             {% block content %}{% endblock %}
         </main>
 
@@ -46,7 +52,7 @@
     <!-- Auth JS -->
     <script src="{% static 'js/auth.js' %}"></script>
     <!-- Entry JS -->
-     <script src="{% static 'js/entry.js' %}"></script>
+    <script src="{% static 'js/entry.js' %}"></script>
 
 </body>
 </html>
