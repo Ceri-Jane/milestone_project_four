@@ -29,15 +29,20 @@
                 placeholder="Describe the feelings behind choosing this hue..."></textarea>
 
             <!-- Emotion Words -->
-            <label>Emotion Words (optional)</label>
-            <p class="emotion-subtext">Choose all that apply</p>
+            <label for="emotion_words">Emotion Words (optional)</label>
+            <p class="form-section-hint">Choose all that apply</p>
 
-            <div class="emotion-grid">
-                {% for word in emotions %}
-                <label>
-                    <input type="checkbox" name="emotion_words" value="{{ word }}"> {{ word }}
-                </label>
-                {% endfor %}
+            <div class="emotion-select-wrapper">
+                <select name="emotion_words" id="emotion_words" multiple class="emotion-multi">
+                    {% for word in emotions %}
+                        <option value="{{ word }}">{{ word }}</option>
+                    {% endfor %}
+                </select>
+
+                <p class="emotion-helper">
+                    Pick any feelings that resonate with you today.<br>
+                    On desktop, hold Ctrl or Cmd to select multiple.
+                </p>
             </div>
 
             <!-- Notes for the Day -->
