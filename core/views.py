@@ -1,7 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+
 from .models import Entry
+
+
+def home(request):
+    """
+    Dashboard / landing page.
+    For now this just renders the home template.
+    Later this can show recent entries or stats.
+    """
+    return render(request, "core/home.html")
 
 
 @login_required
@@ -21,16 +31,16 @@ def new_entry(request):
     emotions = [
         "Calm", "Anxious", "Motivated", "Overwhelmed",
         "Neutral", "Low", "Hopeful", "Tired",
-        "Frustrated", "Content"
+        "Frustrated", "Cheese", "Content",
     ]
 
     if request.method == "POST":
         # Get form values from POST
-        hue = request.POST.get("hue")  # range slider value (0–100)
+        hue = request.POST.get("hue")              # range slider value (0–100)
         notes = request.POST.get("notes")
         selected_emotions = request.POST.getlist("emotion_words")  # multiple checkboxes
 
-        # Optional: derive a simple 1–5 mood score from the hue slider
+        # Derive a simple 1–5 mood score from the hue slider
         mood = None
         if hue:
             try:
@@ -46,7 +56,7 @@ def new_entry(request):
         # Create the entry in the database
         Entry.objects.create(
             user=request.user,
-            mood=mood,               # assumes mood field exists; can be adjusted later
+            mood=mood,               # assumes mood can be null or 1–5
             hue=hue,
             emotion_words=emotion_words,
             notes=notes,
