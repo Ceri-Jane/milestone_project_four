@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
-from .models import Entry, EmotionWord  # ← NEW IMPORT
+from .models import Entry, EmotionWord  # import both models
 
 
 def home(request):
@@ -27,14 +27,16 @@ def new_entry(request):
     # Human-friendly timestamp for the template
     timestamp = timezone.localtime().strftime("%A %d %B %Y • %H:%M")
 
-    # ✔ Pull emotion words from database (alphabetical from model.Meta)
+    # Pull emotion words from database (alphabetical from model.Meta)
     emotions = EmotionWord.objects.all()
 
     if request.method == "POST":
         # Get form values from POST
-        hue = request.POST.get("hue")              # range slider value (0–100)
+        hue = request.POST.get("hue")                 # range slider value (0–100)
+        hue_notes = request.POST.get("hue_notes")     # NEW: meaning of hue
         notes = request.POST.get("notes")
-        selected_emotions = request.POST.getlist("emotion_words")  # multiple checkboxes
+
+        selected_emotions = request.POST.getlist("emotion_words")
 
         # Derive a simple 1–5 mood score from the hue slider
         mood = None
@@ -49,13 +51,20 @@ def new_entry(request):
         # Join selected emotion words into a single string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
+        # Combine hue meaning + notes into a single text field
+        combined_notes = ""
+        if hue_notes:
+            combined_notes += f"Hue meaning: {hue_notes}\n\n"
+        if notes:
+            combined_notes += notes
+
         # Create the entry in the database
         Entry.objects.create(
             user=request.user,
-            mood=mood,               # assumes mood can be null or 1–5
+            mood=mood,
             hue=hue,
             emotion_words=emotion_words,
-            notes=notes,
+            notes=combined_notes,
         )
 
         return redirect("home")  # dashboard for now
