@@ -15,67 +15,7 @@
   --secondary-color-transparent: #ffffff8c
 }
 
-.auth-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center; /* Actual centering happens via main.css */
-  padding: 2rem 1rem;
-}
-
-.auth-card {
-  width: 95%;
-  max-width: 420px;
-  background: var(--secondary-color-transparent);
-  backdrop-filter: blur(6px);
-  padding: 2rem;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-
-.auth-title {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: var(--primary-color);
-  font-style: italic;
-  font-size: 1.8rem;
-}
-
-.auth-card label {
-  display: block;
-  margin-top: 1rem;
-  font-weight: 600;
-  color: var(--primary-color);
-}
-
-.auth-card input {
-  width: 100%;
-  padding: 0.7rem;
-  margin-top: 0.4rem;
-  border-radius: 8px;
-  border: 1px solid var(--primary-color);
-  font-family: var(--primary-font);
-}
-
-.auth-card input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 4px var(--primary-color);
-}
-
-
-.auth-card .auth-remember {
-  display: inline-flex;
-  align-items: center;      /* vertically aligns EVERYTHING */
-  gap: 0.4rem;
-  white-space: nowrap;
-  margin-top: 1rem;
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 1rem;          /* ensures consistent text height */
-}
-
-.auth-card .auth-remember input[type="checkbox"] {
+.form-card .auth-remember input[type="checkbox"] {
   margin-top: -0.1px;     /* ← tiny nudge to align perfectly */
   transform: translateY(-0.1px);  /* micro-adjust */
 }

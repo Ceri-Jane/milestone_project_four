@@ -1,0 +1,72 @@
+/* ----------------------------------------
+   FORM PAGES (New Entry, Edit Entry, etc.)
+----------------------------------------- */
+
+/* Google fonts import */
+@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+/* CSS Variables */
+:root {
+  --primary-font: "Shantell Sans", sans-serif;
+  --body-background-color: #c2e4d2;
+  --video-overlay-color: #ffffff63;
+  --primary-color: #2a5e4f;
+  --seconday-color: #ffffff;
+  --secondary-color-transparent: #ffffff8c
+}
+
+/* Wrapper to center form pages */
+.form-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* works with main.css centering */
+  padding: 2rem 1rem;
+}
+
+/* Frosted glass card layout */
+.form-card {
+  width: 95%;
+  max-width: 420px;
+  background: var(--secondary-color-transparent);
+  backdrop-filter: blur(6px);
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Form title */
+.form-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  font-style: italic;
+  font-size: 1.8rem;
+}
+
+/* Labels */
+.form-card label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Inputs */
+.form-card input,
+.form-card textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.4rem;
+  border-radius: 8px;
+  border: 1px solid var(--primary-color);
+  font-family: var(--primary-font);
+}
+
+/* Focus outline */
+.form-card input:focus,
+.form-card textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 4px var(--primary-color);
+}
