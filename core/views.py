@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.contrib import messages   # ← NEW
+from django.contrib import messages
 
 from .models import Entry, EmotionWord  # import both models
 
@@ -79,3 +79,32 @@ def new_entry(request):
         "emotions": emotions,
     }
     return render(request, "core/new_entry.html", context)
+
+
+@login_required
+def dashboard(request):
+    """
+    Show the logged-in user's entries in a grouped, non-calendar view.
+
+    - Groups entries by date (no empty 'missing' days shown)
+    - Optional filter: search by specific date via ?date=YYYY-MM-DD
+    """
+    # Base queryset: only this user's entries, newest first
+    user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
+
+    # Optional: filter by a specific date (string in YYYY-MM-DD format)
+    search_date = request.GET.get("date")
+    if search_date:
+        user_entries = user_entries.filter(created_at__date=search_date)
+
+    # Group entries by date for accordion display
+    grouped_entries = {}
+    for entry in user_entries:
+        date_key = entry.created_at.date()
+        grouped_entries.setdefault(date_key, []).append(entry)
+
+    context = {
+        "grouped_entries": grouped_entries,
+        "search_date": search_date,
+    }
+    return render(request, "core/dashboard.html", context)
