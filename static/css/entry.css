@@ -48,6 +48,14 @@
   margin-top: 1rem;
 }
 
+/* Subtext under section labels */
+.emotion-subtext {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    margin: 0;
+    opacity: 0.9;
+}
+
 /* Notes textarea spacing */
 .notes-box {
   margin-top: 1rem;

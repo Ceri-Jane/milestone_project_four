@@ -2,30 +2,54 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/entry.css' %}">
 
 <div class="form-wrapper">
     <div class="form-card">
 
+        <!-- Entry Title -->
         <h1 class="form-title">New Entry</h1>
 
         <form method="post">
             {% csrf_token %}
 
-            <label for="mood">Mood (1–5)</label>
-            <input type="number" id="mood" name="mood" min="1" max="5" required>
+            <!-- Timestamp -->
+            {% if timestamp %}
+                <p class="form-info">Entry at: {{ timestamp }}</p>
+            {% endif %}
 
-            <label for="hue">Colour (hex)</label>
-            <input type="text" id="hue" name="hue" placeholder="#a5dfc6">
+            <!-- Mood Hue -->
+            <label for="hue">Mood Hue</label>
+            <div class="hue-slider-wrapper">
+                <input type="range" id="hue" name="hue" min="0" max="100" class="hue-slider">
+            </div>
 
-            <label for="emotion_words">Emotion Words</label>
-            <input type="text" id="emotion_words" name="emotion_words" placeholder="anxious, uneasy, hopeful">
+            <label for="hue_notes">What does this hue mean today? (optional)</label>
+            <textarea id="hue_notes" name="hue_notes" rows="3"
+                placeholder="Describe the feelings behind choosing this hue..."></textarea>
 
-            <label for="notes">Notes</label>
-            <textarea id="notes" name="notes" rows="4" placeholder="Write your thoughts..."></textarea>
+            <!-- Emotion Words -->
+            <label>Emotion Words (optional)</label>
+            <p class="emotion-subtext">Choose all that apply</p>
 
+            <div class="emotion-grid">
+                {% for word in emotions %}
+                <label>
+                    <input type="checkbox" name="emotion_words" value="{{ word }}"> {{ word }}
+                </label>
+                {% endfor %}
+            </div>
+
+            <!-- Notes for the Day -->
+            <label for="notes">Notes for the day (optional)</label>
+            <textarea id="notes" name="notes" rows="4" class="notes-box"
+                placeholder="Write anything else you want to reflect on today..."></textarea>
+
+            <!-- Save Entry Button -->
             <button type="submit" class="select-btn">Save Entry</button>
         </form>
 
     </div>
 </div>
+
 {% endblock %}
