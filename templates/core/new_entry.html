@@ -27,23 +27,32 @@
             <label for="hue_notes">What does this hue mean today? (optional)</label>
             <textarea id="hue_notes" name="hue_notes" rows="3"
                 placeholder="Describe the feelings behind choosing this hue..."></textarea>
+                
+                <!-- Emotion Words -->
+                <label for="emotion_words">Emotion Words (optional)</label>
 
-            <!-- Emotion Words -->
-            <label for="emotion_words">Emotion Words (optional)</label>
-            <p class="form-section-hint">Choose all that apply</p>
+                <div class="emotion-select-wrapper">
 
-            <div class="emotion-select-wrapper">
-                <select name="emotion_words" id="emotion_words" multiple class="emotion-multi">
-                    {% for word in emotions %}
-                        <option value="{{ word }}">{{ word }}</option>
-                    {% endfor %}
-                </select>
+                    <!-- Search bar -->
+                    <input 
+                        type="text"
+                        id="emotion-search"
+                        class="emotion-search"
+                        placeholder="Search emotions..."
+                    >
 
-                <p class="emotion-helper">
-                    Pick any feelings that resonate with you today.<br>
-                    On desktop, hold Ctrl or Cmd to select multiple.
-                </p>
-            </div>
+                    <!-- Multi-select list -->
+                    <select name="emotion_words" id="emotion_words" multiple class="emotion-multi">
+                        {% for word in emotions %}
+                            <option value="{{ word }}">{{ word }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <p class="emotion-helper">
+                        Pick any feelings that resonate with you today.
+                        On desktop, hold Ctrl or Cmd to select multiple.
+                    </p>
+                </div>
 
             <!-- Notes for the Day -->
             <label for="notes">Notes for the day (optional)</label>
