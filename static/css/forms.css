@@ -12,7 +12,8 @@
   --video-overlay-color: #ffffff63;
   --primary-color: #2a5e4f;
   --seconday-color: #ffffff;
-  --secondary-color-transparent: #ffffff8c
+  --secondary-color-transparent: #ffffff8c;
+  --error-color: #ff0000;
 }
 
 /* Wrapper to center form pages */
@@ -69,4 +70,18 @@
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 4px var(--primary-color);
+}
+
+.form-error {
+    color: var(--error-color);
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.form-info {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 500;
 }
