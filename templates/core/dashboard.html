@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Wrapper using existing layout + frosted card style -->
+<div class="form-wrapper">
+    <div class="form-card" style="max-width: 900px; width: 100%;">
+
+        <!-- Dashboard title -->
+        <h1 class="form-title">Your Entries</h1>
+
+        <!-- Optional date filter -->
+        <form method="get" style="text-align: center; margin-bottom: 1rem;">
+            <input 
+                type="date" 
+                name="date" 
+                value="{{ search_date }}"
+                style="
+                    padding: 0.5rem;
+                    border: 1px solid var(--primary-color);
+                    border-radius: 8px;
+                    font-family: var(--primary-font);
+                    margin-right: 0.5rem;
+                "
+            >
+            <button class="select-btn" style="max-width: 150px;">Search</button>
+        </form>
+
+        {% if grouped_entries %}
+        <!-- Accordion grouping entries by date -->
+        <!-- Avoids calendar-style empty days -->
+        <div class="accordion" id="entriesAccordion">
+
+            {% for date, entries in grouped_entries.items %}
+            <!-- One accordion section per date -->
+            <div class="accordion-item" style="border-radius: 10px; margin-bottom: 1rem;">
+
+                <!-- Accordion header -->
+                <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
+                    <button 
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse-{{ forloop.counter }}"
+                        style="font-family: var(--primary-font); color: var(--primary-color);"
+                    >
+                        {{ date }}
+                    </button>
+                </h2>
+
+                <!-- Entries for this date -->
+                <div 
+                    id="collapse-{{ forloop.counter }}" 
+                    class="accordion-collapse collapse"
+                >
+                    <div class="accordion-body">
+
+                        {% for entry in entries %}
+                        <!-- Individual entry card -->
+                        <div 
+                            style="
+                                background: var(--seconday-color);
+                                border-left: 6px solid var(--primary-color);
+                                padding: 1rem;
+                                border-radius: 8px;
+                                margin-bottom: 1rem;
+                                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                            "
+                        >
+                            <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
+                            <p><strong>Hue:</strong> {{ entry.hue }}</p>
+
+                            {% if entry.emotion_words %}
+                                <p><strong>Emotions:</strong> {{ entry.emotion_words }}</p>
+                            {% endif %}
+
+                            {% if entry.notes %}
+                                <p><strong>Notes:</strong><br>{{ entry.notes|linebreaks }}</p>
+                            {% endif %}
+
+                            <!-- Action links (wired later) -->
+                            <div style="margin-top: 0.8rem;">
+                                <a href="#" class="entry-btn" style="margin-right: 1rem;">View</a>
+                                <a href="#" class="entry-btn" style="margin-right: 1rem;">Edit</a>
+                                <a href="#" class="entry-btn" style="color: red;">Delete</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+            <!-- Shown if user has no entries yet -->
+            <p 
+                style="text-align: center; color: var(--primary-color); margin-top: 1rem;"
+            >
+                You haven't created any entries yet.
+            </p>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}
