@@ -1,16 +1,15 @@
-// Filter emotion list by search text
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("emotion-search");
-    const emotionSelect = document.getElementById("emotion_words");
+    const emotionList = document.getElementById("emotion-list");
 
-    if (!searchInput || !emotionSelect) return;
+    if (!searchInput || !emotionList) return;
 
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.toLowerCase();
 
-        for (let option of emotionSelect.options) {
-            const text = option.textContent.toLowerCase();
-            option.style.display = text.includes(query) ? "block" : "none";
+        for (let item of emotionList.querySelectorAll(".emotion-item")) {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(query) ? "flex" : "none";
         }
     });
 });

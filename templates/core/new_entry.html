@@ -29,7 +29,7 @@
                 placeholder="Describe the feelings behind choosing this hue..."></textarea>
                 
                 <!-- Emotion Words -->
-                <label for="emotion_words">Emotion Words (optional)</label>
+                <label for="emotion-search">Emotion Words (optional)</label>
 
                 <div class="emotion-select-wrapper">
 
@@ -41,16 +41,18 @@
                         placeholder="Search emotions..."
                     >
 
-                    <!-- Multi-select list -->
-                    <select name="emotion_words" id="emotion_words" multiple class="emotion-multi">
+                    <!-- Scrollable checkbox list -->
+                    <div class="emotion-list" id="emotion-list">
                         {% for word in emotions %}
-                            <option value="{{ word }}">{{ word }}</option>
+                        <label class="emotion-item">
+                            <input type="checkbox" name="emotion_words" value="{{ word }}">
+                            <span>{{ word }}</span>
+                        </label>
                         {% endfor %}
-                    </select>
+                    </div>
 
                     <p class="emotion-helper">
-                        Pick any feelings that resonate with you today.
-                        On desktop, hold Ctrl or Cmd to select multiple.
+                        Tick as many feelings as you like — this helps you spot patterns over time.
                     </p>
                 </div>
 

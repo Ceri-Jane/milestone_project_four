@@ -33,28 +33,28 @@
   background: transparent;
 }
 
-/* WebKit (Chrome/Safari/Edge) */
+/* WebKit track */
 .hue-slider::-webkit-slider-runnable-track {
   height: 10px;
   background: linear-gradient(to right, #a5dfc6, #2a5e4f);
   border-radius: 999px;
   border: 2px solid var(--primary-color);
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 4px rgba(0,0,0,0.12);
 }
 
+/* WebKit thumb */
 .hue-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: var(--primary-color);
   border: 2px solid var(--seconday-color);
   cursor: pointer;
-  margin-top: -6px; /* Centers thumb over track */
+  margin-top: -6px;
 }
 
-/* Firefox */
+/* Firefox track */
 .hue-slider::-moz-range-track {
   height: 10px;
   background: linear-gradient(to right, #a5dfc6, #2a5e4f);
@@ -62,12 +62,13 @@
   border: 2px solid var(--primary-color);
 }
 
+/* Firefox thumb */
 .hue-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
   background: var(--primary-color);
   border: 2px solid var(--seconday-color);
+  border-radius: 50%;
   cursor: pointer;
 }
 
@@ -83,35 +84,68 @@
   margin: 0.1rem 0 0.5rem;
 }
 
+/* Outer wrapper */
 .emotion-select-wrapper {
   width: 100%;
   margin-top: 0.5rem;
 }
 
-.emotion-multi {
+/* Search box */
+.emotion-search {
   width: 100%;
-  max-height: 180px;
-  min-height: 130px;
-  padding: 0.4rem;
-  border-radius: 8px;
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
   border: 1px solid var(--primary-color);
-  background: var(--seconday-color);
-  color: var(--primary-color);
+  border-radius: 8px;
   font-family: var(--primary-font);
   font-size: 0.95rem;
+  background: var(--seconday-color);
+  color: var(--primary-color);
+}
+
+.emotion-search:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 4px var(--primary-color);
+}
+
+/* Scroll box */
+.emotion-list {
+  max-height: 200px;
   overflow-y: auto;
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  background: var(--seconday-color);
+  padding: 0;
 }
 
-/* One word per line, tidy appearance */
-.emotion-multi option {
-  padding: 0.35rem 0.4rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+/* Each row */
+.emotion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-family: var(--primary-font);
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
-.emotion-multi option:last-child {
+.emotion-item:last-child {
   border-bottom: none;
 }
 
+/* Checkbox styling */
+.emotion-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+
+/* Helper text */
 .emotion-helper {
   margin-top: 0.4rem;
   font-size: 0.8rem;
@@ -119,28 +153,9 @@
   opacity: 0.85;
 }
 
-/* Search input */
-.emotion-search {
-    width: 100%;
-    padding: 0.6rem;
-    margin-bottom: 0.6rem;
-    border: 1px solid var(--primary-color);
-    border-radius: 8px;
-    font-family: var(--primary-font);
-    font-size: 0.95rem;
-    background: var(--seconday-color);
-    color: var(--primary-color);
-}
-
-.emotion-search:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 4px var(--primary-color);
-}
-
 
 /* ----------------------------------------
-   NOTES SECTION
+   Notes section
 ----------------------------------------- */
 
 .notes-box {
