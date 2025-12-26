@@ -10,13 +10,14 @@
         <!-- Entry Title -->
         <h1 class="form-title">Edit Entry</h1>
 
+        <!-- Show original creation timestamp -->
+        <p class="form-info">
+            Entry created on:
+            {{ entry.created_at|date:"l d F Y • H:i" }}
+        </p>
+
         <form method="post">
             {% csrf_token %}
-
-            <!-- Timestamp -->
-            <p class="form-info">
-                Original entry: {{ entry.created_at|date:"j F Y • H:i" }}
-            </p>
 
             <!-- Mood Hue -->
             <label for="hue">Mood Hue</label>
@@ -28,7 +29,7 @@
                     min="0"
                     max="100"
                     class="hue-slider"
-                    value="{{ entry.hue|default:'50' }}"
+                    value="{{ hue_value }}"
                 >
             </div>
             <p class="form-section-hint">
@@ -42,7 +43,7 @@
                 name="hue_notes"
                 rows="3"
                 placeholder="Describe the feelings behind choosing this hue..."
-            >{{ initial_hue_notes }}</textarea>
+            >{{ hue_notes_value }}</textarea>
 
             <!-- Emotion Words -->
             <label for="emotion-search">Emotion Words (optional)</label>
@@ -52,8 +53,8 @@
 
             <div class="emotion-select-wrapper">
 
-                <!-- Search bar -->
-                <input 
+                <!-- Search bar (same search-input class you use elsewhere) -->
+                <input
                     type="text"
                     id="emotion-search"
                     class="search-input"
@@ -63,15 +64,15 @@
                 <!-- Scrollable checkbox list -->
                 <div class="emotion-list" id="emotion-list">
                     {% for word in emotions %}
-                        <label class="emotion-item">
-                            <input
-                                type="checkbox"
-                                name="emotion_words"
-                                value="{{ word.word }}"
-                                {% if word.word in selected_emotions %}checked{% endif %}
-                            >
-                            <span>{{ word.word }}</span>
-                        </label>
+                    <label class="emotion-item">
+                        <input
+                            type="checkbox"
+                            name="emotion_words"
+                            value="{{ word.word }}"
+                            {% if word.word in selected_emotions %}checked{% endif %}
+                        >
+                        <span>{{ word.word }}</span>
+                    </label>
                     {% endfor %}
                 </div>
 
@@ -89,10 +90,10 @@
                 rows="4"
                 class="notes-box"
                 placeholder="Write anything else you want to reflect on today..."
-            >{{ initial_notes_body }}</textarea>
+            >{{ notes_value }}</textarea>
 
-            <!-- Save Entry Button -->
-            <button type="submit" class="select-btn">Save Changes</button>
+            <!-- Save changes button -->
+            <button type="submit" class="select-btn">Save changes</button>
         </form>
 
     </div>

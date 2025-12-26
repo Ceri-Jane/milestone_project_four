@@ -47,7 +47,12 @@
                                 {{ rev.created_at|date:"l d F Y • H:i" }}
                             </p>
 
-                            <p><strong>Mood:</strong> {{ rev.get_mood_display }}</p>
+                            {% if rev.mood %}
+                                <p><strong>Mood:</strong> {{ rev.get_mood_display }}</p>
+                            {% else %}
+                                <p><strong>Mood:</strong> Not recorded for this version</p>
+                            {% endif %}
+
                             <p><strong>Hue:</strong> {{ rev.hue }}</p>
 
                             {% if rev.emotion_words %}

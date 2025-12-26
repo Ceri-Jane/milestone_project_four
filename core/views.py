@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
 
-from .models import Entry, EmotionWord, EntryRevision  # import revision model too
+from .models import Entry, EmotionWord, EntryRevision  # include revisions
 
 
 def home(request):
@@ -113,11 +113,8 @@ def dashboard(request):
 @login_required
 def view_entry(request, entry_id):
     """
-    Show a single entry in read-only mode.
-
-    - Ensures the entry belongs to the logged-in user
-    - Also fetches any previous revisions so the user can
-      see how the entry has changed over time.
+    Show a single entry in read-only mode, plus its revision history.
+    Ensures the entry belongs to the logged-in user.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     revisions = EntryRevision.objects.filter(entry=entry).order_by("-created_at")
@@ -134,7 +131,8 @@ def edit_entry(request, entry_id):
     """
     Allow the user to edit an existing entry.
 
-    - Before updating, store a snapshot of the current values
+    - Pre-populates the form with the current values
+    - Before updating, stores a snapshot of the current values
       in EntryRevision so you can see how it has changed over time.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
@@ -173,8 +171,8 @@ def edit_entry(request, entry_id):
             or entry.notes != combined_notes
         )
 
-        # If there are changes, create a revision snapshot
         if has_changes:
+            # Store previous state in revision history
             EntryRevision.objects.create(
                 entry=entry,
                 mood=entry.mood,
@@ -196,12 +194,38 @@ def edit_entry(request, entry_id):
 
         return redirect("dashboard")
 
-    # GET: pre-fill form fields from the existing entry
+    # ------------------------------
+    # GET: pre-fill form fields
+    # ------------------------------
+
+    # 1) Hue slider value (we currently store 0–100 as text)
+    hue_value = entry.hue or ""
+
+    # 2) Split stored notes into "hue meaning" and main notes (best-effort)
+    hue_notes_value = ""
+    notes_value = entry.notes or ""
+
+    if entry.notes and entry.notes.startswith("Hue meaning: "):
+        parts = entry.notes.split("\n\n", 1)
+        if len(parts) == 2:
+            # First part after "Hue meaning:" prefix
+            hue_notes_value = parts[0].replace("Hue meaning:", "", 1).strip()
+            notes_value = parts[1]
+
+    # 3) Selected emotion words as list
+    selected_emotions = []
+    if entry.emotion_words:
+        selected_emotions = [
+            w.strip() for w in entry.emotion_words.split(",") if w.strip()
+        ]
+
     context = {
         "entry": entry,
         "emotions": emotions,
-        # For now we send the full notes block; later we can split out hue meaning.
-        "existing_notes": entry.notes,
+        "hue_value": hue_value,
+        "hue_notes_value": hue_notes_value,
+        "notes_value": notes_value,
+        "selected_emotions": selected_emotions,
     }
     return render(request, "core/entry_edit.html", context)
 

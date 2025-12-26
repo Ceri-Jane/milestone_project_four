@@ -33,20 +33,24 @@ class Entry(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="entries",  # quick reverse lookup: user.entries.all()
+        related_name="entries",
     )
+
     mood = models.IntegerField(choices=MOOD_CHOICES)  # 1–5 mood rating
     hue = models.CharField(max_length=7, blank=True)  # HEX colour e.g. #a5dfc6
+
     emotion_words = models.CharField(
         max_length=255,
         blank=True,
-        help_text="Comma-separated emotion words.",  # short hint for admin form
+        help_text="Comma-separated emotion words.",
     )
-    notes = models.TextField(blank=True)  # optional free-text notes
-    created_at = models.DateTimeField(auto_now_add=True)  # timestamp on save
+
+    notes = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]  # newest entries first
+        ordering = ["-created_at"]
 
     def __str__(self):
         return (
@@ -58,9 +62,6 @@ class Entry(models.Model):
 class EntryRevision(models.Model):
     """
     Snapshot of an Entry before it was edited.
-
-    - Keeps the previous mood, hue, emotion words, and notes
-    - Linked back to the parent Entry
     """
 
     entry = models.ForeignKey(
@@ -68,14 +69,24 @@ class EntryRevision(models.Model):
         on_delete=models.CASCADE,
         related_name="revisions",
     )
-    mood = models.IntegerField(null=True, blank=True)
+
+    # 🔥 THIS is the key change — same choices as Entry
+    mood = models.IntegerField(
+        choices=Entry.MOOD_CHOICES,
+        null=True,
+        blank=True,
+    )
+
     hue = models.CharField(max_length=7, blank=True)
+
     emotion_words = models.CharField(
         max_length=255,
         blank=True,
         help_text="Comma-separated emotion words at the time of this revision.",
     )
+
     notes = models.TextField(blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
