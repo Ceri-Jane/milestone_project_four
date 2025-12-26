@@ -5,30 +5,31 @@
 
 <!-- Wrapper using existing layout + frosted card style -->
 <div class="form-wrapper">
-    <div class="form-card" style="max-width: 900px; width: 100%;">
+    <!-- Use standard form-card + wider layout for dashboard -->
+    <div class="form-card dashboard-card">
 
         <!-- Dashboard title -->
         <h1 class="form-title">Your Entries</h1>
 
         <!-- Optional date filter -->
-        <form method="get" style="text-align: center; margin-bottom: 1rem;">
+        <form method="get" class="dashboard-filter-form">
             <input 
                 type="date" 
                 name="date" 
                 value="{{ search_date }}"
                 class="search-input"
             >
-            <button class="select-btn" style="max-width: 150px;">Search</button>
+            <button class="select-btn select-btn-small">Search</button>
         </form>
 
         {% if grouped_entries %}
         <!-- Accordion grouping entries by date -->
         <!-- Avoids calendar-style empty days -->
-        <div class="accordion" id="entriesAccordion">
+        <div class="accordion dashboard-accordion" id="entriesAccordion">
 
             {% for date, entries in grouped_entries.items %}
             <!-- One accordion section per date -->
-            <div class="accordion-item" style="border-radius: 10px; margin-bottom: 1rem;">
+            <div class="accordion-item">
 
                 <!-- Accordion header -->
                 <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
@@ -37,7 +38,6 @@
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#collapse-{{ forloop.counter }}"
-                        style="font-family: var(--primary-font); color: var(--primary-color);"
                     >
                         {{ date }}
                     </button>
@@ -52,16 +52,7 @@
 
                         {% for entry in entries %}
                         <!-- Individual entry card -->
-                        <div 
-                            style="
-                                background: var(--seconday-color);
-                                border-left: 6px solid var(--primary-color);
-                                padding: 1rem;
-                                border-radius: 8px;
-                                margin-bottom: 1rem;
-                                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-                            "
-                        >
+                        <div class="entry-card">
                             <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
                             <p><strong>Hue:</strong> {{ entry.hue }}</p>
 
@@ -74,10 +65,10 @@
                             {% endif %}
 
                             <!-- Action links (wired later) -->
-                            <div style="margin-top: 0.8rem;">
-                                <a href="#" class="entry-btn" style="margin-right: 1rem;">View</a>
-                                <a href="#" class="entry-btn" style="margin-right: 1rem;">Edit</a>
-                                <a href="#" class="entry-btn" style="color: red;">Delete</a>
+                            <div class="entry-actions">
+                                <a href="#">View</a>
+                                <a href="#">Edit</a>
+                                <a href="#" class="entry-delete">Delete</a>
                             </div>
                         </div>
                         {% endfor %}
@@ -92,9 +83,7 @@
 
         {% else %}
             <!-- Shown if user has no entries yet -->
-            <p 
-                style="text-align: center; color: var(--primary-color); margin-top: 1rem;"
-            >
+            <p class="form-info empty-state">
                 You haven't created any entries yet.
             </p>
         {% endif %}

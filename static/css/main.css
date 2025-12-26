@@ -386,6 +386,39 @@ main {
     text-decoration: underline;
 }
 
+/* Wider card layout just for the dashboard */
+.dashboard-card {
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Centered filter form under the title */
+.dashboard-filter-form {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Smaller button for the dashboard search form */
+.select-btn-small {
+  width: auto;
+  max-width: 150px;
+}
+
+/* Container for entry action links */
+.entry-actions {
+  margin-top: 0.8rem;
+}
+
+/* Delete link styled as destructive but still inline with other actions */
+.entry-actions .entry-delete {
+  color: #ff0000;
+}
+
+/* Empty state message styling on dashboard */
+.empty-state {
+  margin-top: 1rem;
+}
+
 /* ----------------------------------------
    SEARCH BOX STYLES
 ----------------------------------------- */
