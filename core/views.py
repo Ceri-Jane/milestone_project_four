@@ -119,12 +119,15 @@ def view_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     revisions = EntryRevision.objects.filter(entry=entry).order_by("-created_at")
 
+    # Most recent revision time, if any (used as "last updated")
+    last_updated = revisions[0].created_at if revisions else None
+
     context = {
         "entry": entry,
         "revisions": revisions,
+        "last_updated": last_updated,
     }
     return render(request, "core/entry_detail.html", context)
-
 
 @login_required
 def edit_entry(request, entry_id):
