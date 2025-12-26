@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Ask for confirmation before deleting an entry from the dashboard
-    const deleteForms = document.querySelectorAll(".entry-delete-form");
+    const deleteForms = document.querySelectorAll(".delete-entry-form");
 
     deleteForms.forEach(form => {
         form.addEventListener("submit", function (event) {
