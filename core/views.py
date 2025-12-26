@@ -114,10 +114,19 @@ def dashboard(request):
 def view_entry(request, entry_id):
     """
     Show a single entry in read-only mode.
-    Ensures the entry belongs to the logged-in user.
+
+    - Ensures the entry belongs to the logged-in user
+    - Also fetches any previous revisions so the user can
+      see how the entry has changed over time.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
-    return render(request, "core/entry_detail.html", {"entry": entry})
+    revisions = EntryRevision.objects.filter(entry=entry).order_by("-created_at")
+
+    context = {
+        "entry": entry,
+        "revisions": revisions,
+    }
+    return render(request, "core/entry_detail.html", context)
 
 
 @login_required
