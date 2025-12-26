@@ -313,6 +313,80 @@ main {
 }
 
 /* ----------------------------------------
+   DASHBOARD – ACCORDION STYLES
+----------------------------------------- */
+
+/* Wrapper for the accordion block */
+.dashboard-accordion {
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+/* Each accordion group (date) */
+.accordion-item {
+    border: 1px solid var(--primary-color);
+    border-radius: 10px !important;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background: var(--secondary-color-transparent);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+}
+
+/* Header button */
+.accordion-button {
+    background: #d8e9df;
+    font-family: var(--primary-font);
+    font-size: 1.05rem;
+    color: var(--primary-color);
+    padding: 1rem 1.2rem;
+    border: none;
+}
+
+.accordion-button:not(.collapsed) {
+    background: #c9e4d6;
+    color: var(--primary-color);
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+/* Inside the accordion */
+.accordion-body {
+    background: var(--seconday-color);
+    padding: 1.2rem 1.4rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    font-family: var(--primary-font);
+    color: var(--primary-color);
+}
+
+/* Individual entry container */
+.entry-card {
+    background: var(--secondary-color-transparent);
+    backdrop-filter: blur(4px);
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Inline action links */
+.entry-actions a {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-right: 1rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.entry-actions a:hover {
+    text-decoration: underline;
+}
+
+/* ----------------------------------------
    SUCCESS MESSAGE STYLES
 ---------------------------------------- */
 
