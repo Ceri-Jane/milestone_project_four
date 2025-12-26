@@ -63,13 +63,21 @@
                             {% if entry.notes %}
                                 <p><strong>Notes:</strong><br>{{ entry.notes|linebreaks }}</p>
                             {% endif %}
-
-                            <!-- Action links (wired later) -->
+                            
                             <div class="entry-actions">
                                 <a href="{% url 'view_entry' entry.id %}">View</a>
-                                <a href="#">Edit</a>
-                                <a href="#" class="entry-delete">Delete</a>
+                                <a href="{% url 'edit_entry' entry.id %}">Edit</a>
+
+                                <form method="post"
+                                    action="{% url 'delete_entry' entry.id %}"
+                                    class="entry-delete-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="entry-delete-link">
+                                        Delete
+                                    </button>
+                                </form>
                             </div>
+
                         </div>
                         {% endfor %}
 

@@ -236,8 +236,10 @@ def edit_entry(request, entry_id):
 @login_required
 def delete_entry(request, entry_id):
     """
-    Ask for confirmation, then delete an entry.
-    Uses POST to actually delete.
+    Delete an entry after user confirmation.
+
+    - Only deletes on POST (from dashboard form)
+    - GET just redirects back to the dashboard
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
@@ -246,4 +248,6 @@ def delete_entry(request, entry_id):
         messages.success(request, "Your entry has been deleted.")
         return redirect("dashboard")
 
-    return render(request, "core/entry_confirm_delete.html", {"entry": entry})
+    # If someone hits the URL via GET, just bounce them back safely
+    messages.info(request, "Delete action was not completed.")
+    return redirect("dashboard")

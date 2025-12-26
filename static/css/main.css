@@ -386,6 +386,31 @@ main {
     text-decoration: underline;
 }
 
+.entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.entry-actions form {
+  display: inline;
+}
+
+.entry-delete-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #c0392b; /* red, like before */
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.entry-delete-link:hover {
+  text-decoration: underline;
+}
+
+
 /* Wider card layout just for the dashboard */
 .dashboard-card {
   max-width: 900px;

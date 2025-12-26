@@ -26,4 +26,19 @@ document.addEventListener("DOMContentLoaded", function () {
             alert.remove();
         }, 4000);
     });
+
+    // Ask for confirmation before deleting an entry from the dashboard
+    const deleteForms = document.querySelectorAll(".entry-delete-form");
+
+    deleteForms.forEach(form => {
+        form.addEventListener("submit", function (event) {
+            const confirmed = window.confirm(
+                "Are you sure you want to delete this entry?\n\n" +
+                "This will permanently remove it from your history."
+            );
+            if (!confirmed) {
+                event.preventDefault();
+            }
+        });
+    });
 });
