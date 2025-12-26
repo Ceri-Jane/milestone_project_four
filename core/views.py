@@ -100,6 +100,9 @@ def dashboard(request):
     # Group entries by date for accordion display
     grouped_entries = {}
     for entry in user_entries:
+        # Flag so the template can show an indicator
+        entry.has_revisions = entry.revisions.exists()
+
         date_key = entry.created_at.date()
         grouped_entries.setdefault(date_key, []).append(entry)
 

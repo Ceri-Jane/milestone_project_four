@@ -49,9 +49,8 @@
                     class="accordion-collapse collapse"
                 >
                     <div class="accordion-body">
-
+                        
                         {% for entry in entries %}
-                        <!-- Individual entry card -->
                         <div class="entry-card">
                             <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
                             <p><strong>Hue:</strong> {{ entry.hue }}</p>
@@ -63,23 +62,26 @@
                             {% if entry.notes %}
                                 <p><strong>Notes:</strong><br>{{ entry.notes|linebreaks }}</p>
                             {% endif %}
-                            
-                            <div class="entry-actions">
+
+                            {% if entry.has_revisions %}
+                                <p class="text-center"><strong>*Edited —  revision history available</strong></p>
+                            {% endif %}
+
+                            <div class="justify-content-center entry-actions">
                                 <a href="{% url 'view_entry' entry.id %}">View</a>
                                 <a href="{% url 'edit_entry' entry.id %}">Edit</a>
 
                                 <form method="post"
                                     action="{% url 'delete_entry' entry.id %}"
-                                    class="entry-delete-form">
+                                    class="d-inline delete-entry-form">
                                     {% csrf_token %}
                                     <button type="submit" class="entry-delete-link">
                                         Delete
                                     </button>
                                 </form>
                             </div>
-
                         </div>
-                        {% endfor %}
+                    {% endfor %}
 
                     </div>
                 </div>
