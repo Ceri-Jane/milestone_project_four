@@ -90,25 +90,6 @@
   margin-top: 0.5rem;
 }
 
-/* Search box */
-.emotion-search {
-  width: 100%;
-  padding: 0.6rem;
-  margin-bottom: 0.6rem;
-  border: 1px solid var(--primary-color);
-  border-radius: 8px;
-  font-family: var(--primary-font);
-  font-size: 0.95rem;
-  background: var(--seconday-color);
-  color: var(--primary-color);
-}
-
-.emotion-search:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 4px var(--primary-color);
-}
-
 /* Scroll box */
 .emotion-list {
   max-height: 200px;
@@ -152,7 +133,6 @@
   color: var(--primary-color);
   opacity: 0.85;
 }
-
 
 /* ----------------------------------------
    Notes section
