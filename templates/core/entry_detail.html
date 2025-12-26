@@ -34,31 +34,33 @@
             <a href="{% url 'dashboard' %}">Back to dashboard</a>
         </div>
 
-        <!-- Revision history -->
+        <!-- Revision history in its own scrollable section -->
         {% if revisions %}
-        <h2 class="form-title">
-            Revision history
-        </h2>
+            <div class="revision-section">
+                <h2 class="form-title revision-title">Revision history</h2>
 
-            {% for rev in revisions %}
-                <div class="entry-card">
-                    <p>
-                        <strong>Saved on:</strong>
-                        {{ rev.created_at|date:"l d F Y • H:i" }}
-                    </p>
+                <div class="revision-list">
+                    {% for rev in revisions %}
+                        <div class="entry-card">
+                            <p>
+                                <strong>Saved on:</strong>
+                                {{ rev.created_at|date:"l d F Y • H:i" }}
+                            </p>
 
-                    <p><strong>Mood:</strong> {{ rev.get_mood_display }}</p>
-                    <p><strong>Hue:</strong> {{ rev.hue }}</p>
+                            <p><strong>Mood:</strong> {{ rev.get_mood_display }}</p>
+                            <p><strong>Hue:</strong> {{ rev.hue }}</p>
 
-                    {% if rev.emotion_words %}
-                        <p><strong>Emotions:</strong> {{ rev.emotion_words }}</p>
-                    {% endif %}
+                            {% if rev.emotion_words %}
+                                <p><strong>Emotions:</strong> {{ rev.emotion_words }}</p>
+                            {% endif %}
 
-                    {% if rev.notes %}
-                        <p><strong>Notes at this time:</strong><br>{{ rev.notes|linebreaks }}</p>
-                    {% endif %}
+                            {% if rev.notes %}
+                                <p><strong>Notes at this time:</strong><br>{{ rev.notes|linebreaks }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
+            </div>
         {% else %}
             <p class="form-info">
                 There are no previous versions yet – this is the first version of this entry.

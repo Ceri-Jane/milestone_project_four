@@ -443,6 +443,32 @@ main {
 }
 
 /* ----------------------------------------
+   REVISION HISTORY (ENTRY DETAIL PAGE)
+----------------------------------------- */
+
+.revision-section {
+  margin-top: 2rem;
+}
+
+/* Slightly smaller than main page title */
+.revision-title {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+/* Scrollable list of revision cards */
+.revision-list {
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 0.25rem; /* small breathing room from scrollbar */
+}
+
+/* Extra spacing between revision cards inside the list */
+.revision-list .entry-card {
+  margin-bottom: 1rem;
+}
+
+/* ----------------------------------------
    SUCCESS MESSAGE STYLES
 ---------------------------------------- */
 
