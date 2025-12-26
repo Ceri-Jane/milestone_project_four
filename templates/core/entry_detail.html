@@ -17,7 +17,7 @@
         {% if last_updated %}
             <p class="form-info">
                 Last updated on:
-                {{ last_updated|date:"l d F Y • H:i" }}
+                {{ last_updated|date:"l d F F Y • H:i" }}
             </p>
         {% endif %}
 
@@ -36,15 +36,22 @@
         </div>
 
         <!-- Actions for this entry -->
-        <div class="entry-actions">
+        <div class="entry-actions justify-content-center">
             <a href="{% url 'edit_entry' entry.id %}">Edit this entry</a>
             <a href="{% url 'dashboard' %}">Back to dashboard</a>
         </div>
 
-        <!-- Revision history in its own scrollable section -->
+        <!-- Revision history -->
         {% if revisions %}
             <div class="revision-section">
+
                 <h2 class="form-title revision-title">Revision history</h2>
+
+                <p class="form-info">
+                    Revision history helps you reflect on how your thoughts and feelings
+                    changed over time. Older versions are not mistakes — they capture what
+                    felt real to you in that moment.
+                </p>
 
                 <div class="revision-list">
                     {% for rev in revisions %}
@@ -68,12 +75,13 @@
                     {% endfor %}
                 </div>
             </div>
+
         {% else %}
-        <div class="revision-section">
-        <p class="form-info">
-            This entry has not been edited — this is the original version.
-        </p>
-    </div>
+            <div class="revision-section">
+                <p class="form-info">
+                    This entry has not been edited yet — this is the only version so far.
+                </p>
+            </div>
         {% endif %}
 
     </div>
