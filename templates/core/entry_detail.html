@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Wrapper using existing centered layout -->
+<div class="form-wrapper">
+    <!-- Reuse frosted glass card style -->
+    <div class="form-card">
+
+        <!-- Page title -->
+        <h1 class="form-title">Entry Details</h1>
+
+        <!-- Short helper line -->
+        <p class="form-info">
+            This is a read-only view of one of your saved entries.
+        </p>
+
+        <!-- Basic entry information -->
+        <p><strong>Date:</strong> {{ entry.created_at|date:"j F Y, H:i" }}</p>
+        <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
+        <p><strong>Hue:</strong> {{ entry.hue }}</p>
+
+        {% if entry.emotion_words %}
+            <p><strong>Emotions:</strong> {{ entry.emotion_words }}</p>
+        {% endif %}
+
+        {% if entry.notes %}
+            <p>
+                <strong>Notes:</strong><br>
+                {{ entry.notes|linebreaks }}
+            </p>
+        {% endif %}
+
+        <!-- Simple action links using existing entry-actions styles -->
+        <div class="entry-actions">
+            <a href="{% url 'edit_entry' entry.id %}">Edit this entry</a>
+            <a href="{% url 'delete_entry' entry.id %}" class="entry-delete">Delete</a>
+            <a href="{% url 'dashboard' %}">Back to dashboard</a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

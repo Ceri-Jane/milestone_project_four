@@ -118,3 +118,73 @@ def view_entry(request, entry_id):
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     return render(request, "core/entry_detail.html", {"entry": entry})
+
+
+@login_required
+def edit_entry(request, entry_id):
+    """
+    Allow the user to edit an existing entry.
+    Reuses the same basic logic as creating an entry.
+    """
+    entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
+    emotions = EmotionWord.objects.all()
+
+    if request.method == "POST":
+        hue = request.POST.get("hue")
+        hue_notes = request.POST.get("hue_notes")
+        notes = request.POST.get("notes")
+        selected_emotions = request.POST.getlist("emotion_words")
+
+        # Derive mood from hue
+        mood = None
+        if hue:
+            try:
+                hue_value = int(hue)
+                mood = max(1, min(5, (hue_value // 20) + 1))
+            except ValueError:
+                mood = None
+
+        # Join selected emotion words into a single string
+        emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
+
+        # Combine hue meaning + notes into a single text field
+        combined_notes = ""
+        if hue_notes:
+            combined_notes += f"Hue meaning: {hue_notes}\n\n"
+        if notes:
+            combined_notes += notes
+
+        # Update existing entry
+        entry.mood = mood
+        entry.hue = hue
+        entry.emotion_words = emotion_words
+        entry.notes = combined_notes
+        entry.save()
+
+        messages.success(request, "Your entry has been updated.")
+        return redirect("dashboard")
+
+    # GET: pre-fill form fields from the existing entry
+    context = {
+        "entry": entry,
+        "emotions": emotions,
+        # Can't perfectly split hue meaning from notes, so just pass full notes
+        "existing_notes": entry.notes,
+    }
+    return render(request, "core/entry_edit.html", context)
+
+
+@login_required
+def delete_entry(request, entry_id):
+    """
+    Ask for confirmation, then delete an entry.
+    Uses POST to actually delete.
+    """
+    entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
+
+    if request.method == "POST":
+        entry.delete()
+        messages.success(request, "Your entry has been deleted.")
+        return redirect("dashboard")
+
+    return render(request, "core/entry_confirm_delete.html", {"entry": entry})
