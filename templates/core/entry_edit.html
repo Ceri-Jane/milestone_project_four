@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/entry.css' %}">
+
+<div class="form-wrapper">
+    <div class="form-card">
+
+        <!-- Entry Title -->
+        <h1 class="form-title">Edit Entry</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Timestamp -->
+            <p class="form-info">
+                Original entry: {{ entry.created_at|date:"j F Y • H:i" }}
+            </p>
+
+            <!-- Mood Hue -->
+            <label for="hue">Mood Hue</label>
+            <div class="hue-slider-wrapper">
+                <input
+                    type="range"
+                    id="hue"
+                    name="hue"
+                    min="0"
+                    max="100"
+                    class="hue-slider"
+                    value="{{ entry.hue|default:'50' }}"
+                >
+            </div>
+            <p class="form-section-hint">
+                Move the slider to pick a colour that matches how you feel.
+            </p>
+
+            <!-- Hue meaning -->
+            <label for="hue_notes">What does this hue mean today? (optional)</label>
+            <textarea
+                id="hue_notes"
+                name="hue_notes"
+                rows="3"
+                placeholder="Describe the feelings behind choosing this hue..."
+            >{{ initial_hue_notes }}</textarea>
+
+            <!-- Emotion Words -->
+            <label for="emotion-search">Emotion Words (optional)</label>
+            <p class="form-section-hint">
+                Start typing to filter the list, then tick any words that fit.
+            </p>
+
+            <div class="emotion-select-wrapper">
+
+                <!-- Search bar -->
+                <input 
+                    type="text"
+                    id="emotion-search"
+                    class="search-input"
+                    placeholder="Search emotions..."
+                >
+
+                <!-- Scrollable checkbox list -->
+                <div class="emotion-list" id="emotion-list">
+                    {% for word in emotions %}
+                        <label class="emotion-item">
+                            <input
+                                type="checkbox"
+                                name="emotion_words"
+                                value="{{ word.word }}"
+                                {% if word.word in selected_emotions %}checked{% endif %}
+                            >
+                            <span>{{ word.word }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <p class="emotion-helper">
+                    Tick as many feelings as you like — this helps you spot patterns over time.<br>
+                    You don’t have to pick any words if you don’t want to.
+                </p>
+            </div>
+
+            <!-- Notes for the Day -->
+            <label for="notes">Notes for the day (optional)</label>
+            <textarea
+                id="notes"
+                name="notes"
+                rows="4"
+                class="notes-box"
+                placeholder="Write anything else you want to reflect on today..."
+            >{{ initial_notes_body }}</textarea>
+
+            <!-- Save Entry Button -->
+            <button type="submit" class="select-btn">Save Changes</button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
