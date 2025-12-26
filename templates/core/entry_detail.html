@@ -1,43 +1,69 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block content %}
 
-<!-- Wrapper using existing centered layout -->
 <div class="form-wrapper">
-    <!-- Reuse frosted glass card style -->
     <div class="form-card">
 
         <!-- Page title -->
-        <h1 class="form-title">Entry Details</h1>
+        <h1 class="form-title">Entry details</h1>
 
-        <!-- Short helper line -->
+        <!-- Current entry summary -->
         <p class="form-info">
-            This is a read-only view of one of your saved entries.
+            Created on:
+            {{ entry.created_at|date:"l d F Y • H:i" }}
         </p>
 
-        <!-- Basic entry information -->
-        <p><strong>Date:</strong> {{ entry.created_at|date:"j F Y, H:i" }}</p>
-        <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
-        <p><strong>Hue:</strong> {{ entry.hue }}</p>
+        <!-- Current entry content -->
+        <div class="entry-card">
+            <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
+            <p><strong>Hue:</strong> {{ entry.hue }}</p>
 
-        {% if entry.emotion_words %}
-            <p><strong>Emotions:</strong> {{ entry.emotion_words }}</p>
-        {% endif %}
+            {% if entry.emotion_words %}
+                <p><strong>Emotions:</strong> {{ entry.emotion_words }}</p>
+            {% endif %}
 
-        {% if entry.notes %}
-            <p>
-                <strong>Notes:</strong><br>
-                {{ entry.notes|linebreaks }}
-            </p>
-        {% endif %}
+            {% if entry.notes %}
+                <p><strong>Notes:</strong><br>{{ entry.notes|linebreaks }}</p>
+            {% endif %}
+        </div>
 
-        <!-- Simple action links using existing entry-actions styles -->
+        <!-- Actions for this entry -->
         <div class="entry-actions">
             <a href="{% url 'edit_entry' entry.id %}">Edit this entry</a>
-            <a href="{% url 'delete_entry' entry.id %}" class="entry-delete">Delete</a>
             <a href="{% url 'dashboard' %}">Back to dashboard</a>
         </div>
+
+        <!-- Revision history -->
+        {% if revisions %}
+        <h2 class="form-title">
+            Revision history
+        </h2>
+
+            {% for rev in revisions %}
+                <div class="entry-card">
+                    <p>
+                        <strong>Saved on:</strong>
+                        {{ rev.created_at|date:"l d F Y • H:i" }}
+                    </p>
+
+                    <p><strong>Mood:</strong> {{ rev.get_mood_display }}</p>
+                    <p><strong>Hue:</strong> {{ rev.hue }}</p>
+
+                    {% if rev.emotion_words %}
+                        <p><strong>Emotions:</strong> {{ rev.emotion_words }}</p>
+                    {% endif %}
+
+                    {% if rev.notes %}
+                        <p><strong>Notes at this time:</strong><br>{{ rev.notes|linebreaks }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="form-info">
+                There are no previous versions yet – this is the first version of this entry.
+            </p>
+        {% endif %}
 
     </div>
 </div>
