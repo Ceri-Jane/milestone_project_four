@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
 
-from .models import Entry, EmotionWord  # import both models
+from .models import Entry, EmotionWord, EntryRevision  # import revision model too
 
 
 def home(request):
@@ -124,7 +124,9 @@ def view_entry(request, entry_id):
 def edit_entry(request, entry_id):
     """
     Allow the user to edit an existing entry.
-    Reuses the same basic logic as creating an entry.
+
+    - Before updating, store a snapshot of the current values
+      in EntryRevision so you can see how it has changed over time.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     emotions = EmotionWord.objects.all()
@@ -154,48 +156,43 @@ def edit_entry(request, entry_id):
         if notes:
             combined_notes += notes
 
-        # Update existing entry
-        entry.mood = mood
-        entry.hue = hue
-        entry.emotion_words = emotion_words
-        entry.notes = combined_notes
-        entry.save()
+        # Check if anything actually changed
+        has_changes = (
+            entry.mood != mood
+            or entry.hue != hue
+            or entry.emotion_words != emotion_words
+            or entry.notes != combined_notes
+        )
 
-        messages.success(request, "Your entry has been updated.")
+        # If there are changes, create a revision snapshot
+        if has_changes:
+            EntryRevision.objects.create(
+                entry=entry,
+                mood=entry.mood,
+                hue=entry.hue,
+                emotion_words=entry.emotion_words,
+                notes=entry.notes,
+            )
+
+            # Update existing entry with new values
+            entry.mood = mood
+            entry.hue = hue
+            entry.emotion_words = emotion_words
+            entry.notes = combined_notes
+            entry.save()
+
+            messages.success(request, "Your entry has been updated.")
+        else:
+            messages.info(request, "No changes were made to your entry.")
+
         return redirect("dashboard")
 
-    # ---------- GET: pre-fill form fields from the existing entry ----------
-
-    # Split stored notes back into "hue meaning" and "body" if possible
-    full_notes = entry.notes or ""
-    initial_hue_notes = ""
-    initial_notes_body = full_notes
-
-    prefix = "Hue meaning:"
-    if full_notes.startswith(prefix):
-        # Try to split at the first blank line after the hue meaning
-        parts = full_notes.split("\n\n", 1)
-        if len(parts) == 2:
-            # Remove the prefix text from the first part
-            initial_hue_notes = parts[0].replace(prefix, "", 1).strip()
-            initial_notes_body = parts[1]
-        else:
-            # Only hue meaning was saved, no extra body
-            initial_hue_notes = full_notes.replace(prefix, "", 1).strip()
-            initial_notes_body = ""
-
-    # Turn the stored comma-separated emotions back into a list
-    if entry.emotion_words:
-        selected_emotions = [w.strip() for w in entry.emotion_words.split(",") if w.strip()]
-    else:
-        selected_emotions = []
-
+    # GET: pre-fill form fields from the existing entry
     context = {
         "entry": entry,
         "emotions": emotions,
-        "initial_hue_notes": initial_hue_notes,
-        "initial_notes_body": initial_notes_body,
-        "selected_emotions": selected_emotions,
+        # For now we send the full notes block; later we can split out hue meaning.
+        "existing_notes": entry.notes,
     }
     return render(request, "core/entry_edit.html", context)
 
