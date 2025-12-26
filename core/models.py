@@ -49,4 +49,37 @@ class Entry(models.Model):
         ordering = ["-created_at"]  # newest entries first
 
     def __str__(self):
-        return f"{self.user.username} – {self.get_mood_display()} – {self.created_at:%Y-%m-%d}"
+        return (
+            f"{self.user.username} – {self.get_mood_display()} – "
+            f"{self.created_at:%Y-%m-%d}"
+        )
+
+
+class EntryRevision(models.Model):
+    """
+    Snapshot of an Entry before it was edited.
+
+    - Keeps the previous mood, hue, emotion words, and notes
+    - Linked back to the parent Entry
+    """
+
+    entry = models.ForeignKey(
+        Entry,
+        on_delete=models.CASCADE,
+        related_name="revisions",
+    )
+    mood = models.IntegerField(null=True, blank=True)
+    hue = models.CharField(max_length=7, blank=True)
+    emotion_words = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Comma-separated emotion words at the time of this revision.",
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Revision of Entry {self.entry.id} at {self.created_at:%Y-%m-%d %H:%M}"

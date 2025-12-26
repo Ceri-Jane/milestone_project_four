@@ -164,12 +164,38 @@ def edit_entry(request, entry_id):
         messages.success(request, "Your entry has been updated.")
         return redirect("dashboard")
 
-    # GET: pre-fill form fields from the existing entry
+    # ---------- GET: pre-fill form fields from the existing entry ----------
+
+    # Split stored notes back into "hue meaning" and "body" if possible
+    full_notes = entry.notes or ""
+    initial_hue_notes = ""
+    initial_notes_body = full_notes
+
+    prefix = "Hue meaning:"
+    if full_notes.startswith(prefix):
+        # Try to split at the first blank line after the hue meaning
+        parts = full_notes.split("\n\n", 1)
+        if len(parts) == 2:
+            # Remove the prefix text from the first part
+            initial_hue_notes = parts[0].replace(prefix, "", 1).strip()
+            initial_notes_body = parts[1]
+        else:
+            # Only hue meaning was saved, no extra body
+            initial_hue_notes = full_notes.replace(prefix, "", 1).strip()
+            initial_notes_body = ""
+
+    # Turn the stored comma-separated emotions back into a list
+    if entry.emotion_words:
+        selected_emotions = [w.strip() for w in entry.emotion_words.split(",") if w.strip()]
+    else:
+        selected_emotions = []
+
     context = {
         "entry": entry,
         "emotions": emotions,
-        # Can't perfectly split hue meaning from notes, so just pass full notes
-        "existing_notes": entry.notes,
+        "initial_hue_notes": initial_hue_notes,
+        "initial_notes_body": initial_notes_body,
+        "selected_emotions": selected_emotions,
     }
     return render(request, "core/entry_edit.html", context)
 
