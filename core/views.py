@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
@@ -108,3 +108,13 @@ def dashboard(request):
         "search_date": search_date,
     }
     return render(request, "core/dashboard.html", context)
+
+
+@login_required
+def view_entry(request, entry_id):
+    """
+    Show a single entry in read-only mode.
+    Ensures the entry belongs to the logged-in user.
+    """
+    entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
+    return render(request, "core/entry_detail.html", {"entry": entry})
