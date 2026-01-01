@@ -151,9 +151,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 
 # Allauth redirect settings
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # after logout, go to login page
+LOGIN_REDIRECT_URL = '/dashboard/'          # logged-in users land on My Entries
+LOGOUT_REDIRECT_URL = '/'                   # normal logout → home page
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # password change → login page
 
 # Log the user out after they change their password
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
