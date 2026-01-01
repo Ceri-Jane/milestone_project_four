@@ -2,15 +2,11 @@
 {% load static %}
 
 {% block content %}
-<!-- Wrapper using existing layout + frosted card style -->
 <div class="form-wrapper">
-    <!-- Use standard form-card + wider layout just like dashboard -->
     <div class="form-card dashboard-card">
 
-        <!-- Title -->
         <h1 class="form-title">Your Profile</h1>
 
-        <!-- Brief intro + current details -->
         <p class="form-info">
             Manage your Regulate account details in one place.
         </p>
@@ -20,35 +16,36 @@
 
         <hr>
 
-        <!-- Change Username block -->
+        <!-- Change Username -->
         <div class="entry-card">
             <p><strong>Change Username</strong></p>
-            <p>
-                Update the name shown on your Regulate account.
-            </p>
-            <button class="select-btn select-btn-small" disabled aria-disabled="true">
+            <p>Update the name shown on your Regulate account.</p>
+
+            <button class="select-btn select-btn-small"
+                    disabled
+                    aria-disabled="true">
                 Change Username (coming soon)
             </button>
         </div>
 
-        <!-- Manage Email block -->
+        <!-- Manage Email -->
         <div class="entry-card">
             <p><strong>Manage Email</strong></p>
-            <p>
-                Update the email address linked to your account.
-            </p>
-            <a href="{% url 'account_email' %}" class="select-btn select-btn-small">
+            <p>Update the email address linked to your account.</p>
+
+            <a href="{% url 'account_email' %}"
+               class="select-btn select-btn-small">
                 Manage Email
             </a>
         </div>
 
-        <!-- Change Password block -->
+        <!-- Change Password -->
         <div class="entry-card">
             <p><strong>Change Password</strong></p>
-            <p>
-                Keep your account secure with a strong password.
-            </p>
-            <a href="{% url 'account_change_password' %}" class="select-btn select-btn-small">
+            <p>Keep your account secure with a strong password.</p>
+
+            <a href="{% url 'account_change_password' %}"
+               class="select-btn select-btn-small">
                 Change Password
             </a>
         </div>
