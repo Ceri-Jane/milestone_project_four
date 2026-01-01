@@ -11,41 +11,52 @@
             Manage your Regulate account details in one place.
         </p>
 
-        <p><strong>Username:</strong> {{ request.user.username }}</p>
-        <p><strong>Email:</strong> {{ request.user.email }}</p>
-
         <hr>
 
         <!-- Change Username -->
         <div class="entry-card">
-            <p><strong>Change Username</strong></p>
+            <p><strong>Your Username:</strong> {{ request.user.username }}</p>
             <p>Update the name shown on your Regulate account.</p>
 
             <a href="{% url 'change_username' %}"
-            class="select-btn select-btn-small">
+               class="select-btn">
                 Change Username
             </a>
         </div>
 
         <!-- Manage Email -->
         <div class="entry-card">
-            <p><strong>Manage Email</strong></p>
+            <p><strong>Your Email:</strong> {{ request.user.email }}</p>
             <p>Update the email address linked to your account.</p>
 
             <a href="{% url 'change_email' %}"
-            class="select-btn select-btn-small">
-                Manage Email
+               class="select-btn">
+                Change Email
             </a>
         </div>
 
         <!-- Change Password -->
         <div class="entry-card">
-            <p><strong>Change Password</strong></p>
+            <p><strong>Your Password</strong></p>
             <p>Keep your account secure with a strong password.</p>
 
             <a href="{% url 'account_change_password' %}"
-               class="select-btn select-btn-small">
+               class="select-btn">
                 Change Password
+            </a>
+        </div>
+
+        <!-- Divider before logout -->
+        <hr>
+
+        <!-- Logout -->
+        <div class="entry-card">
+            <p><strong>Log Out</strong></p>
+            <p>Log out of your Regulate account safely.</p>
+
+            <a href="{% url 'account_logout' %}"
+               class="btn btn-danger w-100 regulate-logout-btn">
+                Log Out
             </a>
         </div>
 

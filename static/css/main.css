@@ -136,10 +136,14 @@ main {
   border: none;
   cursor: pointer;
   font-family: var(--primary-font);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .select-btn:hover {
   background-color: #234c41;
+  text-decoration: none;
 }
 
 
