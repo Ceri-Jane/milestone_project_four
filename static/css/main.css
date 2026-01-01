@@ -50,6 +50,7 @@ main {
     flex: 1 0 auto;
 }
 
+
 /* ----------------------------------------
    CARD STYLES
 ---------------------------------------- */
@@ -185,6 +186,7 @@ main {
     color: var(--seconday-color)
 }
 
+
 /* ----------------------------------------
    HERO SECTION
 ---------------------------------------- */
@@ -233,6 +235,7 @@ main {
   height: auto;
 }
 
+
 /* ----------------------------------------
    INTRO SECTION
 ---------------------------------------- */
@@ -268,6 +271,7 @@ main {
     font-size: 0.8rem;
     padding: 0.6rem 1.8rem;
 }
+
 
 /* ----------------------------------------
    FOOTER
@@ -312,8 +316,9 @@ main {
   text-decoration: underline;
 }
 
+
 /* ----------------------------------------
-   DASHBOARD – ACCORDION STYLES
+   DASHBOARD – ACCORDION & FILTER
 ----------------------------------------- */
 
 /* Wrapper for the accordion block */
@@ -410,17 +415,29 @@ main {
   text-decoration: underline;
 }
 
-
 /* Wider card layout just for the dashboard */
 .dashboard-card {
   max-width: 900px;
   width: 100%;
 }
 
-/* Centered filter form under the title */
+/* Centered filter form under the title – flex row so input + button align */
 .dashboard-filter-form {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
   margin-bottom: 1rem;
+}
+
+/* Tweak spacing for search input when used in filter row */
+.dashboard-filter-form .search-input {
+  margin-bottom: 0;
+}
+
+/* Tweak spacing for small button in filter row */
+.dashboard-filter-form .select-btn-small {
+  margin-top: 0;
 }
 
 /* Smaller button for the dashboard search form */
@@ -444,6 +461,7 @@ main {
   margin-top: 1rem;
 }
 
+
 /* ----------------------------------------
    SEARCH BOX STYLES
 ----------------------------------------- */
@@ -466,6 +484,7 @@ main {
   border-color: var(--primary-color);
   box-shadow: 0 0 4px var(--primary-color);
 }
+
 
 /* ----------------------------------------
    REVISION HISTORY (ENTRY DETAIL PAGE)
@@ -492,6 +511,7 @@ main {
 .revision-list .entry-card {
   margin-bottom: 1rem;
 }
+
 
 /* ----------------------------------------
    SUCCESS MESSAGE STYLES
@@ -595,4 +615,3 @@ main {
     font-size: 0.8rem;
   }
 }
-
