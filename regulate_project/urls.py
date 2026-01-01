@@ -12,7 +12,7 @@ urlpatterns = [
     path("", include("core.urls")),  # include all core routes
 
     # Custom account views (profile etc.)
-    path("account/", include("account.urls")),
+    path("account/", include("accounts.urls")),
 
     # Account system (login, signup, reset, etc) via allauth
     path("accounts/", include("allauth.urls")),
