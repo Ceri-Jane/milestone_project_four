@@ -45,3 +45,37 @@ def change_username(request):
         "current_username": request.user.username,
     }
     return render(request, "account/change_username.html", context)
+
+
+@login_required
+def change_email(request):
+    """
+    Allow the logged-in user to update their email address.
+    """
+    User = get_user_model()
+
+    if request.method == "POST":
+        new_email = request.POST.get("email", "").strip().lower()
+
+        # Basic validation
+        if not new_email:
+            messages.error(request, "Please enter an email address.")
+            return redirect("change_email")
+
+        # Check if email already belongs to another account
+        if User.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+            messages.error(request, "That email address is already in use.")
+            return redirect("change_email")
+
+        # Update and save
+        request.user.email = new_email
+        request.user.save()
+
+        messages.success(request, "Your email address has been updated.")
+        return redirect("profile")
+
+    # GET — show current email in form
+    context = {
+        "current_email": request.user.email or "",
+    }
+    return render(request, "account/change_email.html", context)
