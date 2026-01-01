@@ -20,7 +20,7 @@
 
             {% if user.is_authenticated %}
 
-            <!-- Profile Dropdown -->
+            <!-- My Account Dropdown -->
             <div class="dropdown">
                 <button class="btn dropdown-toggle regulate-btn"
                         type="button"
@@ -38,10 +38,10 @@
 
                     <li role="none">
                         <a class="dropdown-item"
-                           href="{% url 'dashboard' %}"
-                           role="menuitem"
-                           aria-label="View your dashboard">
-                            Dashboard
+                        href="{% url 'dashboard' %}"
+                        role="menuitem"
+                        aria-label="View your entries">
+                            My Entries
                         </a>
                     </li>
 

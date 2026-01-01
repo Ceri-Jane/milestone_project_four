@@ -8,7 +8,7 @@ from .models import Entry, EmotionWord, EntryRevision  # include revisions
 
 def home(request):
     """
-    Dashboard / landing page.
+    Landing page.
     For now this just renders the home template.
     Later this can show recent entries or stats.
     """
@@ -71,7 +71,8 @@ def new_entry(request):
         # SUCCESS MESSAGE
         messages.success(request, "Your entry has been saved.")
 
-        return redirect("home")  # dashboard for now
+        # After saving, send user to My Entries page
+        return redirect("dashboard")
 
     # GET request: show empty form
     context = {
@@ -84,7 +85,8 @@ def new_entry(request):
 @login_required
 def dashboard(request):
     """
-    Show the logged-in user's entries in a grouped, non-calendar view.
+    Show the logged-in user's entries in a grouped, non-calendar view
+    (the 'My Entries' page).
 
     - Groups entries by date (no empty 'missing' days shown)
     - Optional filter: search by specific date via ?date=YYYY-MM-DD
@@ -110,7 +112,8 @@ def dashboard(request):
         "grouped_entries": grouped_entries,
         "search_date": search_date,
     }
-    return render(request, "core/dashboard.html", context)
+    # NOTE: template renamed from 'core/dashboard.html' to 'core/my_entries.html'
+    return render(request, "core/my_entries.html", context)
 
 
 @login_required
@@ -131,6 +134,7 @@ def view_entry(request, entry_id):
         "last_updated": last_updated,
     }
     return render(request, "core/entry_detail.html", context)
+
 
 @login_required
 def edit_entry(request, entry_id):
@@ -241,8 +245,8 @@ def delete_entry(request, entry_id):
     """
     Delete an entry after user confirmation.
 
-    - Only deletes on POST (from dashboard form)
-    - GET just redirects back to the dashboard
+    - Only deletes on POST (from My Entries page)
+    - GET just redirects back to the My Entries view
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
