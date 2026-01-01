@@ -153,7 +153,10 @@ SITE_ID = 1
 # Allauth redirect settings
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # after logout, go to login page
+
+# Log the user out after they change their password
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 # Allauth modern configuration (2025+)
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
