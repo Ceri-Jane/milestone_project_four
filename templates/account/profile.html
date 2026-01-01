@@ -2,19 +2,57 @@
 {% load static %}
 
 {% block content %}
+<!-- Wrapper using existing layout + frosted card style -->
 <div class="form-wrapper">
+    <!-- Use standard form-card + wider layout just like dashboard -->
     <div class="form-card dashboard-card">
+
+        <!-- Title -->
         <h1 class="form-title">Your Profile</h1>
-        <p class="form-intro">
-            Manage your Regulate account details here.
+
+        <!-- Brief intro + current details -->
+        <p class="form-info">
+            Manage your Regulate account details in one place.
         </p>
 
         <p><strong>Username:</strong> {{ request.user.username }}</p>
         <p><strong>Email:</strong> {{ request.user.email }}</p>
 
-        <p class="mt-3">
-            Soon this page will link to change-username, change-email and change-password forms.
-        </p>
+        <hr>
+
+        <!-- Change Username block -->
+        <div class="entry-card">
+            <p><strong>Change Username</strong></p>
+            <p>
+                Update the name shown on your Regulate account.
+            </p>
+            <button class="select-btn select-btn-small" disabled aria-disabled="true">
+                Change Username (coming soon)
+            </button>
+        </div>
+
+        <!-- Manage Email block -->
+        <div class="entry-card">
+            <p><strong>Manage Email</strong></p>
+            <p>
+                Update the email address linked to your account.
+            </p>
+            <a href="{% url 'account_email' %}" class="select-btn select-btn-small">
+                Manage Email
+            </a>
+        </div>
+
+        <!-- Change Password block -->
+        <div class="entry-card">
+            <p><strong>Change Password</strong></p>
+            <p>
+                Keep your account secure with a strong password.
+            </p>
+            <a href="{% url 'account_change_password' %}" class="select-btn select-btn-small">
+                Change Password
+            </a>
+        </div>
+
     </div>
 </div>
 {% endblock %}
