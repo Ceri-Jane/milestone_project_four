@@ -115,38 +115,24 @@ if DATABASE_URL:
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+# Static files
 
 STATIC_URL = "/static/"
 
@@ -158,17 +144,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Whitenoise storage – makes Heroku serve your static files
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -189,6 +170,8 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
 # Modern Allauth login config
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
+
+# Email is REQUIRED here via the * marker
 ACCOUNT_SIGNUP_FIELDS = [
     "email*",
     "username*",
@@ -196,18 +179,15 @@ ACCOUNT_SIGNUP_FIELDS = [
     "password2*",
 ]
 
+# Email must be unique
+ACCOUNT_UNIQUE_EMAIL = True
+
+# No email verification — users can log in immediately
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
 ACCOUNT_RATE_LIMITS = {
     "login_failed": "5/10m",
 }
-
-# 🔒 Email behaviour:
-# - Email is REQUIRED
-# - Must be UNIQUE
-# - But NOT verified (no confirmation email flow)
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_VERIFICATION = "none"   # no confirm step, login works immediately
-
 
 # Development email backend (prints emails to the terminal)
 # Used for things like "forgot password"
