@@ -51,6 +51,8 @@ class Entry(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = "Entry"
+        verbose_name_plural = "Entries"
 
     def __str__(self):
         return (
@@ -70,7 +72,6 @@ class EntryRevision(models.Model):
         related_name="revisions",
     )
 
-    # 🔥 THIS is the key change — same choices as Entry
     mood = models.IntegerField(
         choices=Entry.MOOD_CHOICES,
         null=True,
@@ -91,6 +92,8 @@ class EntryRevision(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = "Entry revision"
+        verbose_name_plural = "Entry revisions"
 
     def __str__(self):
         return f"Revision of Entry {self.entry.id} at {self.created_at:%Y-%m-%d %H:%M}"

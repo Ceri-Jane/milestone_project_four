@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
 
     "core",
-    "accounts",
+    "accounts.apps.AccountsConfig",  # Use AppConfig so signals are loaded
 ]
 
 # Authentication backends for Django + Allauth
@@ -175,7 +175,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SITE_ID = 1
 
 
-# Allauth redirect settings
+# -----------------------------
+# Allauth settings
+# -----------------------------
+
+# Where users go after auth actions
 LOGIN_REDIRECT_URL = "/dashboard/"           # logged-in users land on My Entries
 LOGOUT_REDIRECT_URL = "/"                    # normal logout → home page
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"            # after logout via Allauth → home
@@ -183,7 +187,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"            # after logout via Allauth → home
 # Log the user out after they change their password
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 
-# Allauth modern configuration (2025+)
+# Modern Allauth login config
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 ACCOUNT_SIGNUP_FIELDS = [
     "email*",
@@ -196,5 +200,15 @@ ACCOUNT_RATE_LIMITS = {
     "login_failed": "5/10m",
 }
 
+# 🔒 Email behaviour:
+# - Email is REQUIRED
+# - Must be UNIQUE
+# - But NOT verified (no confirmation email flow)
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = "none"   # no confirm step, login works immediately
+
+
 # Development email backend (prints emails to the terminal)
+# Used for things like "forgot password"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
