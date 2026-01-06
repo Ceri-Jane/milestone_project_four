@@ -118,10 +118,14 @@ def my_entries(request):
 @login_required
 def dashboard(request):
     """
-    Temporary wrapper: dashboard currently behaves the same as My Entries.
-    We'll turn this into a real hub page later.
+    Dashboard hub page.
+
+    This is now a separate page with cards that link to:
+    - My entries list
+    - New entry
+    - Supportive phrases (coming soon)
     """
-    return my_entries(request)
+    return render(request, "core/dashboard.html")
 
 
 @login_required

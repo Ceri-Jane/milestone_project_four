@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card dashboard-card">
+
+        <h1 class="form-title">Your Dashboard</h1>
+
+        <p class="form-info">
+            Choose what you’d like to do with Regulate today.
+        </p>
+
+        <hr>
+
+        <!-- Add new entry -->
+        <div class="entry-card">
+            <p><strong>Add a New Entry</strong></p>
+            <p>
+                Capture how you’re feeling right now in a quick, low-pressure note.
+            </p>
+
+            <a href="{% url 'new_entry' %}"
+               class="select-btn">
+                Add New Entry
+            </a>
+        </div>
+
+        <!-- Your entries -->
+        <div class="entry-card">
+            <p><strong>Your Entries</strong></p>
+            <p>
+                Browse, search, and revisit your previous notes without any calendar pressure.
+            </p>
+
+            <a href="{% url 'my_entries' %}"
+               class="select-btn">
+                Go to Your Entries
+            </a>
+        </div>
+
+        <!-- Supportive phrases / quotes (placeholder) -->
+        <div class="entry-card">
+            <p><strong>Supportive Phrases</strong></p>
+            <p>
+                Soon you’ll be able to generate gentle, validating phrases here
+                for moments when you need a little extra support.
+            </p>
+
+            <button type="button"
+                    class="select-btn"
+                    disabled>
+                Quotes Coming Soon
+            </button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
