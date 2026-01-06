@@ -83,7 +83,7 @@ def new_entry(request):
 
 
 @login_required
-def dashboard(request):
+def my_entries(request):
     """
     Show the logged-in user's entries in a grouped, non-calendar view
     (the 'My Entries' page).
@@ -112,8 +112,16 @@ def dashboard(request):
         "grouped_entries": grouped_entries,
         "search_date": search_date,
     }
-    # NOTE: template renamed from 'core/dashboard.html' to 'core/my_entries.html'
     return render(request, "core/my_entries.html", context)
+
+
+@login_required
+def dashboard(request):
+    """
+    Temporary wrapper: dashboard currently behaves the same as My Entries.
+    Turn this into a real hub page later.
+    """
+    return my_entries(request)
 
 
 @login_required
