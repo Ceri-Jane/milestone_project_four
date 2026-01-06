@@ -7,7 +7,13 @@
     <div class="form-card dashboard-card">
 
         <!-- Page title -->
-        <h1 class="form-title">My Entries</h1>
+        <h1 class="form-title">Your Entries</h1>
+
+        <p class="form-info">
+            Browse and search your past entries. No streaks, no guilt — just a record when you needed it.
+        </p>
+
+        <hr>
 
         <!-- Date filter row -->
         <form method="get" class="dashboard-filter-form mb-3">
@@ -16,6 +22,7 @@
                 name="date" 
                 value="{{ search_date }}"
                 class="search-input"
+                aria-label="Filter entries by date"
             >
             <button class="select-btn select-btn-small">
                 Search
@@ -54,6 +61,7 @@
                         
                         {% for entry in entries %}
                         <div class="entry-card">
+
                             <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
                             <p><strong>Hue:</strong> {{ entry.hue }}</p>
 
@@ -66,7 +74,9 @@
                             {% endif %}
 
                             {% if entry.has_revisions %}
-                                <p class="text-center"><strong>*Edited — revision history available</strong></p>
+                                <p class="text-center">
+                                    <strong>*Edited — revision history available</strong>
+                                </p>
                             {% endif %}
 
                             <div class="justify-content-center entry-actions">
@@ -95,10 +105,10 @@
 
         {% else %}
             <p class="form-info empty-state">
-                You haven't created any entries yet.
+                You haven’t created any entries yet — and that’s okay.
             </p>
 
-            <!-- Encourage first entry -->
+            <!-- Encourage gentle first step -->
             <div class="text-center mt-3">
                 <a href="{% url 'new_entry' %}" class="select-btn">
                     Create Your First Entry
