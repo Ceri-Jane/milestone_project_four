@@ -7,8 +7,11 @@ urlpatterns = [
     # Create new entry
     path("new-entry/", views.new_entry, name="new_entry"),
 
-    # Dashboard / list of entries
+    # Dashboard (temporary alias for My Entries)
     path("dashboard/", views.dashboard, name="dashboard"),
+
+    # My Entries – dedicated route for list/search view
+    path("entries/", views.my_entries, name="my_entries"),
 
     # ----- ENTRY ACTION ROUTES -----
 
