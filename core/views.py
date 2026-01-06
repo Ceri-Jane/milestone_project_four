@@ -261,8 +261,8 @@ def delete_entry(request, entry_id):
     if request.method == "POST":
         entry.delete()
         messages.success(request, "Your entry has been deleted.")
-        return redirect("dashboard")
+        return redirect("my_entries")
 
     # If someone hits the URL via GET, just bounce them back safely
     messages.info(request, "Delete action was not completed.")
-    return redirect("dashboard")
+    return redirect("my_entries")
