@@ -7,7 +7,7 @@ urlpatterns = [
     # Create new entry
     path("new-entry/", views.new_entry, name="new_entry"),
 
-    # Dashboard (temporary alias for My Entries)
+    # Dashboard (hub page)
     path("dashboard/", views.dashboard, name="dashboard"),
 
     # My Entries – dedicated route for list/search view
@@ -23,4 +23,13 @@ urlpatterns = [
 
     # Delete entry
     path("entry/<int:entry_id>/delete/", views.delete_entry, name="delete_entry"),
+
+    # ----- API ROUTES -----
+
+    # Supportive phrase / quotes (EXTERNAL API integration)
+    path(
+        "api/supportive-phrase/",
+        views.supportive_phrase,
+        name="supportive_phrase",
+    ),
 ]

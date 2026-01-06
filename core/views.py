@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
+from django.http import JsonResponse
+
+import requests
 
 from .models import Entry, EmotionWord, EntryRevision  # include revisions
 
@@ -270,3 +273,33 @@ def delete_entry(request, entry_id):
     # If someone hits the URL via GET, just bounce them back safely
     messages.info(request, "Delete action was not completed.")
     return redirect("my_entries")
+
+
+@login_required
+def supportive_phrase(request):
+    """
+    Fetch a supportive quote/phrase from an external API and return JSON.
+
+    This keeps the external API URL on the backend so the frontend
+    only ever calls our own endpoint.
+    """
+    try:
+        # Simple public quote API (no key required)
+        response = requests.get("https://api.quotable.io/random", timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        quote = data.get("content", "You are doing better than you think.")
+        author = data.get("author", "")
+
+        return JsonResponse({
+            "quote": quote,
+            "author": author,
+        })
+
+    except Exception:
+        # Safe fallback if the external API fails
+        return JsonResponse({
+            "quote": "Even on hard days, you deserve kindness from yourself.",
+            "author": "",
+        }, status=200)
