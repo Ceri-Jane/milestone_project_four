@@ -39,18 +39,28 @@
             </a>
         </div>
 
-        <!-- Supportive phrases / quotes (placeholder) -->
-        <div class="entry-card">
+        <!-- Supportive phrases / quotes -->
+        <div class="entry-card supportive-card">
             <p><strong>Supportive Phrases</strong></p>
             <p>
-                Soon you’ll be able to generate gentle, validating phrases here
-                for moments when you need a little extra support.
+                Generate a gentle, validating phrase on days when you need
+                a little extra support.
             </p>
 
-            <button type="button"
-                    class="select-btn"
-                    disabled>
-                Quotes Coming Soon
+            <!-- Quote display box -->
+            <div id="supportive-quote-box" class="supportive-quote-box">
+                <p id="supportive-quote-text">
+                    Click the button below to generate a supportive phrase.
+                </p>
+                <p id="supportive-quote-author" class="form-info"></p>
+            </div>
+
+            <!-- Button -->
+            <button
+                id="generate-quote-btn"
+                class="select-btn mt-2"
+                type="button">
+                Generate Supportive Phrase
             </button>
         </div>
 

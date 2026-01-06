@@ -465,6 +465,36 @@ main {
   margin-top: 1rem;
 }
 
+/* ----------------------------------------
+   SUPPORTIVE PHRASES CARD
+---------------------------------------- */
+
+.supportive-card {
+    margin-top: 1rem;
+}
+
+/* Inner quote box inside the supportive card */
+.supportive-quote-box {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    background: var(--seconday-color);
+    border: 4px solid var(--primary-color);
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    min-height: 3.5rem;
+    font-style: italic;
+}
+
+.supportive-quote-box p {
+    margin-bottom: 0.25rem;
+}
+
+/* Make the author line a bit softer */
+.supportive-quote-box #supportive-quote-author {
+    font-style: normal;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
 
 /* ----------------------------------------
    SEARCH BOX STYLES
