@@ -16,7 +16,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
@@ -157,16 +156,22 @@ SITE_ID = 1
 
 
 # -----------------------------
-# Allauth settings
+# Allauth / auth settings
 # -----------------------------
 
-# Where users go after auth actions
+# Where users go after auth actions (site users)
 LOGIN_REDIRECT_URL = "/dashboard/"           # logged-in users land on My Entries
 LOGOUT_REDIRECT_URL = "/"                    # normal logout → home page
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"            # after logout via Allauth → home
 
+# Where ADMIN logout should go (Django admin only)
+ADMIN_LOGOUT_REDIRECT_URL = "/admin/login/"
+
 # Log the user out after they change their password
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
+
+# Log out immediately on GET (no confirmation page)
+ACCOUNT_LOGOUT_ON_GET = True
 
 # Modern Allauth login config
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
