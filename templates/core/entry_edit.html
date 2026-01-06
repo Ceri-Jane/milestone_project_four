@@ -53,7 +53,7 @@
 
             <div class="emotion-select-wrapper">
 
-                <!-- Search bar (same search-input class you use elsewhere) -->
+                <!-- Search bar -->
                 <input
                     type="text"
                     id="emotion-search"
@@ -95,9 +95,9 @@
             <!-- Save changes button -->
             <button type="submit" class="select-btn">Save changes</button>
 
-            <!-- Back to dashboard link -->
-             <div class="entry-actions justify-content-center">
-                <a href="{% url 'dashboard' %}">Cancel and return to dashboard</a>
+            <!-- Back to entries link -->
+            <div class="entry-actions justify-content-center">
+                <a href="{% url 'my_entries' %}">Cancel and return to your entries</a>
             </div>
         </form>
 
