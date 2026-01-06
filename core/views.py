@@ -72,7 +72,7 @@ def new_entry(request):
         messages.success(request, "Your entry has been saved.")
 
         # After saving, send user to My Entries page
-        return redirect("dashboard")
+        return redirect("my_entries")
 
     # GET request: show empty form
     context = {
@@ -119,7 +119,7 @@ def my_entries(request):
 def dashboard(request):
     """
     Temporary wrapper: dashboard currently behaves the same as My Entries.
-    Turn this into a real hub page later.
+    We'll turn this into a real hub page later.
     """
     return my_entries(request)
 
@@ -210,7 +210,7 @@ def edit_entry(request, entry_id):
         else:
             messages.info(request, "No changes were made to your entry.")
 
-        return redirect("dashboard")
+        return redirect("my_entries")
 
     # ------------------------------
     # GET: pre-fill form fields
