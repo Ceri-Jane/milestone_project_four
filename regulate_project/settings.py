@@ -11,16 +11,15 @@ import dj_database_url
 from decouple import config
 import env
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
+# -----------------------------
+# Django security & debug
+# -----------------------------
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -31,7 +30,9 @@ ALLOWED_HOSTS = [
 ]
 
 
-# Application definition
+# -----------------------------
+# INSTALLED APPS
+# -----------------------------
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -47,23 +48,25 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
 
     "core",
-    "accounts.apps.AccountsConfig",  # Use AppConfig so signals are loaded
+    "accounts.apps.AccountsConfig",
+    "billing",
 ]
 
-# Authentication backends for Django + Allauth
+
 AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",          # Django built-in auth
-    "allauth.account.auth_backends.AuthenticationBackend" # Allows login via email
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend"
 ]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Serve static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "allauth.account.middleware.AccountMiddleware",  # required by allauth
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -71,21 +74,23 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "regulate_project.urls"
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # global templates folder
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                "django.template.context_processors.request",  # required by allauth
+                "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "regulate_project.wsgi.application"
 
@@ -94,7 +99,6 @@ WSGI_APPLICATION = "regulate_project.wsgi.application"
 # DATABASES
 # -----------------------------
 
-# Local development → sqlite
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -102,7 +106,6 @@ DATABASES = {
     }
 }
 
-# Heroku / production → Postgres (if DATABASE_URL is set)
 DATABASE_URL = config("DATABASE_URL", default=None)
 
 if DATABASE_URL:
@@ -113,7 +116,9 @@ if DATABASE_URL:
     )
 
 
+# -----------------------------
 # Password validation
+# -----------------------------
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -123,7 +128,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
+# -----------------------------
+# Internationalisation
+# -----------------------------
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
@@ -131,7 +138,9 @@ USE_I18N = True
 USE_TZ = True
 
 
+# -----------------------------
 # Static files
+# -----------------------------
 
 STATIC_URL = "/static/"
 
@@ -141,7 +150,6 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Whitenoise storage – makes Heroku serve your static files
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
@@ -156,27 +164,19 @@ SITE_ID = 1
 
 
 # -----------------------------
-# Allauth / auth settings
+# Allauth settings
 # -----------------------------
 
-# Where users go after auth actions (site users)
-LOGIN_REDIRECT_URL = "/dashboard/"           # logged-in users land on My Entries
-LOGOUT_REDIRECT_URL = "/"                    # normal logout → home page
-ACCOUNT_LOGOUT_REDIRECT_URL = "/"            # after logout via Allauth → home
-
-# Where ADMIN logout should go (Django admin only)
+LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ADMIN_LOGOUT_REDIRECT_URL = "/admin/login/"
 
-# Log the user out after they change their password
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
-
-# Log out immediately on GET (no confirmation page)
 ACCOUNT_LOGOUT_ON_GET = True
 
-# Modern Allauth login config
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 
-# Email is REQUIRED here via the * marker
 ACCOUNT_SIGNUP_FIELDS = [
     "email*",
     "username*",
@@ -184,16 +184,23 @@ ACCOUNT_SIGNUP_FIELDS = [
     "password2*",
 ]
 
-# Email must be unique
 ACCOUNT_UNIQUE_EMAIL = True
-
-# No email verification — users can log in immediately
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 ACCOUNT_RATE_LIMITS = {
     "login_failed": "5/10m",
 }
 
-# Development email backend (prints emails to the terminal)
-# Used for things like "forgot password"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+# -----------------------------
+# Stripe (env-only — nothing committed)
+# -----------------------------
+
+STRIPE_PUBLIC_KEY = config("STRIPE_PUBLIC_KEY", default="")
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
+STRIPE_PRICE_ID = config("STRIPE_PRICE_ID", default="")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
+
+STRIPE_CURRENCY = "gbp"

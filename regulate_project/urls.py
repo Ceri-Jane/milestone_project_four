@@ -15,18 +15,21 @@ urlpatterns = [
         name="admin_logout",
     ),
 
-    # Standard admin URLs (now using the custom logout above)
+    # Standard admin URLs
     path("admin/", admin.site.urls),
 
-    # Home / dashboard
+    # Home / landing
     path("", core_views.home, name="home"),
 
-    # Core app routes (new entry, lists, etc)
-    path("", include("core.urls")),  # include all core routes
+    # Core app routes (entries, dashboard, etc.)
+    path("", include("core.urls")),
 
-    # Custom account views (profile etc.)
+    # Accounts/profile routes
     path("account/", include("accounts.urls")),
 
-    # Account system (login, signup, reset, etc) via allauth
+    # Allauth (login, signup, reset, etc.)
     path("accounts/", include("allauth.urls")),
+
+    # Billing / subscriptions
+    path("billing/", include("billing.urls")),
 ]

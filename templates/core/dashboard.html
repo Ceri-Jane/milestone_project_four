@@ -64,6 +64,29 @@
             </button>
         </div>
 
+        <!-- Regulate+ Free Trial card -->
+        <div class="entry-card regulate-plus-card">
+            <p><strong>Regulate+ Free Trial (5 days)</strong></p>
+            <p>
+                Try Regulate+ free for 5 days. We’ll ask for your card details on a
+                secure Stripe checkout page, but <strong>you won’t be charged until the trial ends</strong>.
+                You can cancel any time before then and you won’t be billed.
+            </p>
+
+            <p class="form-info">
+                This gives you space to see whether a paid version of Regulate
+                supports your routines — without any pressure.
+            </p>
+
+            <!-- JS will call /billing/start-trial/ and redirect to Stripe -->
+            <button
+                id="start-trial-btn"
+                class="select-btn"
+                type="button">
+                Start 5-Day Free Trial
+            </button>
+        </div>
+
     </div>
 </div>
 {% endblock %}

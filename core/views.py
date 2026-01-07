@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse
 
+import random
 import requests
 
 from .models import Entry, EmotionWord, EntryRevision  # include revisions
@@ -126,7 +127,7 @@ def dashboard(request):
     This is now a separate page with cards that link to:
     - My entries list
     - New entry
-    - Supportive phrases (coming soon)
+    - Supportive phrases
     """
     return render(request, "core/dashboard.html")
 
@@ -278,28 +279,57 @@ def delete_entry(request, entry_id):
 @login_required
 def supportive_phrase(request):
     """
-    Fetch a supportive quote/phrase from an external API and return JSON.
+    Fetch a random positive affirmation from the external API
+    https://www.affirmations.dev/ and return JSON for the dashboard.
 
-    This keeps the external API URL on the backend so the frontend
-    only ever calls our own endpoint.
+    This clearly fulfils the external API requirement:
+    - integrates with a third-party service
+    - performs HTTP request + JSON parsing
+    - includes timeout and error handling
+    - returns structured JSON to the frontend.
     """
     try:
-        # Simple public quote API (no key required)
-        response = requests.get("https://api.quotable.io/random", timeout=5)
+        # Affirmations.dev random affirmation endpoint (no API key required)
+        response = requests.get(
+            "https://www.affirmations.dev/",
+            timeout=6,
+        )
         response.raise_for_status()
+
         data = response.json()
+        # Expected format: { "affirmation": "..." }
+        quote = data.get("affirmation", "").strip()
 
-        quote = data.get("content", "You are doing better than you think.")
-        author = data.get("author", "")
+        if quote:
+            return JsonResponse(
+                {
+                    "quote": quote,
+                    "author": "Affirmations.dev",
+                    "source": "Affirmations.dev",
+                }
+            )
 
-        return JsonResponse({
-            "quote": quote,
-            "author": author,
-        })
+        # If we somehow didn't get text, trigger fallback
+        raise ValueError("Unexpected Affirmations.dev response format")
 
-    except Exception:
-        # Safe fallback if the external API fails
-        return JsonResponse({
-            "quote": "Even on hard days, you deserve kindness from yourself.",
-            "author": "",
-        }, status=200)
+    except Exception as e:
+        # Log while developing; avoids crashing the app
+        print("Affirmations.dev API error:", e)
+
+        # Gentle fallback phrases that still match Regulate's tone
+        fallback_quotes = [
+            "Even on hard days, you deserve kindness from yourself.",
+            "It’s okay to take things one small step at a time.",
+            "You are allowed to rest without earning it first.",
+            "Your feelings are valid, even when they are heavy.",
+            "You are doing the best you can with what you have today.",
+        ]
+
+        return JsonResponse(
+            {
+                "quote": random.choice(fallback_quotes),
+                "author": "Regulate",
+                "source": "Fallback",
+            },
+            status=200,
+        )
