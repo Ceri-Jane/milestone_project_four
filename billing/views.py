@@ -22,7 +22,7 @@ def start_trial(request):
     Behaviour:
     - If user already has an active or trial subscription → block duplicate signup
     - Otherwise creates a hosted Stripe Checkout session
-    - Trial period is applied by Stripe (from the Price settings)
+    - 5-day free trial is applied via subscription_data.trial_period_days
     """
 
     subscription = getattr(request.user, "subscription", None)
@@ -34,31 +34,40 @@ def start_trial(request):
     try:
         session = stripe.checkout.Session.create(
             mode="subscription",
-            payment_method_types=["card"],
+
+            # Don’t lock to cards only — this lets Stripe offer wallets
+            # like Apple Pay / Google Pay where available.
             line_items=[
                 {
                     "price": settings.STRIPE_PRICE_ID,
                     "quantity": 1,
                 }
             ],
+
             subscription_data={
-                # Trial is configured in Stripe Price
+                # ✅ Actual 5-day trial is set here
+                "trial_period_days": 5,
                 "metadata": {
                     "user_id": request.user.id,
                     "username": request.user.username,
                     "email": request.user.email,
-                }
+                },
             },
+
             customer_email=request.user.email,
+
+            # After successful checkout, show a gentle confirmation page
             success_url=request.build_absolute_uri(
                 reverse("trial_success")
             ),
+
+            # If user cancels out of Stripe Checkout
             cancel_url=request.build_absolute_uri(
                 reverse("trial_cancelled")
             ),
         )
 
-        # Return JSON if called via JS button
+        # Frontend JS expects JSON with session_url
         return JsonResponse({"session_url": session.url})
 
     except Exception as e:

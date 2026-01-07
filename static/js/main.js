@@ -86,4 +86,51 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // ----------------------------------------
+    // Start Regulate+ 5-day free trial (Stripe Checkout)
+    // ----------------------------------------
+    const startTrialBtn = document.getElementById("start-trial-btn");
+
+    if (startTrialBtn) {
+        startTrialBtn.addEventListener("click", async function () {
+            const originalLabel = startTrialBtn.innerText;
+            startTrialBtn.disabled = true;
+            startTrialBtn.innerText = "Redirecting to Stripe…";
+
+            try {
+                const response = await fetch("/billing/start-trial/");
+
+                // If the response isn't JSON (e.g. redirect because already subscribed),
+                // just send the user back to the dashboard safely.
+                const contentType = response.headers.get("content-type") || "";
+                if (!contentType.includes("application/json")) {
+                    window.location.href = "/dashboard/";
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.session_url) {
+                    // Redirect to Stripe Checkout
+                    window.location.href = data.session_url;
+                } else {
+                    alert(
+                        "Sorry, we couldn't start your free trial right now.\n" +
+                        "Please try again in a moment."
+                    );
+                    startTrialBtn.disabled = false;
+                    startTrialBtn.innerText = originalLabel;
+                }
+
+            } catch (error) {
+                alert(
+                    "Something went wrong contacting the payment server.\n" +
+                    "Please check your connection and try again."
+                );
+                startTrialBtn.disabled = false;
+                startTrialBtn.innerText = originalLabel;
+            }
+        });
+    }
+
 });
