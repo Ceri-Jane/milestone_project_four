@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card">
+
+        <h1 class="form-title">Trial not started</h1>
+
+        <p class="form-info">
+            You left the Stripe checkout page before starting your Regulate+ trial.
+        </p>
+
+        <div class="entry-card">
+            <p>
+                That’s completely okay — you can keep using Regulate’s core features as
+                normal without a paid plan.
+            </p>
+
+            <p>
+                If you change your mind later, you can start a <strong>5-day free trial</strong>
+                any time from your dashboard. You won’t be charged until the trial ends,
+                and you can cancel before then if it doesn’t feel right.
+            </p>
+        </div>
+
+        <div class="entry-actions justify-content-center">
+            <a href="{% url 'dashboard' %}">
+                Back to your dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

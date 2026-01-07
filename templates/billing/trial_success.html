@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card">
+
+        <h1 class="form-title">Regulate+ trial started</h1>
+
+        <p class="form-info">
+            Thanks for starting your <strong>5-day free trial</strong> of Regulate+.
+        </p>
+
+        <div class="entry-card">
+            <p>
+                Your subscription is now in a <strong>trial period</strong>. Stripe will only
+                charge you after the trial ends, unless you cancel before then.
+            </p>
+
+            <p class="form-info">
+                You’ll receive an email receipt/confirmation from Stripe with the details.
+            </p>
+
+            <p>
+                During your trial you can:
+            </p>
+            <ul>
+                <li>Create as many entries as you like</li>
+                <li>Experiment with mood tracking and emotion tags</li>
+                <li>Decide whether Regulate+ fits your routines and energy levels</li>
+            </ul>
+        </div>
+
+        <div class="entry-actions justify-content-center">
+            <a href="{% url 'dashboard' %}">
+                Back to your dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
