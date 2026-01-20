@@ -1,8 +1,9 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
+from django.contrib import messages
 
 import stripe
 
@@ -21,7 +22,6 @@ def start_trial(request):
     """
     sub = getattr(request.user, "subscription", None)
 
-    # Block if already active or currently trialing
     if sub and sub.status in ["trialing", "active"]:
         return JsonResponse(
             {
@@ -33,7 +33,6 @@ def start_trial(request):
             status=409,
         )
 
-    # Block if they've EVER had a trial before
     if sub and getattr(sub, "has_had_trial", False):
         return JsonResponse(
             {
@@ -75,8 +74,6 @@ def start_trial(request):
 def start_subscription(request):
     """
     Paid subscription checkout (NO trial).
-    Use this for users who already used their trial and cancelled,
-    or anyone returning later.
     """
     sub = getattr(request.user, "subscription", None)
 
@@ -120,11 +117,29 @@ def start_subscription(request):
 @login_required
 def billing_details(request):
     """
-    Simple "Billing details" page placeholder for now.
-    Later we'll replace/extend this with Stripe Customer Portal.
+    Send user to Stripe to manage their billing.
     """
     sub = getattr(request.user, "subscription", None)
-    return render(request, "billing/billing_details.html", {"subscription": sub})
+    stripe_customer_id = getattr(sub, "stripe_customer_id", None)
+
+    if not stripe_customer_id:
+        messages.error(
+            request,
+            "We couldn’t find your billing details yet. Try refreshing and clicking again.",
+        )
+        return redirect("dashboard")
+
+    try:
+        portal_session = stripe.billing_portal.Session.create(
+            customer=stripe_customer_id,
+            return_url=request.build_absolute_uri(reverse("dashboard")),
+        )
+        return redirect(portal_session.url)
+
+    except Exception as e:
+        print("Stripe Portal Error:", e)
+        messages.error(request, "Couldn’t open billing page right now.")
+        return redirect("dashboard")
 
 
 @login_required
