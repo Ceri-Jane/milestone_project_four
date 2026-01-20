@@ -124,12 +124,22 @@ def dashboard(request):
     """
     Dashboard hub page.
 
-    This is now a separate page with cards that link to:
+    Cards that link to:
     - My entries list
     - New entry
     - Supportive phrases
+    - Regulate+ (trial/subscription)
     """
-    return render(request, "core/dashboard.html")
+    # ✅ SAFE: doesn't crash if the user has no Subscription row yet
+    subscription = getattr(request.user, "subscription", None)
+
+    return render(
+        request,
+        "core/dashboard.html",
+        {
+            "subscription": subscription,
+        },
+    )
 
 
 @login_required
@@ -224,21 +234,17 @@ def edit_entry(request, entry_id):
     # GET: pre-fill form fields
     # ------------------------------
 
-    # 1) Hue slider value (we currently store 0–100 as text)
     hue_value = entry.hue or ""
 
-    # 2) Split stored notes into "hue meaning" and main notes (best-effort)
     hue_notes_value = ""
     notes_value = entry.notes or ""
 
     if entry.notes and entry.notes.startswith("Hue meaning: "):
         parts = entry.notes.split("\n\n", 1)
         if len(parts) == 2:
-            # First part after "Hue meaning:" prefix
             hue_notes_value = parts[0].replace("Hue meaning:", "", 1).strip()
             notes_value = parts[1]
 
-    # 3) Selected emotion words as list
     selected_emotions = []
     if entry.emotion_words:
         selected_emotions = [
@@ -271,7 +277,6 @@ def delete_entry(request, entry_id):
         messages.success(request, "Your entry has been deleted.")
         return redirect("my_entries")
 
-    # If someone hits the URL via GET, just bounce them back safely
     messages.info(request, "Delete action was not completed.")
     return redirect("my_entries")
 
@@ -279,57 +284,58 @@ def delete_entry(request, entry_id):
 @login_required
 def supportive_phrase(request):
     """
-    Fetch a random positive affirmation from the external API
-    https://www.affirmations.dev/ and return JSON for the dashboard.
-
-    This clearly fulfils the external API requirement:
-    - integrates with a third-party service
-    - performs HTTP request + JSON parsing
-    - includes timeout and error handling
-    - returns structured JSON to the frontend.
+    Fetch a supportive quote/phrase from an external API and return JSON.
     """
+    fallback_quotes = [
+        "Even on hard days, you deserve kindness from yourself.",
+        "It’s okay to be exactly where you are today.",
+        "You are allowed to rest without earning it first.",
+        "The feelings you have right now are valid, even if they’re uncomfortable.",
+        "You have survived every difficult day so far — that matters.",
+        "Needing support does not make you a burden.",
+    ]
+
+    quotes = request.session.get("supportive_quotes")
+
     try:
-        # Affirmations.dev random affirmation endpoint (no API key required)
-        response = requests.get(
-            "https://www.affirmations.dev/",
-            timeout=6,
-        )
-        response.raise_for_status()
+        if not quotes:
+            response = requests.get("https://type.fit/api/quotes", timeout=5)
+            response.raise_for_status()
+            data = response.json()
 
-        data = response.json()
-        # Expected format: { "affirmation": "..." }
-        quote = data.get("affirmation", "").strip()
+            quotes_list = []
+            if isinstance(data, list):
+                for obj in data:
+                    text = obj.get("text") or obj.get("q")
+                    if text:
+                        author = obj.get("author") or obj.get("a") or ""
+                        quotes_list.append({"text": text, "author": author})
 
-        if quote:
-            return JsonResponse(
-                {
-                    "quote": quote,
-                    "author": "Affirmations.dev",
-                    "source": "Affirmations.dev",
-                }
-            )
+            if not quotes_list:
+                raise ValueError("No usable quotes from external API")
 
-        # If we somehow didn't get text, trigger fallback
-        raise ValueError("Unexpected Affirmations.dev response format")
+            random.shuffle(quotes_list)
+            quotes = quotes_list
+            request.session["supportive_quotes"] = quotes
 
     except Exception as e:
-        # Log while developing; avoids crashing the app
-        print("Affirmations.dev API error:", e)
+        print("Supportive phrase external API error:", e)
 
-        # Gentle fallback phrases that still match Regulate's tone
-        fallback_quotes = [
-            "Even on hard days, you deserve kindness from yourself.",
-            "It’s okay to take things one small step at a time.",
-            "You are allowed to rest without earning it first.",
-            "Your feelings are valid, even when they are heavy.",
-            "You are doing the best you can with what you have today.",
-        ]
+        if not quotes:
+            quotes = [{"text": q, "author": ""} for q in fallback_quotes]
+            random.shuffle(quotes)
+            request.session["supportive_quotes"] = quotes
 
-        return JsonResponse(
-            {
-                "quote": random.choice(fallback_quotes),
-                "author": "Regulate",
-                "source": "Fallback",
-            },
-            status=200,
-        )
+    if not quotes:
+        return JsonResponse({
+            "quote": "Even on hard days, you deserve kindness from yourself.",
+            "author": "",
+        }, status=200)
+
+    quote_obj = quotes.pop(0)
+    request.session["supportive_quotes"] = quotes
+
+    return JsonResponse({
+        "quote": quote_obj.get("text", "You are doing better than you think."),
+        "author": quote_obj.get("author", ""),
+    })

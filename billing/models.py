@@ -4,12 +4,8 @@ from django.conf import settings
 
 class Subscription(models.Model):
     """
-    Stores the Stripe subscription details for a single user.
-
-    This will:
-    - track whether they are in a free trial or active paid plan
-    - store the related Stripe IDs
-    - know when their trial/period ends, so I can gatekeep features
+    Stores Stripe subscription details for a single user.
+    Tracks trial/active state and important end dates for gating features.
     """
 
     STATUS_CHOICES = [
@@ -28,6 +24,12 @@ class Subscription(models.Model):
         related_name="subscription",
     )
 
+    # Trial history flag (trial only once)
+    has_had_trial = models.BooleanField(
+        default=False,
+        help_text="True if the user has ever started a free trial.",
+    )
+
     # Stripe identifiers
     stripe_customer_id = models.CharField(
         max_length=255,
@@ -42,15 +44,15 @@ class Subscription(models.Model):
         help_text="Stripe Subscription ID (sub_...)",
     )
 
-    # Billing status
+    # Billing status (default should be neutral until Stripe tells us)
     status = models.CharField(
         max_length=32,
         choices=STATUS_CHOICES,
-        default="trialing",
+        default="incomplete",
         help_text="Current status as reported by Stripe.",
     )
 
-    # Dates from Stripe (all in UTC)
+    # Dates from Stripe (UTC)
     trial_end = models.DateTimeField(
         blank=True,
         null=True,

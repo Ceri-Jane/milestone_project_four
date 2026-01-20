@@ -64,27 +64,87 @@
             </button>
         </div>
 
-        <!-- Regulate+ Free Trial card -->
+        <!-- Regulate+ Free Trial / Subscription card -->
         <div class="entry-card regulate-plus-card">
-            <p><strong>Regulate+ Free Trial (5 days)</strong></p>
-            <p>
-                Try Regulate+ free for 5 days. We’ll ask for your card details on a
-                secure Stripe checkout page, but <strong>you won’t be charged until the trial ends</strong>.
-                You can cancel any time before then and you won’t be billed.
-            </p>
+            <p><strong>Regulate+</strong></p>
 
-            <p class="form-info">
-                This gives you space to see whether a paid version of Regulate
-                supports your routines — without any pressure.
-            </p>
+            {% if subscription %}
+                {% if subscription.status == "trialing" %}
+                    <p>
+                        <strong>Your free trial is active.</strong>
+                        You won’t be charged until your trial ends.
+                    </p>
 
-            <!-- JS will call /billing/start-trial/ and redirect to Stripe -->
-            <button
-                id="start-trial-btn"
-                class="select-btn"
-                type="button">
-                Start 5-Day Free Trial
-            </button>
+                    {% if subscription.trial_end %}
+                        <p class="form-info">
+                            Trial ends:
+                            <strong>{{ subscription.trial_end|date:"D j M Y" }}</strong>
+                        </p>
+                    {% endif %}
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'billing_details' %}" class="select-btn">
+                            Manage billing
+                        </a>
+                    </div>
+
+                {% elif subscription.status == "active" %}
+                    <p>
+                        <strong>Your Regulate+ subscription is active.</strong>
+                    </p>
+
+                    {% if subscription.current_period_end %}
+                        <p class="form-info">
+                            Next renewal:
+                            <strong>{{ subscription.current_period_end|date:"D j M Y" }}</strong>
+                        </p>
+                    {% endif %}
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'billing_details' %}" class="select-btn">
+                            Manage billing
+                        </a>
+                    </div>
+
+                {% else %}
+                    <p>
+                        Your Regulate+ plan isn’t currently active.
+                    </p>
+                    <p class="form-info">
+                        You can restart your subscription any time (trial is only available once).
+                    </p>
+
+                    <a href="{% url 'start_subscription' %}" class="select-btn">
+                        Restart Regulate+
+                    </a>
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'billing_details' %}" class="select-btn">
+                            Manage billing
+                        </a>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <p>
+                    Try Regulate+ free for 5 days. We’ll ask for your card details on a
+                    secure Stripe checkout page, but <strong>you won’t be charged until the trial ends</strong>.
+                    You can cancel any time before then and you won’t be billed.
+                </p>
+
+                <p class="form-info">
+                    This gives you space to see whether a paid version of Regulate
+                    supports your routines — without any pressure.
+                </p>
+
+                <!-- Redirect to Stripe Checkout -->
+                <a
+                    id="start-trial-btn"
+                    href="{% url 'start_trial' %}"
+                    class="select-btn">
+                    Start 5-Day Free Trial
+                </a>
+            {% endif %}
         </div>
 
     </div>

@@ -1,51 +1,54 @@
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.http import JsonResponse
 from django.urls import reverse
+from django.http import JsonResponse
 
 import stripe
 
-from .models import Subscription
-
-
-# Use secret key from environment
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def _iso_or_none(dt):
+    return dt.isoformat() if dt else None
 
 
 @login_required
 def start_trial(request):
     """
-    Create a Stripe Checkout Session for starting a Regulate+ subscription.
-
-    Behaviour:
-    - If user already has an active or trial subscription → block duplicate signup
-    - Otherwise creates a hosted Stripe Checkout session
-    - 5-day free trial is applied via subscription_data.trial_period_days
+    Start a 5-day free trial (ONLY if user has never had one).
+    Returns JSON for JS to redirect or show a friendly message.
     """
+    sub = getattr(request.user, "subscription", None)
 
-    subscription = getattr(request.user, "subscription", None)
+    # Block if already active or currently trialing
+    if sub and sub.status in ["trialing", "active"]:
+        return JsonResponse(
+            {
+                "ok": False,
+                "reason": "already_subscribed",
+                "status": sub.status,
+                "trial_end": _iso_or_none(sub.trial_end),
+            },
+            status=409,
+        )
 
-    if subscription and subscription.status in ["trialing", "active"]:
-        messages.info(request, "You already have an active Regulate+ plan.")
-        return redirect("dashboard")
+    # Block if they've EVER had a trial before
+    if sub and getattr(sub, "has_had_trial", False):
+        return JsonResponse(
+            {
+                "ok": False,
+                "reason": "trial_already_used",
+                "status": sub.status,
+            },
+            status=409,
+        )
 
     try:
         session = stripe.checkout.Session.create(
             mode="subscription",
-
-            # Don’t lock to cards only — this lets Stripe offer wallets
-            # like Apple Pay / Google Pay where available.
-            line_items=[
-                {
-                    "price": settings.STRIPE_PRICE_ID,
-                    "quantity": 1,
-                }
-            ],
-
+            line_items=[{"price": settings.STRIPE_PRICE_ID, "quantity": 1}],
             subscription_data={
-                # ✅ Actual 5-day trial is set here
                 "trial_period_days": 5,
                 "metadata": {
                     "user_id": request.user.id,
@@ -53,45 +56,82 @@ def start_trial(request):
                     "email": request.user.email,
                 },
             },
-
             customer_email=request.user.email,
-
-            # After successful checkout, show a gentle confirmation page
-            success_url=request.build_absolute_uri(
-                reverse("trial_success")
-            ),
-
-            # If user cancels out of Stripe Checkout
-            cancel_url=request.build_absolute_uri(
-                reverse("trial_cancelled")
-            ),
+            success_url=request.build_absolute_uri(reverse("trial_success")),
+            cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
         )
 
-        # Frontend JS expects JSON with session_url
-        return JsonResponse({"session_url": session.url})
+        return JsonResponse({"ok": True, "session_url": session.url})
 
     except Exception as e:
-        print("Stripe Checkout Error:", e)
-
-        messages.error(
-            request,
-            "Sorry — something went wrong starting your free trial."
+        print("Stripe Checkout Error (trial):", e)
+        return JsonResponse(
+            {"ok": False, "reason": "stripe_error"},
+            status=500,
         )
-        return redirect("dashboard")
+
+
+@login_required
+def start_subscription(request):
+    """
+    Paid subscription checkout (NO trial).
+    Use this for users who already used their trial and cancelled,
+    or anyone returning later.
+    """
+    sub = getattr(request.user, "subscription", None)
+
+    if sub and sub.status in ["trialing", "active"]:
+        return JsonResponse(
+            {
+                "ok": False,
+                "reason": "already_subscribed",
+                "status": sub.status,
+                "trial_end": _iso_or_none(sub.trial_end),
+            },
+            status=409,
+        )
+
+    try:
+        session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[{"price": settings.STRIPE_PRICE_ID, "quantity": 1}],
+            subscription_data={
+                "metadata": {
+                    "user_id": request.user.id,
+                    "username": request.user.username,
+                    "email": request.user.email,
+                },
+            },
+            customer_email=request.user.email,
+            success_url=request.build_absolute_uri(reverse("trial_success")),
+            cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
+        )
+
+        return JsonResponse({"ok": True, "session_url": session.url})
+
+    except Exception as e:
+        print("Stripe Checkout Error (subscribe):", e)
+        return JsonResponse(
+            {"ok": False, "reason": "stripe_error"},
+            status=500,
+        )
+
+
+@login_required
+def billing_details(request):
+    """
+    Simple "Billing details" page placeholder for now.
+    Later we'll replace/extend this with Stripe Customer Portal.
+    """
+    sub = getattr(request.user, "subscription", None)
+    return render(request, "billing/billing_details.html", {"subscription": sub})
 
 
 @login_required
 def trial_success(request):
-    """
-    Temporary placeholder page after checkout success.
-    A webhook will later confirm subscription + create DB record.
-    """
     return render(request, "billing/trial_success.html")
 
 
 @login_required
 def trial_cancelled(request):
-    """
-    Page shown when the user exits Stripe Checkout without completing signup.
-    """
     return render(request, "billing/trial_cancelled.html")
