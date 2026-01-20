@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card">
+
+        <h1 class="form-title">FAQ</h1>
+
+        <p class="form-info">
+            Quick answers about how Regulate works, your data, and Regulate+ billing.
+        </p>
+
+        <hr>
+
+        <!-- Bootstrap accordion -->
+        <div class="accordion" id="faqAccordion">
+
+            <!-- Data / privacy -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
+                        Why do you need my account details (email/username)?
+                    </button>
+                </h2>
+                <div id="faqCollapseOne" class="accordion-collapse collapse show"
+                    aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        We use your account details so you can log in securely and keep your entries private to you.
+                        Your email can also be used for basic account actions (like password resets).
+                        Regulate does not sell your data or use it for advertising.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
+                        Do you store or use my information anywhere else?
+                    </button>
+                </h2>
+                <div id="faqCollapseTwo" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Your Regulate account data is used only to run the app (for example: saving your entries and
+                        showing them back to you). It isn’t shared with third parties for marketing, and it isn’t used
+                        outside of Regulate.
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to add and edit entries -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingTen">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseTen" aria-expanded="false" aria-controls="faqCollapseTen">
+                        How do I add or edit an entry?
+                    </button>
+                </h2>
+                <div id="faqCollapseTen" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingTen" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        You can add a new entry from your dashboard by choosing “Add New Entry”.
+                        Fill in the hue slider, emotions, and notes, then save.
+                        To edit an entry, go to “Your Entries”, open the entry, and choose edit.
+                        You can update it at any time, and Regulate keeps a simple history of changes.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Free trial -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">
+                        How does the 5-day free trial work?
+                    </button>
+                </h2>
+                <div id="faqCollapseThree" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        After you sign up, you can start a 5-day free trial of Regulate+ from your dashboard.
+                        During the trial you get full access to Regulate+ features. You won’t be charged until the trial ends.
+                        You can cancel before the end of the trial to avoid being billed.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">
+                        Why can I only have one free trial per user?
+                    </button>
+                </h2>
+                <div id="faqCollapseFour" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        The trial is limited to one per user so it stays fair and can’t be repeated indefinitely.
+                        If you’ve already used your trial and want Regulate+ again later, you can restart a paid subscription
+                        from your dashboard.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing / Stripe -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseFive" aria-expanded="false" aria-controls="faqCollapseFive">
+                        How do I update my billing details?
+                    </button>
+                </h2>
+                <div id="faqCollapseFive" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingFive" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Billing is handled securely through Stripe. On your dashboard, select
+                        <strong>Manage billing in Stripe</strong> and you’ll be taken to Stripe’s billing portal.
+                        From there you can update your card details, billing info, and view invoices.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseSix" aria-expanded="false" aria-controls="faqCollapseSix">
+                        Do you store my card details?
+                    </button>
+                </h2>
+                <div id="faqCollapseSix" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingSix" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        No. Card details are processed and stored by Stripe, not Regulate.
+                        This means Regulate never directly handles your card number.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Using the app -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingSeven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseSeven" aria-expanded="false" aria-controls="faqCollapseSeven">
+                        Can I delete an entry if I don’t want it saved?
+                    </button>
+                </h2>
+                <div id="faqCollapseSeven" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingSeven" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes. You can delete entries from your entries list. Deleting an entry removes it from your account.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingEight">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseEight" aria-expanded="false" aria-controls="faqCollapseEight">
+                        What are “Supportive Phrases” and where do they come from?
+                    </button>
+                </h2>
+                <div id="faqCollapseEight" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingEight" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Supportive Phrases are short, gentle prompts you can generate from your dashboard.
+                        They pull from an external quote source and there’s also a built-in fallback list
+                        in case the external service is unavailable.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important note -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingNine">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseNine" aria-expanded="false" aria-controls="faqCollapseNine">
+                        Is Regulate a replacement for professional support?
+                    </button>
+                </h2>
+                <div id="faqCollapseNine" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingNine" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        No. Regulate is a self-support tool and isn’t a substitute for professional care.
+                        If you’re in immediate danger or feel unsafe, please use the Crisis &amp; Support page
+                        for urgent contact options.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="faqHeadingEleven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapseEleven" aria-expanded="false" aria-controls="faqCollapseEleven">
+                        Will Regulate show patterns or let me export my entries?
+                    </button>
+                </h2>
+                <div id="faqCollapseEleven" class="accordion-collapse collapse"
+                    aria-labelledby="faqHeadingEleven" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        The dashboard will soon include simple graphs so you can see emotion and mood
+                        patterns over time.
+                        There are also plans to let you download your entries as a PDF, so you can
+                        share them with therapists, doctors, or other mental health professionals
+                        if you choose to.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
