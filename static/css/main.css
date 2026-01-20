@@ -50,6 +50,12 @@ main {
     flex: 1 0 auto;
 }
 
+.nav-title {
+  color: var(--primary-color);
+  font-style: italic;
+  font-weight: 700;
+}
+
 
 /* ----------------------------------------
    CARD STYLES
@@ -667,4 +673,16 @@ main {
     .info-card {
         max-width: 980px; /* desktop */
     }
+}
+
+@media (max-width: 320px) {
+  .nav-logo {
+    height: 48px;
+  }
+}
+
+@media (min-width: 425px) {
+  .regulate-navbar-logo {
+    text-align: center;
+  }
 }

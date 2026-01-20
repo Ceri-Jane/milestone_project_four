@@ -4,18 +4,24 @@
      role="navigation"
      aria-label="Main navigation">
 
-    <div class="container d-flex justify-content-between align-items-center">
+    <div class="container d-flex align-items-center">
 
-        <!-- Logo / Home link -->
+        <!-- Left: Logo / Home -->
         <a class="navbar-brand d-flex align-items-center"
            href="/"
            aria-label="Go to Regulate home page">
 
             <img src="{% static 'images/bug-logo.png' %}"
                  alt="Regulate Logo"
-                 class="nav-logo me-2">
+                 class="nav-logo">
         </a>
 
+        <!-- Middle: App name -->
+        <div class="flex-grow-1 regulate-navbar-logo">
+            <span class="nav-title">Regulate.</span>
+        </div>
+
+        <!-- Right: Account / Auth buttons -->
         <div class="d-flex align-items-center">
 
             {% if user.is_authenticated %}
