@@ -111,6 +111,12 @@ main {
   box-shadow: 0 0 4px var(--primary-color);
 }
 
+/* Wider layout for info pages (FAQ / Crisis & Support) */
+.info-card {
+    width: 100%;
+    max-width: 520px; /* keeps current mobile size */
+}
+
 .form-error {
     color: var(--error-color);
     text-align: center;
@@ -648,4 +654,17 @@ main {
     font-weight: 200;
     font-size: 0.8rem;
   }
+}
+
+  /* Wider layout for info pages (FAQ / Crisis & Support) */
+@media (min-width: 768px) {
+    .info-card {
+        max-width: 820px; /* tablet / small laptop */
+    }
+}
+
+@media (min-width: 1200px) {
+    .info-card {
+        max-width: 980px; /* desktop */
+    }
 }
