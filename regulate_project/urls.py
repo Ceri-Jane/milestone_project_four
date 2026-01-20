@@ -21,6 +21,10 @@ urlpatterns = [
     # Home / landing
     path("", core_views.home, name="home"),
 
+    # Static info pages
+    path("faq/", core_views.faq, name="faq"),
+    path("support/", core_views.support, name="support"),
+
     # Core app routes (entries, dashboard, etc.)
     path("", include("core.urls")),
 

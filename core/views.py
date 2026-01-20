@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 
 import random
 import requests
@@ -17,6 +17,28 @@ def home(request):
     Later this can show recent entries or stats.
     """
     return render(request, "core/home.html")
+
+
+def faq(request):
+    """
+    FAQ page (static).
+    Keeping this in core for now so it matches how home is handled.
+    """
+    try:
+        return render(request, "pages/faq.html")
+    except Exception:
+        return HttpResponseNotFound("FAQ page not created yet.")
+
+
+def support(request):
+    """
+    Crisis/support info page (static).
+    This will hold contact numbers + guidance.
+    """
+    try:
+        return render(request, "pages/support.html")
+    except Exception:
+        return HttpResponseNotFound("Support page not created yet.")
 
 
 @login_required
