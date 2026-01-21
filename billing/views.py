@@ -2,7 +2,6 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.http import JsonResponse
 from django.contrib import messages
 
 import stripe
@@ -17,31 +16,22 @@ def _iso_or_none(dt):
 @login_required
 def start_trial(request):
     """
-    Start a 5-day free trial (ONLY if user has never had one).
-    Returns JSON for JS to redirect or show a friendly message.
+    Starts a 5-day free trial via Stripe Checkout.
+
+    Notes:
+    - If the user is already trialing/active, we send them back to dashboard.
+    - If they've already used their trial before, we block it (1 trial per user).
+    - We redirect straight to Stripe (no JSON), so it works even if JS doesn't load.
     """
     sub = getattr(request.user, "subscription", None)
 
     if sub and sub.status in ["trialing", "active"]:
-        return JsonResponse(
-            {
-                "ok": False,
-                "reason": "already_subscribed",
-                "status": sub.status,
-                "trial_end": _iso_or_none(sub.trial_end),
-            },
-            status=409,
-        )
+        messages.info(request, "You already have an active plan.")
+        return redirect("dashboard")
 
     if sub and getattr(sub, "has_had_trial", False):
-        return JsonResponse(
-            {
-                "ok": False,
-                "reason": "trial_already_used",
-                "status": sub.status,
-            },
-            status=409,
-        )
+        messages.info(request, "You can only use the free trial once per user.")
+        return redirect("dashboard")
 
     try:
         session = stripe.checkout.Session.create(
@@ -60,33 +50,26 @@ def start_trial(request):
             cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
         )
 
-        return JsonResponse({"ok": True, "session_url": session.url})
+        # Send user straight to Stripe Checkout
+        return redirect(session.url)
 
     except Exception as e:
         print("Stripe Checkout Error (trial):", e)
-        return JsonResponse(
-            {"ok": False, "reason": "stripe_error"},
-            status=500,
-        )
+        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
+        return redirect("dashboard")
 
 
 @login_required
 def start_subscription(request):
     """
-    Paid subscription checkout (NO trial).
+    Paid subscription checkout (no trial).
+    Used when trial has already been used (or for returning users).
     """
     sub = getattr(request.user, "subscription", None)
 
     if sub and sub.status in ["trialing", "active"]:
-        return JsonResponse(
-            {
-                "ok": False,
-                "reason": "already_subscribed",
-                "status": sub.status,
-                "trial_end": _iso_or_none(sub.trial_end),
-            },
-            status=409,
-        )
+        messages.info(request, "You already have an active plan.")
+        return redirect("dashboard")
 
     try:
         session = stripe.checkout.Session.create(
@@ -104,20 +87,22 @@ def start_subscription(request):
             cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
         )
 
-        return JsonResponse({"ok": True, "session_url": session.url})
+        return redirect(session.url)
 
     except Exception as e:
         print("Stripe Checkout Error (subscribe):", e)
-        return JsonResponse(
-            {"ok": False, "reason": "stripe_error"},
-            status=500,
-        )
+        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
+        return redirect("dashboard")
 
 
 @login_required
 def billing_details(request):
     """
-    Send user to Stripe to manage their billing.
+    Sends the user to Stripe Customer Portal to manage billing.
+
+    Notes:
+    - We need a stored stripe_customer_id on the user's Subscription row.
+    - Return URL points back to the dashboard.
     """
     sub = getattr(request.user, "subscription", None)
     stripe_customer_id = getattr(sub, "stripe_customer_id", None)

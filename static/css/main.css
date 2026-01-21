@@ -12,53 +12,45 @@
   --error-color: #ff0000;
 }
 
-
 /* ----------------------------------------
-   GLOBAL STYLES
+  GLOBAL STYLES
 ---------------------------------------- */
 
 /* Ensure the whole page fills the full viewport height */
 html, body {
-    height: 100%;
-    margin: 0;
+  height: 100%;
+  margin: 0;
 }
 
 /* The body background + global styling */
 body {
-    background-color: var(--body-background-color);
-    font-family: var(--primary-font);
+  background-color: var(--body-background-color);
+  font-family: var(--primary-font);
 }
 
 /* page-container acts as the parent flexbox */
 .page-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
 }
 
 /* Fills all remaining space between navbar and footer */
 .content {
-    flex: 1; /* This pushes the footer down */
-    display: flex; 
-    justify-content: center; /* Centers auth pages horizontally */
-    align-items: center;     /* Centers auth pages vertically */
-    flex-direction: column;  /* Allows normal stacking of content */
+  flex: 1; /* This pushes the footer down */
+  display: flex; 
+  justify-content: center; /* Centers auth pages horizontally */
+  align-items: center;     /* Centers auth pages vertically */
+  flex-direction: column;  /* Allows normal stacking of content */
 }
 
 /* main grows to fill space between navbar and footer */
 main {
-    flex: 1 0 auto;
+  flex: 1 0 auto;
 }
-
-.nav-title {
-  color: var(--primary-color);
-  font-style: italic;
-  font-weight: 700;
-}
-
 
 /* ----------------------------------------
-   CARD STYLES
+  CARD STYLES
 ---------------------------------------- */
 
 /* Wrapper to center form pages */
@@ -119,22 +111,22 @@ main {
 
 /* Wider layout for info pages (FAQ / Crisis & Support) */
 .info-card {
-    width: 100%;
-    max-width: 520px; /* keeps current mobile size */
+  width: 100%;
+  max-width: 520px; /* keeps current mobile size */
 }
 
 .form-error {
-    color: var(--error-color);
-    text-align: center;
-    margin-bottom: 1rem;
-    font-weight: 600;
+  color: var(--error-color);
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .form-info {
-    text-align: center;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-    font-weight: 500;
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .select-btn {
@@ -160,51 +152,57 @@ main {
 
 
 /* ----------------------------------------
-   NAVBAR
+  NAVBAR
 ---------------------------------------- */
 
 .nav-color {
-    background: transparent;
+  background: transparent;
 }
 
 .nav-logo {
-    height: 80px;
-    width: auto;
+  height: 80px;
+  width: auto;
+}
+
+.nav-title {
+  color: var(--primary-color);
+  font-style: italic;
+  font-weight: 700;
 }
 
 .navbar-brand:hover .nav-title {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .regulate-btn {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    font-weight: 600;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .regulate-btn:hover {
-    background-color: var(--primary-color);
-    color: var(--seconday-color);
-    border-color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--seconday-color);
+  border-color: var(--primary-color);
 }
 
 .regulate-dropdown {
-    background: var(--seconday-color);
-    border: 1px solid var(--primary-color);
+  background: var(--seconday-color);
+  border: 1px solid var(--primary-color);
 }
 
 .regulate-dropdown .dropdown-item {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .regulate-dropdown .dropdown-item:hover {
-    background-color: var(--primary-color);
-    color: var(--seconday-color)
+  background-color: var(--primary-color);
+  color: var(--seconday-color)
 }
 
 
 /* ----------------------------------------
-   HERO SECTION
+  HERO SECTION
 ---------------------------------------- */
 
 /* Wraps the entire hero section and keeps it centred */
@@ -253,7 +251,7 @@ main {
 
 
 /* ----------------------------------------
-   INTRO SECTION
+  INTRO SECTION
 ---------------------------------------- */
 
 .intro-section {
@@ -284,13 +282,13 @@ main {
 }
 
 .intro-actions .btn {
-    font-size: 0.8rem;
-    padding: 0.6rem 1.8rem;
+  font-size: 0.8rem;
+  padding: 0.6rem 1.8rem;
 }
 
 
 /* ----------------------------------------
-   FOOTER
+  FOOTER
 ---------------------------------------- */
 
 .reg-footer {
@@ -334,77 +332,77 @@ main {
 
 
 /* ----------------------------------------
-   DASHBOARD – ACCORDION & FILTER
+  DASHBOARD – ACCORDION & FILTER
 ----------------------------------------- */
 
 /* Wrapper for the accordion block */
 .dashboard-accordion {
-    width: 100%;
-    margin-top: 1.5rem;
+  width: 100%;
+  margin-top: 1.5rem;
 }
 
 /* Each accordion group (date) */
 .accordion-item {
-    border: 1px solid var(--primary-color);
-    border-radius: 10px !important;
-    margin-bottom: 1rem;
-    overflow: hidden;
-    background: var(--secondary-color-transparent);
-    backdrop-filter: blur(4px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+  border: 1px solid var(--primary-color);
+  border-radius: 10px !important;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: var(--secondary-color-transparent);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.10);
 }
 
 /* Header button */
 .accordion-button {
-    background: #d8e9df;
-    font-family: var(--primary-font);
-    font-size: 1.05rem;
-    color: var(--primary-color);
-    padding: 1rem 1.2rem;
-    border: none;
+  background: #d8e9df;
+  font-family: var(--primary-font);
+  font-size: 1.05rem;
+  color: var(--primary-color);
+  padding: 1rem 1.2rem;
+  border: none;
 }
 
 .accordion-button:not(.collapsed) {
-    background: #c9e4d6;
-    color: var(--primary-color);
-    box-shadow: none;
+  background: #c9e4d6;
+  color: var(--primary-color);
+  box-shadow: none;
 }
 
 .accordion-button:focus {
-    box-shadow: 0 0 0 2px var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 /* Inside the accordion */
 .accordion-body {
-    background: var(--seconday-color);
-    padding: 1.2rem 1.4rem;
-    border-top: 1px solid rgba(0,0,0,0.08);
-    font-family: var(--primary-font);
-    color: var(--primary-color);
+  background: var(--seconday-color);
+  padding: 1.2rem 1.4rem;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  font-family: var(--primary-font);
+  color: var(--primary-color);
 }
 
 /* Individual entry container */
 .entry-card {
-    background: var(--secondary-color-transparent);
-    backdrop-filter: blur(4px);
-    border-left: 4px solid var(--primary-color);
-    padding: 1rem 1.2rem;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: var(--secondary-color-transparent);
+  backdrop-filter: blur(4px);
+  border-left: 4px solid var(--primary-color);
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 /* Inline action links */
 .entry-actions a {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-right: 1rem;
-    color: var(--primary-color);
-    text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-right: 1rem;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
 .entry-actions a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .entry-actions {
@@ -478,38 +476,38 @@ main {
 }
 
 /* ----------------------------------------
-   SUPPORTIVE PHRASES CARD
+  SUPPORTIVE PHRASES CARD
 ---------------------------------------- */
 
 .supportive-card {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 /* Inner quote box inside the supportive card */
 .supportive-quote-box {
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
-    background: var(--seconday-color);
-    border: 4px solid var(--primary-color);
-    padding: 0.9rem 1rem;
-    border-radius: 10px;
-    min-height: 3.5rem;
-    font-style: italic;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  background: var(--seconday-color);
+  border: 4px solid var(--primary-color);
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  min-height: 3.5rem;
+  font-style: italic;
 }
 
 .supportive-quote-box p {
-    margin-bottom: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 /* Make the author line a bit softer */
 .supportive-quote-box #supportive-quote-author {
-    font-style: normal;
-    font-size: 0.9rem;
-    opacity: 0.85;
+  font-style: normal;
+  font-size: 0.9rem;
+  opacity: 0.85;
 }
 
 /* ----------------------------------------
-   SEARCH BOX STYLES
+  SEARCH BOX STYLES
 ----------------------------------------- */
 
 /* Search box */
@@ -533,7 +531,7 @@ main {
 
 
 /* ----------------------------------------
-   REVISION HISTORY (ENTRY DETAIL PAGE)
+  REVISION HISTORY (ENTRY DETAIL PAGE)
 ----------------------------------------- */
 
 .revision-section {
@@ -560,29 +558,29 @@ main {
 
 
 /* ----------------------------------------
-   SUCCESS MESSAGE STYLES
+  SUCCESS MESSAGE STYLES
 ---------------------------------------- */
 
 .messages {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.2rem;
 }
 
 .alert-success {
-    background: #d6f5e3; /* soft green to match your palette */
-    color: var(--primary-color);
-    border: 1px solid #a2d9c9;
-    padding: 0.9rem 1.2rem;
-    border-radius: 12px;
-    font-family: var(--primary-font);
-    font-size: 1.05rem;
-    max-width: 800px;
-    width: 90%;
-    text-align: center;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    animation: fadeSlideIn 0.4s ease-out;
+  background: #d6f5e3; /* soft green to match your palette */
+  color: var(--primary-color);
+  border: 1px solid #a2d9c9;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  font-family: var(--primary-font);
+  font-size: 1.05rem;
+  max-width: 800px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  animation: fadeSlideIn 0.4s ease-out;
 }
 
 /* Fade-slide-in animation */
@@ -615,7 +613,7 @@ main {
 
 
 /* ----------------------------------------
-   INTRO SECTION – MOBILE SCROLL VERSION
+  INTRO SECTION – MOBILE SCROLL VERSION
 ---------------------------------------- */
 
 @media (max-width: 767px) {

@@ -4,6 +4,8 @@ from . import webhooks
 
 urlpatterns = [
     path("start-trial/", views.start_trial, name="start_trial"),
+    path("start-subscription/", views.start_subscription, name="start_subscription"),
+
     path("trial-success/", views.trial_success, name="trial_success"),
     path("trial-cancelled/", views.trial_cancelled, name="trial_cancelled"),
 
