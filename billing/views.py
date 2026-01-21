@@ -6,11 +6,9 @@ from django.contrib import messages
 
 import stripe
 
+from .models import Subscription
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
-def _iso_or_none(dt):
-    return dt.isoformat() if dt else None
 
 
 @login_required
@@ -18,20 +16,37 @@ def start_trial(request):
     """
     Starts a 5-day free trial via Stripe Checkout.
 
-    Notes:
-    - If the user is already trialing/active, we send them back to dashboard.
-    - If they've already used their trial before, we block it (1 trial per user).
-    - We redirect straight to Stripe (no JSON), so it works even if JS doesn't load.
+    Fixes:
+    - SAFE subscription lookup (no getattr OneToOne crash)
+    - Creates/updates a local Subscription row immediately so trial can't be started repeatedly
+      even if webhook is delayed/misconfigured.
     """
-    sub = getattr(request.user, "subscription", None)
+    sub = Subscription.objects.filter(user=request.user).first()
 
     if sub and sub.status in ["trialing", "active"]:
         messages.info(request, "You already have an active plan.")
         return redirect("dashboard")
 
-    if sub and getattr(sub, "has_had_trial", False):
+    # If they've ever used a trial, block it
+    if sub and sub.has_had_trial:
         messages.info(request, "You can only use the free trial once per user.")
         return redirect("dashboard")
+
+    # Ensure a local row exists BEFORE sending them to Stripe
+    # This prevents repeated trial checkouts if webhook hasn't updated yet.
+    if not sub:
+        sub = Subscription.objects.create(
+            user=request.user,
+            status="incomplete",
+            has_had_trial=True,
+        )
+    else:
+        # Mark trial as used as soon as they start the checkout flow
+        sub.has_had_trial = True
+        # Keep a neutral status until webhook confirms trialing/active
+        if sub.status not in ["trialing", "active"]:
+            sub.status = "incomplete"
+        sub.save(update_fields=["has_had_trial", "status", "updated_at"])
 
     try:
         session = stripe.checkout.Session.create(
@@ -50,12 +65,14 @@ def start_trial(request):
             cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
         )
 
-        # Send user straight to Stripe Checkout
         return redirect(session.url)
 
     except Exception as e:
         print("Stripe Checkout Error (trial):", e)
-        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
+        messages.error(
+            request,
+            "Sorry — we couldn’t open Stripe Checkout. Please try again."
+        )
         return redirect("dashboard")
 
 
@@ -63,9 +80,8 @@ def start_trial(request):
 def start_subscription(request):
     """
     Paid subscription checkout (no trial).
-    Used when trial has already been used (or for returning users).
     """
-    sub = getattr(request.user, "subscription", None)
+    sub = Subscription.objects.filter(user=request.user).first()
 
     if sub and sub.status in ["trialing", "active"]:
         messages.info(request, "You already have an active plan.")
@@ -91,7 +107,10 @@ def start_subscription(request):
 
     except Exception as e:
         print("Stripe Checkout Error (subscribe):", e)
-        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
+        messages.error(
+            request,
+            "Sorry — we couldn’t open Stripe Checkout. Please try again."
+        )
         return redirect("dashboard")
 
 
@@ -99,13 +118,9 @@ def start_subscription(request):
 def billing_details(request):
     """
     Sends the user to Stripe Customer Portal to manage billing.
-
-    Notes:
-    - We need a stored stripe_customer_id on the user's Subscription row.
-    - Return URL points back to the dashboard.
     """
-    sub = getattr(request.user, "subscription", None)
-    stripe_customer_id = getattr(sub, "stripe_customer_id", None)
+    sub = Subscription.objects.filter(user=request.user).first()
+    stripe_customer_id = sub.stripe_customer_id if sub else None
 
     if not stripe_customer_id:
         messages.error(

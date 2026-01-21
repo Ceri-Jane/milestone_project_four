@@ -8,6 +8,7 @@ import random
 import requests
 
 from .models import Entry, EmotionWord, EntryRevision  # include revisions
+from billing.models import Subscription
 
 
 def home(request):
@@ -22,7 +23,7 @@ def home(request):
 def faq(request):
     """
     FAQ page (static).
-    Keeping this in core for now so it matches how home is handled.
+    Keeping this in core so it matches how home is handled.
     """
     try:
         return render(request, "pages/faq.html")
@@ -115,12 +116,12 @@ def my_entries(request):
     (the 'My Entries' page).
 
     - Groups entries by date (no empty 'missing' days shown)
-    - Optional filter: search by specific date via ?date=YYYY-MM-DD
+    - Search by specific date via ?date=YYYY-MM-DD
     """
     # Base queryset: only this user's entries, newest first
     user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
 
-    # Optional: filter by a specific date (string in YYYY-MM-DD format)
+    # Filter by a specific date (string in YYYY-MM-DD format)
     search_date = request.GET.get("date")
     if search_date:
         user_entries = user_entries.filter(created_at__date=search_date)
@@ -152,8 +153,7 @@ def dashboard(request):
     - Supportive phrases
     - Regulate+ (trial/subscription)
     """
-    # ✅ SAFE: doesn't crash if the user has no Subscription row yet
-    subscription = getattr(request.user, "subscription", None)
+    subscription = Subscription.objects.filter(user=request.user).first()
 
     return render(
         request,
