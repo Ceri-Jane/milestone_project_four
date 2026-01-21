@@ -2,11 +2,12 @@ from datetime import datetime, timezone as dt_timezone
 
 import stripe
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
 
 from .models import Subscription
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -17,24 +18,33 @@ def _to_dt(ts):
     return datetime.fromtimestamp(ts, tz=dt_timezone.utc)
 
 
-def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
+def _upsert_subscription(user, stripe_sub):
     sub_id = stripe_sub.get("id")
-    cust_id = stripe_customer_id or stripe_sub.get("customer")
+    cust_id = stripe_sub.get("customer")
     status = stripe_sub.get("status")
 
     current_period_end = _to_dt(stripe_sub.get("current_period_end"))
     trial_end = _to_dt(stripe_sub.get("trial_end"))
+    cancel_at_period_end = stripe_sub.get("cancel_at_period_end", False)
 
-    obj, _ = Subscription.objects.get_or_create(user=user)
+    obj, _created = Subscription.objects.get_or_create(user=user)
 
-    obj.stripe_subscription_id = sub_id
-    obj.stripe_customer_id = cust_id
-    obj.status = status or obj.status
-    obj.current_period_end = current_period_end
-    obj.trial_end = trial_end
+    if hasattr(obj, "stripe_subscription_id"):
+        obj.stripe_subscription_id = sub_id
+    if hasattr(obj, "stripe_customer_id"):
+        obj.stripe_customer_id = cust_id
+    if hasattr(obj, "status"):
+        obj.status = status
+    if hasattr(obj, "current_period_end"):
+        obj.current_period_end = current_period_end
+    if hasattr(obj, "trial_end"):
+        obj.trial_end = trial_end
 
-    if trial_end or status == "trialing":
+    if hasattr(obj, "has_had_trial") and trial_end:
         obj.has_had_trial = True
+
+    if hasattr(obj, "cancel_at_period_end"):
+        obj.cancel_at_period_end = cancel_at_period_end
 
     obj.save()
     return obj
@@ -78,33 +88,24 @@ def stripe_webhook(request):
         sub_id = data_object.get("id")
         try:
             local = Subscription.objects.get(stripe_subscription_id=sub_id)
-            local.status = "canceled"
+            if hasattr(local, "status"):
+                local.status = "canceled"
             local.save()
         except Subscription.DoesNotExist:
             pass
 
     elif event_type == "checkout.session.completed":
-        # Checkout session object
         subscription_id = data_object.get("subscription")
-        customer_id = data_object.get("customer")
-
-        # Prefer session metadata, fall back to subscription metadata
-        user_id = None
-        session_meta = data_object.get("metadata", {})
-        if session_meta:
-            user_id = session_meta.get("user_id")
-
         if subscription_id:
             try:
                 stripe_sub = stripe.Subscription.retrieve(subscription_id)
-                if not user_id:
-                    sub_meta = stripe_sub.get("metadata", {})
-                    user_id = sub_meta.get("user_id")
+                metadata = stripe_sub.get("metadata", {})
+                user_id = metadata.get("user_id")
 
                 if user_id:
                     User = get_user_model()
                     user = User.objects.get(id=user_id)
-                    _upsert_subscription(user, stripe_sub, stripe_customer_id=customer_id)
+                    _upsert_subscription(user, stripe_sub)
             except Exception:
                 pass
 
