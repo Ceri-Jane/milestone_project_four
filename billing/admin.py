@@ -13,6 +13,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "user",
         "status",
         "has_had_trial",
+        "created_at",
         "trial_end",
         "current_period_end",
         "stripe_customer_id",
