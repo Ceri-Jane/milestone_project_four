@@ -29,18 +29,13 @@ def _upsert_subscription(user, stripe_sub):
 
     obj, _created = Subscription.objects.get_or_create(user=user)
 
-    if hasattr(obj, "stripe_subscription_id"):
-        obj.stripe_subscription_id = sub_id
-    if hasattr(obj, "stripe_customer_id"):
-        obj.stripe_customer_id = cust_id
-    if hasattr(obj, "status"):
-        obj.status = status
-    if hasattr(obj, "current_period_end"):
-        obj.current_period_end = current_period_end
-    if hasattr(obj, "trial_end"):
-        obj.trial_end = trial_end
+    obj.stripe_subscription_id = sub_id
+    obj.stripe_customer_id = cust_id
+    obj.status = status
+    obj.current_period_end = current_period_end
+    obj.trial_end = trial_end
 
-    if hasattr(obj, "has_had_trial") and trial_end:
+    if trial_end:
         obj.has_had_trial = True
 
     if hasattr(obj, "cancel_at_period_end"):
@@ -48,6 +43,35 @@ def _upsert_subscription(user, stripe_sub):
 
     obj.save()
     return obj
+
+
+def _get_user_from_subscription_or_session(sub_obj=None, session_obj=None):
+    """
+    Try to find the user_id from:
+    - subscription.metadata.user_id
+    - session.subscription_data.metadata.user_id
+    - session.metadata.user_id
+    """
+    user_id = None
+
+    if sub_obj:
+        user_id = (sub_obj.get("metadata") or {}).get("user_id")
+
+    if not user_id and session_obj:
+        sub_data = session_obj.get("subscription_data") or {}
+        user_id = (sub_data.get("metadata") or {}).get("user_id")
+
+    if not user_id and session_obj:
+        user_id = (session_obj.get("metadata") or {}).get("user_id")
+
+    if not user_id:
+        return None
+
+    User = get_user_model()
+    try:
+        return User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return None
 
 
 @csrf_exempt
@@ -73,39 +97,45 @@ def stripe_webhook(request):
     data_object = event["data"]["object"]
 
     if event_type in ("customer.subscription.created", "customer.subscription.updated"):
-        metadata = data_object.get("metadata", {})
-        user_id = metadata.get("user_id")
-
-        if user_id:
-            User = get_user_model()
-            try:
-                user = User.objects.get(id=user_id)
-                _upsert_subscription(user, data_object)
-            except User.DoesNotExist:
-                pass
+        user = _get_user_from_subscription_or_session(sub_obj=data_object)
+        if user:
+            _upsert_subscription(user, data_object)
 
     elif event_type == "customer.subscription.deleted":
         sub_id = data_object.get("id")
-        try:
-            local = Subscription.objects.get(stripe_subscription_id=sub_id)
-            if hasattr(local, "status"):
-                local.status = "canceled"
+        customer_id = data_object.get("customer")
+
+        local = None
+        if sub_id:
+            local = Subscription.objects.filter(stripe_subscription_id=sub_id).first()
+
+        if not local and customer_id:
+            local = Subscription.objects.filter(stripe_customer_id=customer_id).first()
+
+        if local:
+            local.status = "canceled"
             local.save()
-        except Subscription.DoesNotExist:
-            pass
 
     elif event_type == "checkout.session.completed":
         subscription_id = data_object.get("subscription")
+        customer_id = data_object.get("customer")
+
         if subscription_id:
             try:
                 stripe_sub = stripe.Subscription.retrieve(subscription_id)
-                metadata = stripe_sub.get("metadata", {})
-                user_id = metadata.get("user_id")
 
-                if user_id:
-                    User = get_user_model()
-                    user = User.objects.get(id=user_id)
-                    _upsert_subscription(user, stripe_sub)
+                user = _get_user_from_subscription_or_session(
+                    sub_obj=stripe_sub,
+                    session_obj=data_object,
+                )
+
+                if user:
+                    obj = _upsert_subscription(user, stripe_sub)
+
+                    if customer_id and not obj.stripe_customer_id:
+                        obj.stripe_customer_id = customer_id
+                        obj.save()
+
             except Exception:
                 pass
 
