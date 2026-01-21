@@ -15,12 +15,16 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "has_had_trial",
         "created_at",
         "trial_end",
-        "current_period_end",
         "stripe_customer_id",
         "stripe_subscription_id",
     )
     list_filter = ("status", "has_had_trial")
-    search_fields = ("user__username", "user__email", "stripe_customer_id", "stripe_subscription_id")
+    search_fields = (
+        "user__username",
+        "user__email",
+        "stripe_customer_id",
+        "stripe_subscription_id",
+    )
     ordering = ("-created_at",)
 
     readonly_fields = (
@@ -30,14 +34,13 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "has_had_trial",
         "status",
         "trial_end",
-        "current_period_end",
         "created_at",
         "updated_at",
     )
 
     fieldsets = (
         (None, {"fields": ("user", "status", "has_had_trial")}),
-        ("Dates", {"fields": ("trial_end", "current_period_end")}),
+        ("Dates", {"fields": ("trial_end",)}),
         ("Stripe", {"fields": ("stripe_customer_id", "stripe_subscription_id")}),
         ("System", {"fields": ("created_at", "updated_at")}),
     )
@@ -55,14 +58,13 @@ class SubscriptionInline(admin.StackedInline):
         "status",
         "has_had_trial",
         "trial_end",
-        "current_period_end",
         "created_at",
         "updated_at",
     )
 
     fieldsets = (
         (None, {"fields": ("status", "has_had_trial")}),
-        ("Dates", {"fields": ("trial_end", "current_period_end")}),
+        ("Dates", {"fields": ("trial_end",)}),
         ("Stripe", {"fields": ("stripe_customer_id", "stripe_subscription_id")}),
         ("System", {"fields": ("created_at", "updated_at")}),
     )
