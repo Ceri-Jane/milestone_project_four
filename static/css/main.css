@@ -49,6 +49,24 @@ main {
   flex: 1 0 auto;
 }
 
+/* Custom themed link */
+#custom-link {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+#custom-link:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+#custom-link:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* ----------------------------------------
   CARD STYLES
 ---------------------------------------- */
