@@ -49,10 +49,17 @@
 
             {% if subscription %}
                 {% if subscription.status == "trialing" %}
-                    <p>
-                        <strong>Your free trial is active.</strong>
-                        You won’t be charged until your trial ends.
-                    </p>
+                    {% if subscription.cancel_at_period_end %}
+                        <p>
+                            <strong>Your free trial is active, but it’s set to end.</strong>
+                            You won’t be charged when the trial ends.
+                        </p>
+                    {% else %}
+                        <p>
+                            <strong>Your free trial is active.</strong>
+                            You won’t be charged until your trial ends.
+                        </p>
+                    {% endif %}
 
                     {% if subscription.trial_end %}
                         <p class="form-info">

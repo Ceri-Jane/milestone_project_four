@@ -63,6 +63,10 @@ class Subscription(models.Model):
         null=True,
         help_text="End of current billing period.",
     )
+    cancel_at_period_end = models.BooleanField(
+        default=False,
+        help_text="True if the user has cancelled and the subscription will end at period end/trial end.",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

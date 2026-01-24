@@ -1,3 +1,5 @@
+# billing/webhooks.py
+
 from datetime import datetime, timezone as dt_timezone
 
 import stripe
@@ -8,17 +10,20 @@ from django.contrib.auth import get_user_model
 
 from .models import Subscription
 
-
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def _to_dt(ts):
+    """Convert Stripe unix timestamps to timezone-aware UTC datetimes."""
     if not ts:
         return None
     return datetime.fromtimestamp(ts, tz=dt_timezone.utc)
 
 
 def _upsert_subscription(user, stripe_sub):
+    """
+    Create/update the local Subscription record from a Stripe subscription payload.
+    """
     sub_id = stripe_sub.get("id")
     cust_id = stripe_sub.get("customer")
     status = stripe_sub.get("status")
@@ -27,6 +32,9 @@ def _upsert_subscription(user, stripe_sub):
     trial_end = _to_dt(stripe_sub.get("trial_end"))
     cancel_at_period_end = stripe_sub.get("cancel_at_period_end", False)
 
+    # Handy while testing locally / reading Heroku logs
+    print("UPSERT:", status, "cancel_at_period_end=", cancel_at_period_end)
+
     obj, _created = Subscription.objects.get_or_create(user=user)
 
     obj.stripe_subscription_id = sub_id
@@ -34,12 +42,11 @@ def _upsert_subscription(user, stripe_sub):
     obj.status = status
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
+    obj.cancel_at_period_end = bool(cancel_at_period_end)
 
+    # Trial is only allowed once, so flag it as soon as we've seen a trial end timestamp.
     if trial_end:
         obj.has_had_trial = True
-
-    if hasattr(obj, "cancel_at_period_end"):
-        obj.cancel_at_period_end = cancel_at_period_end
 
     obj.save()
     return obj
@@ -74,6 +81,32 @@ def _get_user_from_subscription_or_session(sub_obj=None, session_obj=None):
         return None
 
 
+def _get_local_subscription_from_ids(sub_obj):
+    """
+    Find a local Subscription using Stripe IDs.
+    This is important because portal-driven events don't reliably include metadata.user_id.
+    """
+    sub_id = sub_obj.get("id")
+    customer_id = sub_obj.get("customer")
+
+    local = None
+    if sub_id:
+        local = (
+            Subscription.objects.filter(stripe_subscription_id=sub_id)
+            .select_related("user")
+            .first()
+        )
+
+    if not local and customer_id:
+        local = (
+            Subscription.objects.filter(stripe_customer_id=customer_id)
+            .select_related("user")
+            .first()
+        )
+
+    return local
+
+
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
@@ -96,24 +129,25 @@ def stripe_webhook(request):
     event_type = event["type"]
     data_object = event["data"]["object"]
 
+    print("STRIPE EVENT:", event_type)
+
     if event_type in ("customer.subscription.created", "customer.subscription.updated"):
-        user = _get_user_from_subscription_or_session(sub_obj=data_object)
-        if user:
-            _upsert_subscription(user, data_object)
+        # 1) First try to match by Stripe IDs (most reliable for portal updates/cancellations)
+        local = _get_local_subscription_from_ids(data_object)
+        if local and getattr(local, "user", None):
+            _upsert_subscription(local.user, data_object)
+        else:
+            # 2) Fallback to metadata mapping (useful during initial checkout flow)
+            user = _get_user_from_subscription_or_session(sub_obj=data_object)
+            if user:
+                _upsert_subscription(user, data_object)
 
     elif event_type == "customer.subscription.deleted":
-        sub_id = data_object.get("id")
-        customer_id = data_object.get("customer")
-
-        local = None
-        if sub_id:
-            local = Subscription.objects.filter(stripe_subscription_id=sub_id).first()
-
-        if not local and customer_id:
-            local = Subscription.objects.filter(stripe_customer_id=customer_id).first()
-
+        # Subscription fully ended on Stripe side (not just cancel_at_period_end)
+        local = _get_local_subscription_from_ids(data_object)
         if local:
             local.status = "canceled"
+            local.cancel_at_period_end = False
             local.save()
 
     elif event_type == "checkout.session.completed":
@@ -132,11 +166,11 @@ def stripe_webhook(request):
                 if user:
                     obj = _upsert_subscription(user, stripe_sub)
 
+                    # Belt and braces: ensure we store the customer id if we didn't already.
                     if customer_id and not obj.stripe_customer_id:
                         obj.stripe_customer_id = customer_id
                         obj.save()
-
-            except Exception:
-                pass
+            except Exception as e:
+                print("checkout.session.completed handler error:", e)
 
     return HttpResponse(status=200)
