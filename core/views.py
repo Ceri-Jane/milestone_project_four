@@ -7,24 +7,17 @@ from django.http import JsonResponse, HttpResponseNotFound
 import random
 import requests
 
-from .models import Entry, EmotionWord, EntryRevision  # include revisions
+from .models import Entry, EmotionWord, EntryRevision
 from billing.models import Subscription
 
 
 def home(request):
-    """
-    Landing page.
-    For now this just renders the home template.
-    Later this can show recent entries or stats.
-    """
+    """Landing page."""
     return render(request, "core/home.html")
 
 
 def faq(request):
-    """
-    FAQ page (static).
-    Keeping this in core so it matches how home is handled.
-    """
+    """Static FAQ page."""
     try:
         return render(request, "pages/faq.html")
     except Exception:
@@ -32,10 +25,7 @@ def faq(request):
 
 
 def support(request):
-    """
-    Crisis/support info page (static).
-    This will hold contact numbers + guidance.
-    """
+    """Static crisis/support info page."""
     try:
         return render(request, "pages/support.html")
     except Exception:
@@ -45,48 +35,38 @@ def support(request):
 @login_required
 def new_entry(request):
     """
-    Display the New Entry form and handle saving an entry.
+    Create a new entry.
 
-    - Shows a timestamp at the top of the form
-    - Pulls emotion word options from EmotionWord model
-    - Saves hue slider value, selected emotions, and notes
+    Notes:
+    - Hue is stored as 0–100 (slider), then mapped to a simple 1–5 mood score.
+    - Emotion words are stored as a comma-separated string for now (simple + fits CI scope).
+    - Hue meaning + notes are combined into one text field so the UI stays low-friction.
     """
-
-    # Human-friendly timestamp for the template
     timestamp = timezone.localtime().strftime("%A %d %B %Y • %H:%M")
-
-    # Pull emotion words from database (alphabetical from model.Meta)
-    emotions = EmotionWord.objects.all()
+    emotions = EmotionWord.objects.all()  # ordered via model Meta
 
     if request.method == "POST":
-        # Get form values from POST
-        hue = request.POST.get("hue")                 # range slider value (0–100)
-        hue_notes = request.POST.get("hue_notes")     # meaning of hue
+        hue = request.POST.get("hue")  # 0–100
+        hue_notes = request.POST.get("hue_notes")
         notes = request.POST.get("notes")
-
         selected_emotions = request.POST.getlist("emotion_words")
 
-        # Derive a simple 1–5 mood score from the hue slider
         mood = None
         if hue:
             try:
                 hue_value = int(hue)
-                # Map 0–100 into 1–5
                 mood = max(1, min(5, (hue_value // 20) + 1))
             except ValueError:
                 mood = None
 
-        # Join selected emotion words into a single string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
-        # Combine hue meaning + notes into a single text field
         combined_notes = ""
         if hue_notes:
             combined_notes += f"Hue meaning: {hue_notes}\n\n"
         if notes:
             combined_notes += notes
 
-        # Create the entry in the database
         Entry.objects.create(
             user=request.user,
             mood=mood,
@@ -95,103 +75,83 @@ def new_entry(request):
             notes=combined_notes,
         )
 
-        # SUCCESS MESSAGE
         messages.success(request, "Your entry has been saved.")
-
-        # After saving, send user to My Entries page
         return redirect("my_entries")
-
-    # GET request: show empty form
-    context = {
-        "timestamp": timestamp,
-        "emotions": emotions,
-    }
-    return render(request, "core/new_entry.html", context)
-
-
-@login_required
-def my_entries(request):
-    """
-    Show the logged-in user's entries in a grouped, non-calendar view
-    (the 'My Entries' page).
-
-    - Groups entries by date (no empty 'missing' days shown)
-    - Search by specific date via ?date=YYYY-MM-DD
-    """
-    # Base queryset: only this user's entries, newest first
-    user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
-
-    # Filter by a specific date (string in YYYY-MM-DD format)
-    search_date = request.GET.get("date")
-    if search_date:
-        user_entries = user_entries.filter(created_at__date=search_date)
-
-    # Group entries by date for accordion display
-    grouped_entries = {}
-    for entry in user_entries:
-        # Flag so the template can show an indicator
-        entry.has_revisions = entry.revisions.exists()
-
-        date_key = entry.created_at.date()
-        grouped_entries.setdefault(date_key, []).append(entry)
-
-    context = {
-        "grouped_entries": grouped_entries,
-        "search_date": search_date,
-    }
-    return render(request, "core/my_entries.html", context)
-
-
-@login_required
-def dashboard(request):
-    """
-    Dashboard hub page.
-
-    Cards that link to:
-    - My entries list
-    - New entry
-    - Supportive phrases
-    - Regulate+ (trial/subscription)
-    """
-    subscription = Subscription.objects.filter(user=request.user).first()
 
     return render(
         request,
-        "core/dashboard.html",
+        "core/new_entry.html",
         {
-            "subscription": subscription,
+            "timestamp": timestamp,
+            "emotions": emotions,
         },
     )
 
 
 @login_required
+def my_entries(request):
+    """
+    User entries page (grouped by date, not a calendar).
+
+    UX intent:
+    - Avoid “empty days” and pressure to keep streaks.
+    - Optional date filter via ?date=YYYY-MM-DD.
+    """
+    user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
+
+    search_date = request.GET.get("date")
+    if search_date:
+        user_entries = user_entries.filter(created_at__date=search_date)
+
+    grouped_entries = {}
+    for entry in user_entries:
+        entry.has_revisions = entry.revisions.exists()
+        date_key = entry.created_at.date()
+        grouped_entries.setdefault(date_key, []).append(entry)
+
+    return render(
+        request,
+        "core/my_entries.html",
+        {
+            "grouped_entries": grouped_entries,
+            "search_date": search_date,
+        },
+    )
+
+
+@login_required
+def dashboard(request):
+    """Dashboard hub page."""
+    subscription = Subscription.objects.filter(user=request.user).first()
+    return render(request, "core/dashboard.html", {"subscription": subscription})
+
+
+@login_required
 def view_entry(request, entry_id):
-    """
-    Show a single entry in read-only mode, plus its revision history.
-    Ensures the entry belongs to the logged-in user.
-    """
+    """Read-only entry view + revision history. Ownership is enforced."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     revisions = EntryRevision.objects.filter(entry=entry).order_by("-created_at")
-
-    # Most recent revision time, if any (used as "last updated")
     last_updated = revisions[0].created_at if revisions else None
 
-    context = {
-        "entry": entry,
-        "revisions": revisions,
-        "last_updated": last_updated,
-    }
-    return render(request, "core/entry_detail.html", context)
+    return render(
+        request,
+        "core/entry_detail.html",
+        {
+            "entry": entry,
+            "revisions": revisions,
+            "last_updated": last_updated,
+        },
+    )
 
 
 @login_required
 def edit_entry(request, entry_id):
     """
-    Allow the user to edit an existing entry.
+    Edit an entry.
 
-    - Pre-populates the form with the current values
-    - Before updating, stores a snapshot of the current values
-      in EntryRevision so you can see how it has changed over time.
+    Dev note:
+    - Before saving changes, we snapshot the previous values into EntryRevision.
+      This keeps the UI simple but still gives a clear audit trail of edits.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     emotions = EmotionWord.objects.all()
@@ -202,7 +162,6 @@ def edit_entry(request, entry_id):
         notes = request.POST.get("notes")
         selected_emotions = request.POST.getlist("emotion_words")
 
-        # Derive mood from hue
         mood = None
         if hue:
             try:
@@ -211,17 +170,14 @@ def edit_entry(request, entry_id):
             except ValueError:
                 mood = None
 
-        # Join selected emotion words into a single string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
-        # Combine hue meaning + notes into a single text field
         combined_notes = ""
         if hue_notes:
             combined_notes += f"Hue meaning: {hue_notes}\n\n"
         if notes:
             combined_notes += notes
 
-        # Check if anything actually changed
         has_changes = (
             entry.mood != mood
             or entry.hue != hue
@@ -230,7 +186,6 @@ def edit_entry(request, entry_id):
         )
 
         if has_changes:
-            # Store previous state in revision history
             EntryRevision.objects.create(
                 entry=entry,
                 mood=entry.mood,
@@ -239,7 +194,6 @@ def edit_entry(request, entry_id):
                 notes=entry.notes,
             )
 
-            # Update existing entry with new values
             entry.mood = mood
             entry.hue = hue
             entry.emotion_words = emotion_words
@@ -252,15 +206,12 @@ def edit_entry(request, entry_id):
 
         return redirect("my_entries")
 
-    # ------------------------------
     # GET: pre-fill form fields
-    # ------------------------------
-
     hue_value = entry.hue or ""
-
     hue_notes_value = ""
     notes_value = entry.notes or ""
 
+    # Split "Hue meaning" out into its own field for the edit form
     if entry.notes and entry.notes.startswith("Hue meaning: "):
         parts = entry.notes.split("\n\n", 1)
         if len(parts) == 2:
@@ -273,25 +224,23 @@ def edit_entry(request, entry_id):
             w.strip() for w in entry.emotion_words.split(",") if w.strip()
         ]
 
-    context = {
-        "entry": entry,
-        "emotions": emotions,
-        "hue_value": hue_value,
-        "hue_notes_value": hue_notes_value,
-        "notes_value": notes_value,
-        "selected_emotions": selected_emotions,
-    }
-    return render(request, "core/entry_edit.html", context)
+    return render(
+        request,
+        "core/entry_edit.html",
+        {
+            "entry": entry,
+            "emotions": emotions,
+            "hue_value": hue_value,
+            "hue_notes_value": hue_notes_value,
+            "notes_value": notes_value,
+            "selected_emotions": selected_emotions,
+        },
+    )
 
 
 @login_required
 def delete_entry(request, entry_id):
-    """
-    Delete an entry after user confirmation.
-
-    - Only deletes on POST (from My Entries page)
-    - GET just redirects back to the My Entries view
-    """
+    """Delete an entry (POST only)."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
     if request.method == "POST":
@@ -306,58 +255,48 @@ def delete_entry(request, entry_id):
 @login_required
 def supportive_phrase(request):
     """
-    Fetch a supportive quote/phrase from an external API and return JSON.
+    Return a supportive phrase as JSON for the dashboard card.
+
+    Dev notes:
+    - We fetch server-side so it behaves the same locally + on deploy (and avoids CORS issues).
+    - No session caching here on purpose: this API returns a single random affirmation and stays fresh.
+    - If the API is down, we fall back to a small local set so the dashboard never looks broken.
     """
     fallback_quotes = [
         "Even on hard days, you deserve kindness from yourself.",
-        "It’s okay to be exactly where you are today.",
+        "It’s okay to take things one small step at a time.",
         "You are allowed to rest without earning it first.",
-        "The feelings you have right now are valid, even if they’re uncomfortable.",
-        "You have survived every difficult day so far — that matters.",
-        "Needing support does not make you a burden.",
+        "Your feelings are valid, even when they are heavy.",
+        "You are doing the best you can with what you have today.",
     ]
 
-    quotes = request.session.get("supportive_quotes")
-
     try:
-        if not quotes:
-            response = requests.get("https://type.fit/api/quotes", timeout=5)
-            response.raise_for_status()
-            data = response.json()
+        # Returns JSON like: {"affirmation": "..." } (no API key needed)
+        response = requests.get("https://www.affirmations.dev/", timeout=6)
+        response.raise_for_status()
 
-            quotes_list = []
-            if isinstance(data, list):
-                for obj in data:
-                    text = obj.get("text") or obj.get("q")
-                    if text:
-                        author = obj.get("author") or obj.get("a") or ""
-                        quotes_list.append({"text": text, "author": author})
+        data = response.json()
+        quote = (data.get("affirmation") or "").strip()
 
-            if not quotes_list:
-                raise ValueError("No usable quotes from external API")
+        if not quote:
+            raise ValueError("Affirmations.dev returned no affirmation text")
 
-            random.shuffle(quotes_list)
-            quotes = quotes_list
-            request.session["supportive_quotes"] = quotes
+        return JsonResponse(
+            {
+                "quote": quote,
+                "author": "Affirmations.dev",
+            },
+            status=200,
+        )
 
     except Exception as e:
-        print("Supportive phrase external API error:", e)
+        # Keep this lightweight; useful while developing and harmless in production logs.
+        print("Affirmations.dev API error:", e)
 
-        if not quotes:
-            quotes = [{"text": q, "author": ""} for q in fallback_quotes]
-            random.shuffle(quotes)
-            request.session["supportive_quotes"] = quotes
-
-    if not quotes:
-        return JsonResponse({
-            "quote": "Even on hard days, you deserve kindness from yourself.",
-            "author": "",
-        }, status=200)
-
-    quote_obj = quotes.pop(0)
-    request.session["supportive_quotes"] = quotes
-
-    return JsonResponse({
-        "quote": quote_obj.get("text", "You are doing better than you think."),
-        "author": quote_obj.get("author", ""),
-    })
+        return JsonResponse(
+            {
+                "quote": random.choice(fallback_quotes),
+                "author": "Regulate",
+            },
+            status=200,
+        )
