@@ -18,8 +18,7 @@
             <p><strong>Your Username:</strong> {{ request.user.username }}</p>
             <p>Update the name shown on your Regulate account.</p>
 
-            <a href="{% url 'change_username' %}"
-               class="select-btn">
+            <a href="{% url 'change_username' %}" class="select-btn">
                 Change Username
             </a>
         </div>
@@ -29,8 +28,7 @@
             <p><strong>Your Email:</strong> {{ request.user.email }}</p>
             <p>Update the email address linked to your account.</p>
 
-            <a href="{% url 'change_email' %}"
-               class="select-btn">
+            <a href="{% url 'change_email' %}" class="select-btn">
                 Change Email
             </a>
         </div>
@@ -40,25 +38,96 @@
             <p><strong>Your Password</strong></p>
             <p>Keep your account secure with a strong password.</p>
 
-            <a href="{% url 'account_change_password' %}"
-               class="select-btn">
+            <a href="{% url 'account_change_password' %}" class="select-btn">
                 Change Password
             </a>
         </div>
 
-        <!-- Divider before logout -->
+        <!-- Regulate+ / Billing -->
+        <div class="entry-card regulate-plus-card">
+            <p><strong>Regulate+ & Billing</strong></p>
+
+            {% if subscription %}
+                {% if subscription.status == "trialing" %}
+                    <p>
+                        <strong>Your free trial is active.</strong>
+                        You won’t be charged until your trial ends.
+                    </p>
+
+                    {% if subscription.trial_end %}
+                        <p class="form-info">
+                            Trial ends:
+                            <strong>{{ subscription.trial_end|date:"D j M Y" }}</strong>
+                        </p>
+                    {% endif %}
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'billing_details' %}" class="select-btn">
+                            Manage billing in Stripe
+                        </a>
+                    </div>
+
+                {% elif subscription.status == "active" %}
+                    <p>
+                        <strong>Your Regulate+ subscription is active.</strong>
+                    </p>
+
+                    {% if subscription.current_period_end %}
+                        <p class="form-info">
+                            Next renewal:
+                            <strong>{{ subscription.current_period_end|date:"D j M Y" }}</strong>
+                        </p>
+                    {% endif %}
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'billing_details' %}" class="select-btn">
+                            Manage billing in Stripe
+                        </a>
+                    </div>
+
+                {% else %}
+                    <p>Your Regulate+ plan isn’t currently active.</p>
+                    <p class="form-info">
+                        You can restart your subscription any time (trial is only available once).
+                    </p>
+
+                    <a href="{% url 'start_subscription' %}" class="select-btn">
+                        Restart Regulate+
+                    </a>
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'billing_details' %}" class="select-btn">
+                            Manage billing in Stripe
+                        </a>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <p>
+                    Try Regulate+ free for 5 days. You’ll enter card details on a secure Stripe checkout page,
+                    but <strong>you won’t be charged until the trial ends</strong>. Cancel any time before then.
+                </p>
+
+                <p class="form-info">
+                    This gives you space to see whether Regulate+ supports your routines — without pressure.
+                </p>
+
+                <a href="{% url 'start_trial' %}" class="select-btn">
+                    Start 5-Day Free Trial
+                </a>
+            {% endif %}
+        </div>
+
         <hr>
 
         <!-- Logout -->
         <div class="entry-card">
             <p><strong>Log Out</strong></p>
             <p>Log out of your Regulate account safely.</p>
-            
-            <a href="{% url 'account_logout' %}"
-               class="btn btn-danger w-100">
+
+            <a href="{% url 'account_logout' %}" class="btn btn-danger w-100">
                 Log Out
             </a>
-
         </div>
 
     </div>
