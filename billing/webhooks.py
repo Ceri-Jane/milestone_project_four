@@ -23,6 +23,12 @@ def _to_dt(ts):
 def _upsert_subscription(user, stripe_sub):
     """
     Create/update the local Subscription record from a Stripe subscription payload.
+
+    NOTE:
+    Stripe can represent "will end at period end" in two ways:
+      - cancel_at_period_end (bool)
+      - cancel_at (unix timestamp)
+    Cancelling during trial often sets cancel_at but NOT cancel_at_period_end.
     """
     sub_id = stripe_sub.get("id")
     cust_id = stripe_sub.get("customer")
@@ -30,10 +36,24 @@ def _upsert_subscription(user, stripe_sub):
 
     current_period_end = _to_dt(stripe_sub.get("current_period_end"))
     trial_end = _to_dt(stripe_sub.get("trial_end"))
-    cancel_at_period_end = stripe_sub.get("cancel_at_period_end", False)
+
+    cancel_at_period_end = bool(stripe_sub.get("cancel_at_period_end", False))
+    cancel_at = _to_dt(stripe_sub.get("cancel_at"))
+
+    # If cancel_at exists, treat it as "this subscription is set to end"
+    derived_cancel_flag = bool(cancel_at) or cancel_at_period_end
 
     # Handy while testing locally / reading Heroku logs
-    print("UPSERT:", status, "cancel_at_period_end=", cancel_at_period_end)
+    print(
+        "UPSERT:",
+        status,
+        "cancel_at_period_end=",
+        cancel_at_period_end,
+        "cancel_at=",
+        cancel_at,
+        "derived_cancel_flag=",
+        derived_cancel_flag,
+    )
 
     obj, _created = Subscription.objects.get_or_create(user=user)
 
@@ -42,7 +62,7 @@ def _upsert_subscription(user, stripe_sub):
     obj.status = status
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
-    obj.cancel_at_period_end = bool(cancel_at_period_end)
+    obj.cancel_at_period_end = derived_cancel_flag
 
     # Trial is only allowed once, so flag it as soon as we've seen a trial end timestamp.
     if trial_end:
