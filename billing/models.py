@@ -63,9 +63,16 @@ class Subscription(models.Model):
         null=True,
         help_text="End of current billing period.",
     )
+
+    # Stripe cancellation fields
     cancel_at_period_end = models.BooleanField(
         default=False,
-        help_text="True if the user has cancelled and the subscription will end at period end/trial end.",
+        help_text="True if Stripe says the subscription will cancel at the end of the current period.",
+    )
+    cancel_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="If set, the subscription is scheduled to cancel at this time (UTC).",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -24,11 +24,10 @@ def _upsert_subscription(user, stripe_sub):
     """
     Create/update the local Subscription record from a Stripe subscription payload.
 
-    NOTE:
-    Stripe can represent "will end at period end" in two ways:
+    Stripe can represent a scheduled end in two ways:
       - cancel_at_period_end (bool)
       - cancel_at (unix timestamp)
-    Cancelling during trial often sets cancel_at but NOT cancel_at_period_end.
+    Cancelling during a trial often sets cancel_at but NOT cancel_at_period_end.
     """
     sub_id = stripe_sub.get("id")
     cust_id = stripe_sub.get("customer")
@@ -40,10 +39,9 @@ def _upsert_subscription(user, stripe_sub):
     cancel_at_period_end = bool(stripe_sub.get("cancel_at_period_end", False))
     cancel_at = _to_dt(stripe_sub.get("cancel_at"))
 
-    # If cancel_at exists, treat it as "this subscription is set to end"
-    derived_cancel_flag = bool(cancel_at) or cancel_at_period_end
+    will_end = bool(cancel_at) or cancel_at_period_end
 
-    # Handy while testing locally / reading Heroku logs
+    # Handy while testing / reading logs
     print(
         "UPSERT:",
         status,
@@ -51,8 +49,8 @@ def _upsert_subscription(user, stripe_sub):
         cancel_at_period_end,
         "cancel_at=",
         cancel_at,
-        "derived_cancel_flag=",
-        derived_cancel_flag,
+        "will_end=",
+        will_end,
     )
 
     obj, _created = Subscription.objects.get_or_create(user=user)
@@ -62,7 +60,10 @@ def _upsert_subscription(user, stripe_sub):
     obj.status = status
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
-    obj.cancel_at_period_end = derived_cancel_flag
+
+    # Store the real Stripe values separately
+    obj.cancel_at_period_end = cancel_at_period_end
+    obj.cancel_at = cancel_at
 
     # Trial is only allowed once, so flag it as soon as we've seen a trial end timestamp.
     if trial_end:
@@ -163,11 +164,12 @@ def stripe_webhook(request):
                 _upsert_subscription(user, data_object)
 
     elif event_type == "customer.subscription.deleted":
-        # Subscription fully ended on Stripe side (not just cancel_at_period_end)
+        # Subscription fully ended on Stripe side (not just scheduled to end)
         local = _get_local_subscription_from_ids(data_object)
         if local:
             local.status = "canceled"
             local.cancel_at_period_end = False
+            local.cancel_at = None
             local.save()
 
     elif event_type == "checkout.session.completed":

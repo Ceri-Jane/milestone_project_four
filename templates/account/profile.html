@@ -48,8 +48,16 @@
             <p><strong>Regulate+ & Billing</strong></p>
 
             {% if subscription %}
+
+                {# A subscription is "set to end" if either field is true/set #}
+                {% if subscription.cancel_at or subscription.cancel_at_period_end %}
+                    {% with will_end=True %}
+                {% else %}
+                    {% with will_end=False %}
+                {% endif %}
+
                 {% if subscription.status == "trialing" %}
-                    {% if subscription.cancel_at_period_end %}
+                    {% if will_end %}
                         <p>
                             <strong>Your free trial is active, but it’s set to end.</strong>
                             You won’t be charged when the trial ends.
@@ -66,6 +74,11 @@
                             Trial ends:
                             <strong>{{ subscription.trial_end|date:"D j M Y" }}</strong>
                         </p>
+                    {% elif subscription.cancel_at %}
+                        <p class="form-info">
+                            Trial ends:
+                            <strong>{{ subscription.cancel_at|date:"D j M Y" }}</strong>
+                        </p>
                     {% endif %}
 
                     <div class="text-center mt-3">
@@ -75,11 +88,23 @@
                     </div>
 
                 {% elif subscription.status == "active" %}
-                    <p>
-                        <strong>Your Regulate+ subscription is active.</strong>
-                    </p>
+                    {% if will_end %}
+                        <p>
+                            <strong>Your Regulate+ subscription is active, but it’s set to end.</strong>
+                            You’ll keep access until your end date.
+                        </p>
+                    {% else %}
+                        <p>
+                            <strong>Your Regulate+ subscription is active.</strong>
+                        </p>
+                    {% endif %}
 
-                    {% if subscription.current_period_end %}
+                    {% if subscription.cancel_at %}
+                        <p class="form-info">
+                            Ends:
+                            <strong>{{ subscription.cancel_at|date:"D j M Y" }}</strong>
+                        </p>
+                    {% elif subscription.current_period_end %}
                         <p class="form-info">
                             Next renewal:
                             <strong>{{ subscription.current_period_end|date:"D j M Y" }}</strong>
@@ -108,6 +133,8 @@
                         </a>
                     </div>
                 {% endif %}
+
+                {% endwith %}
 
             {% else %}
                 <p>
