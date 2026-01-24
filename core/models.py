@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User  # built-in user model
+from django.conf import settings
+from django.utils import timezone
 
 
 class EmotionWord(models.Model):
@@ -31,7 +32,7 @@ class Entry(models.Model):
     ]
 
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="entries",
     )
@@ -97,3 +98,75 @@ class EntryRevision(models.Model):
 
     def __str__(self):
         return f"Revision of Entry {self.entry.id} at {self.created_at:%Y-%m-%d %H:%M}"
+
+
+# ------------------------------------------------------------
+# Admin-safe models (no private entries)
+# ------------------------------------------------------------
+
+class SiteAnnouncement(models.Model):
+    """
+    Short site-wide announcements for users (e.g. maintenance, new features).
+    Safe: contains no private user content.
+    """
+
+    title = models.CharField(max_length=120)
+    message = models.TextField(max_length=600)
+
+    is_active = models.BooleanField(default=True)
+
+    # Optional scheduling
+    starts_at = models.DateTimeField(blank=True, null=True)
+    ends_at = models.DateTimeField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def is_live(self):
+        """True if active and within the schedule window (if set)."""
+        if not self.is_active:
+            return False
+        now = timezone.now()
+        if self.starts_at and now < self.starts_at:
+            return False
+        if self.ends_at and now > self.ends_at:
+            return False
+        return True
+
+    def __str__(self):
+        return self.title
+
+
+class SupportTicket(models.Model):
+    """
+    Basic support inbox for users to contact you.
+    Safe: should not contain entries; just support messages.
+    """
+
+    STATUS_CHOICES = [
+        ("new", "New"),
+        ("in_progress", "In progress"),
+        ("resolved", "Resolved"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="support_tickets",
+        help_text="Optional: set if user was logged in.",
+    )
+
+    email = models.EmailField(blank=True, help_text="If user is logged out.")
+    subject = models.CharField(max_length=140)
+    message = models.TextField(max_length=3000)
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        who = self.user.username if self.user else (self.email or "Unknown")
+        return f"{self.subject} ({who})"
