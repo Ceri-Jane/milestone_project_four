@@ -5,6 +5,22 @@
 <div class="form-wrapper">
     <div class="form-card dashboard-card">
 
+        {# -------------------------------------------------- #}
+        {# SITE ANNOUNCEMENTS (from admin)                     #}
+        {# -------------------------------------------------- #}
+        {% if announcements %}
+            <div class="mb-3">
+                {% for a in announcements %}
+                    <div class="alert alert-banner align-items-center" role="alert">
+                        {% if a.title %}
+                            <strong>{{ a.title }}</strong><br>
+                        {% endif %}
+                        {{ a.message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <h1 class="form-title">Your Dashboard</h1>
 
         <p class="form-info">
@@ -20,8 +36,7 @@
                 Capture how you’re feeling right now in a quick, low-pressure note.
             </p>
 
-            <a href="{% url 'new_entry' %}"
-               class="select-btn">
+            <a href="{% url 'new_entry' %}" class="select-btn">
                 Add New Entry
             </a>
         </div>
@@ -33,8 +48,7 @@
                 Browse, search, and revisit your previous notes without any calendar pressure.
             </p>
 
-            <a href="{% url 'my_entries' %}"
-               class="select-btn">
+            <a href="{% url 'my_entries' %}" class="select-btn">
                 Go to Your Entries
             </a>
         </div>

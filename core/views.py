@@ -7,7 +7,13 @@ from django.http import JsonResponse, HttpResponseNotFound
 import random
 import requests
 
-from .models import Entry, EmotionWord, EntryRevision
+from .models import (
+    Entry,
+    EmotionWord,
+    EntryRevision,
+    SupportTicket,
+    SiteAnnouncement,
+)
 from billing.models import Subscription
 
 
@@ -30,6 +36,49 @@ def support(request):
         return render(request, "pages/support.html")
     except Exception:
         return HttpResponseNotFound("Support page not created yet.")
+
+
+def contact(request):
+    """
+    Non-urgent contact form.
+    Creates SupportTicket entries to view/manage in admin.
+
+    IMPORTANT:
+    - Separate from the crisis/support page.
+    - Not monitored 24/7.
+    """
+    if request.method == "POST":
+        subject = (request.POST.get("subject") or "").strip()
+        message_text = (request.POST.get("message") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+
+        if not subject or not message_text:
+            messages.error(request, "Please add a subject and message.")
+            return redirect("contact")
+
+        user = request.user if request.user.is_authenticated else None
+
+        # If logged in, prefer account email, but allow fallback
+        if user:
+            email_to_store = (user.email or "").strip()
+        else:
+            email_to_store = email
+
+        if not user and not email_to_store:
+            messages.error(request, "Please enter an email address so we can reply.")
+            return redirect("contact")
+
+        SupportTicket.objects.create(
+            user=user,
+            email=email_to_store,
+            subject=subject,
+            message=message_text,
+        )
+
+        messages.success(request, "Message sent. Thank you — we’ll reply when we can.")
+        return redirect("contact")
+
+    return render(request, "pages/contact.html")
 
 
 @login_required
@@ -123,7 +172,21 @@ def my_entries(request):
 def dashboard(request):
     """Dashboard hub page."""
     subscription = Subscription.objects.filter(user=request.user).first()
-    return render(request, "core/dashboard.html", {"subscription": subscription})
+
+    # Pull active announcements then apply "live window" logic in Python
+    active_announcements = SiteAnnouncement.objects.filter(is_active=True).order_by(
+        "-updated_at"
+    )
+    live_announcements = [a for a in active_announcements if a.is_live]
+
+    return render(
+        request,
+        "core/dashboard.html",
+        {
+            "subscription": subscription,
+            "announcements": live_announcements,
+        },
+    )
 
 
 @login_required
@@ -150,7 +213,7 @@ def edit_entry(request, entry_id):
     Edit an entry.
 
     Dev note:
-    - Before saving changes, we snapshot the previous values into EntryRevision.
+    - Before saving changes, snapshot the previous values into EntryRevision.
       This keeps the UI simple but still gives a clear audit trail of edits.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
@@ -206,12 +269,10 @@ def edit_entry(request, entry_id):
 
         return redirect("my_entries")
 
-    # GET: pre-fill form fields
     hue_value = entry.hue or ""
     hue_notes_value = ""
     notes_value = entry.notes or ""
 
-    # Split "Hue meaning" out into its own field for the edit form
     if entry.notes and entry.notes.startswith("Hue meaning: "):
         parts = entry.notes.split("\n\n", 1)
         if len(parts) == 2:
@@ -256,11 +317,6 @@ def delete_entry(request, entry_id):
 def supportive_phrase(request):
     """
     Return a supportive phrase as JSON for the dashboard card.
-
-    Dev notes:
-    - We fetch server-side so it behaves the same locally + on deploy (and avoids CORS issues).
-    - No session caching here on purpose: this API returns a single random affirmation and stays fresh.
-    - If the API is down, we fall back to a small local set so the dashboard never looks broken.
     """
     fallback_quotes = [
         "Even on hard days, you deserve kindness from yourself.",
@@ -271,7 +327,6 @@ def supportive_phrase(request):
     ]
 
     try:
-        # Returns JSON like: {"affirmation": "..." } (no API key needed)
         response = requests.get("https://www.affirmations.dev/", timeout=6)
         response.raise_for_status()
 
@@ -281,22 +336,11 @@ def supportive_phrase(request):
         if not quote:
             raise ValueError("Affirmations.dev returned no affirmation text")
 
-        return JsonResponse(
-            {
-                "quote": quote,
-                "author": "Affirmations.dev",
-            },
-            status=200,
-        )
+        return JsonResponse({"quote": quote, "author": "Affirmations.dev"}, status=200)
 
     except Exception as e:
-        # Keep this lightweight; useful while developing and harmless in production logs.
         print("Affirmations.dev API error:", e)
-
         return JsonResponse(
-            {
-                "quote": random.choice(fallback_quotes),
-                "author": "Regulate",
-            },
+            {"quote": random.choice(fallback_quotes), "author": "Regulate"},
             status=200,
         )

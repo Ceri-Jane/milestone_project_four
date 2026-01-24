@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-wrapper">
+  <div class="form-card dashboard-card">
+
+    <h1 class="form-title">Contact</h1>
+
+    <p class="form-info">
+      Use this form to contact the Regulate admin team about your account,
+      site feedback, or suggestions for improvements.
+    </p>
+
+    <p class="form-info">
+      This form is <strong>not monitored continuously</strong> and is not intended
+      for mental health support.
+      If you need urgent help, please visit the
+      <a href="{% url 'support' %}">Crisis & Support</a> page.
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% if not request.user.is_authenticated %}
+        <label for="email">Email</label>
+        <input
+          type="email"
+          name="email"
+          id="email"
+          class="search-input"
+          required
+        >
+      {% endif %}
+
+      <label for="subject">Subject</label>
+      <input
+        type="text"
+        name="subject"
+        id="subject"
+        class="search-input"
+        maxlength="140"
+        required
+      >
+
+      <label for="message">Message</label>
+      <textarea
+        name="message"
+        id="message"
+        class="search-input"
+        rows="6"
+        maxlength="3000"
+        required
+      ></textarea>
+
+      <button class="select-btn mt-3" type="submit">
+        Send message
+      </button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

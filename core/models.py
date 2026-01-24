@@ -8,7 +8,6 @@ class EmotionWord(models.Model):
     Stores a single emotion word used as an option
     in the Emotion Words checkbox list on the entry form.
     """
-
     word = models.CharField(max_length=50, unique=True)
 
     class Meta:
@@ -37,8 +36,8 @@ class Entry(models.Model):
         related_name="entries",
     )
 
-    mood = models.IntegerField(choices=MOOD_CHOICES)  # 1–5 mood rating
-    hue = models.CharField(max_length=7, blank=True)  # HEX colour e.g. #a5dfc6
+    mood = models.IntegerField(choices=MOOD_CHOICES)
+    hue = models.CharField(max_length=7, blank=True)
 
     emotion_words = models.CharField(
         max_length=255,
@@ -47,7 +46,6 @@ class Entry(models.Model):
     )
 
     notes = models.TextField(blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -63,9 +61,7 @@ class Entry(models.Model):
 
 
 class EntryRevision(models.Model):
-    """
-    Snapshot of an Entry before it was edited.
-    """
+    """Snapshot of an Entry before it was edited."""
 
     entry = models.ForeignKey(
         Entry,
@@ -88,7 +84,6 @@ class EntryRevision(models.Model):
     )
 
     notes = models.TextField(blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -100,30 +95,24 @@ class EntryRevision(models.Model):
         return f"Revision of Entry {self.entry.id} at {self.created_at:%Y-%m-%d %H:%M}"
 
 
-# ------------------------------------------------------------
-# Admin-safe models (no private entries)
-# ------------------------------------------------------------
-
 class SiteAnnouncement(models.Model):
     """
     Short site-wide announcements for users (e.g. maintenance, new features).
     Safe: contains no private user content.
     """
-
     title = models.CharField(max_length=120)
     message = models.TextField(max_length=600)
 
     is_active = models.BooleanField(default=True)
 
-    # Optional scheduling
     starts_at = models.DateTimeField(blank=True, null=True)
     ends_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
     def is_live(self):
-        """True if active and within the schedule window (if set)."""
         if not self.is_active:
             return False
         now = timezone.now()
@@ -139,7 +128,7 @@ class SiteAnnouncement(models.Model):
 
 class SupportTicket(models.Model):
     """
-    Basic support inbox for users to contact you.
+    Basic support inbox for users to contact admin.
     Safe: should not contain entries; just support messages.
     """
 
