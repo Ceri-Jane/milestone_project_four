@@ -137,7 +137,7 @@ def billing_details(request):
     try:
         portal_session = stripe.billing_portal.Session.create(
             customer=stripe_customer_id,
-            return_url=request.build_absolute_uri(reverse("dashboard")),
+            return_url=request.build_absolute_uri(reverse("profile")),
         )
         return redirect(portal_session.url)
 
