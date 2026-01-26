@@ -167,6 +167,7 @@ SITE_ID = 1
 # -----------------------------
 
 LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_URL = "/accounts/login/"
 LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ADMIN_LOGOUT_REDIRECT_URL = "/admin/login/"
