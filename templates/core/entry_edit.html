@@ -43,7 +43,7 @@
                     min="0"
                     max="100"
                     class="hue-slider"
-                    value="{{ hue_value }}"
+                    value="{{ hue_value|default:0 }}"
                 >
             </div>
             <p class="form-section-hint">
@@ -57,7 +57,7 @@
                 name="hue_notes"
                 rows="3"
                 aria-describedby="hue-notes-hint"
-            >{{ hue_notes_value }}</textarea>
+            >{{ existing_hue_notes }}</textarea>
             <p class="form-section-hint" id="hue-notes-hint">
                 Describe the feelings behind choosing this hue (optional).
             </p>
@@ -107,7 +107,7 @@
                 rows="4"
                 class="notes-box"
                 aria-describedby="notes-hint"
-            >{{ notes_value }}</textarea>
+            >{{ existing_notes }}</textarea>
             <p class="form-section-hint" id="notes-hint">
                 Add anything else you want to save for today (optional).
             </p>

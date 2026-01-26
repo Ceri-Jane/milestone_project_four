@@ -65,7 +65,6 @@ def contact(request):
 @login_required
 def new_entry(request):
     """Create a new entry."""
-    # Free plan gating: view-only after FREE_ENTRY_LIMIT entries
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -78,27 +77,26 @@ def new_entry(request):
     emotions = EmotionWord.objects.all()
 
     if request.method == "POST":
-        # Form values
         hue = request.POST.get("hue")
         hue_notes = request.POST.get("hue_notes")
         notes = request.POST.get("notes")
         selected_emotions = request.POST.getlist("emotion_words")
 
-        # Map hue slider (0–100) to mood score (1–5)
-        mood = None
-        hue_value = None
-        if hue:
+        # Defaults so Entry.mood never ends up None
+        mood = 3
+        hue_value = 50
+
+        if hue is not None:
             try:
                 hue_value = int(hue)
+                hue_value = max(0, min(100, hue_value))
                 mood = max(1, min(5, (hue_value // 20) + 1))
-            except ValueError:
-                mood = None
-                hue_value = None
+            except (TypeError, ValueError):
+                # Leave defaults (neutral)
+                pass
 
-        # Store emotion words as a simple CSV string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
-        # Combine hue meaning + notes into one notes field
         combined_notes = ""
         if hue_notes:
             combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
@@ -107,7 +105,7 @@ def new_entry(request):
 
         Entry.objects.create(
             user=request.user,
-            hue=hue_value,
+            hue=str(hue_value) if hue_value is not None else "",
             mood=mood,
             emotion_words=emotion_words,
             notes=combined_notes,
@@ -131,12 +129,10 @@ def my_entries(request):
     """List entries grouped by date, with optional date filter."""
     user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
 
-    # Optional ?date=YYYY-MM-DD filter
     search_date = request.GET.get("date")
     if search_date:
         user_entries = user_entries.filter(created_at__date=search_date)
 
-    # Group entries by date for accordion display
     grouped_entries = {}
     for entry in user_entries:
         entry.has_revisions = entry.revisions.exists()
@@ -164,7 +160,6 @@ def dashboard(request):
     """Dashboard hub page."""
     subscription = Subscription.objects.filter(user=request.user).first()
 
-    # Active announcements filtered by live window
     active_announcements = SiteAnnouncement.objects.filter(is_active=True).order_by(
         "-updated_at"
     )
@@ -211,7 +206,6 @@ def edit_entry(request, entry_id):
     """Edit an entry and store a revision snapshot."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
-    # Free plan gating
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -228,15 +222,19 @@ def edit_entry(request, entry_id):
         notes = request.POST.get("notes")
         selected_emotions = request.POST.getlist("emotion_words")
 
-        mood = None
-        hue_value = None
-        if hue:
+        # Start with current values, only overwrite if the POST value is valid
+        mood = entry.mood
+        hue_value = entry.hue
+
+        if hue is not None:
             try:
-                hue_value = int(hue)
-                mood = max(1, min(5, (hue_value // 20) + 1))
-            except ValueError:
-                mood = None
-                hue_value = None
+                hv = int(hue)
+                hv = max(0, min(100, hv))
+                hue_value = hv
+                mood = max(1, min(5, (hv // 20) + 1))
+            except (TypeError, ValueError):
+                # Keep existing values if the slider value is invalid
+                pass
 
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
@@ -246,16 +244,16 @@ def edit_entry(request, entry_id):
         if notes:
             combined_notes += notes.strip()
 
-        # Save previous values before overwrite
+        # Save previous values before overwrite (fields match EntryRevision model)
         EntryRevision.objects.create(
             entry=entry,
-            previous_hue=entry.hue,
-            previous_mood=entry.mood,
-            previous_emotion_words=entry.emotion_words,
-            previous_notes=entry.notes,
+            hue=entry.hue,
+            mood=entry.mood,
+            emotion_words=entry.emotion_words,
+            notes=entry.notes,
         )
 
-        entry.hue = hue_value
+        entry.hue = str(hue_value) if hue_value is not None else ""
         entry.mood = mood
         entry.emotion_words = emotion_words
         entry.notes = combined_notes
@@ -264,9 +262,9 @@ def edit_entry(request, entry_id):
         messages.success(request, "Entry updated.")
         return redirect("view_entry", entry_id=entry.id)
 
-    # Prefill fields from combined notes format
     existing_hue_notes = ""
     existing_notes = entry.notes or ""
+
     if existing_notes.startswith("Hue meaning:"):
         try:
             parts = existing_notes.split("\n\n", 1)
@@ -283,13 +281,20 @@ def edit_entry(request, entry_id):
 
     return render(
         request,
-        "core/edit_entry.html",
+        "core/entry_edit.html",
         {
             "entry": entry,
             "emotions": emotions,
+            "selected_emotions": selected_emotions,
+
+            # Matches your template variables
+            "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
+            "hue_notes_value": existing_hue_notes,
+            "notes_value": existing_notes,
+
+            # Also keep these for any older template versions you still have around
             "existing_hue_notes": existing_hue_notes,
             "existing_notes": existing_notes,
-            "selected_emotions": selected_emotions,
         },
     )
 
@@ -299,7 +304,6 @@ def delete_entry(request, entry_id):
     """Delete an entry (POST only)."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
-    # Free plan gating
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -333,7 +337,6 @@ def supportive_phrase(request):
     phrase = None
     author = ""
 
-    # External API: {"affirmation": "..."}
     try:
         r = requests.get("https://www.affirmations.dev/", timeout=5)
         if r.status_code == 200:
@@ -345,19 +348,16 @@ def supportive_phrase(request):
         phrase = None
         author = ""
 
-    # Fallback if API fails/returns nothing
     if not phrase:
         phrase = random.choice(fallback_phrases)
         author = ""
 
     response = JsonResponse(
         {
-            "quote": phrase,   # backwards compatibility
+            "quote": phrase,
             "phrase": phrase,
             "author": author,
         }
     )
-
-    # Prevent caching for repeated fetches
     response["Cache-Control"] = "no-store"
     return response
