@@ -6,7 +6,7 @@
     <div class="form-card dashboard-card">
 
         {# -------------------------------------------------- #}
-        {# SITE ANNOUNCEMENTS (from admin)                     #}
+        {# SITE ANNOUNCEMENTS (from admin)                    #}
         {# -------------------------------------------------- #}
         {% if announcements %}
             <div class="mb-3">
@@ -36,9 +36,19 @@
                 Capture how you’re feeling right now in a quick, low-pressure note.
             </p>
 
-            <a href="{% url 'new_entry' %}" class="select-btn">
-                Add New Entry
-            </a>
+            {% if is_free_locked %}
+                <button class="select-btn is-disabled" disabled>
+                    Entry limit reached
+                </button>
+                <p class="form-info small-text">
+                    You’ve reached {{ free_entry_limit }} entries on the free plan.
+                    You can still view your entries, but creating and editing is paused.
+                </p>
+            {% else %}
+                <a href="{% url 'new_entry' %}" class="select-btn">
+                    Add New Entry
+                </a>
+            {% endif %}
         </div>
 
         <!-- Your entries -->
