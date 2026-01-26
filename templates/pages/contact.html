@@ -19,24 +19,28 @@
 <div class="form-wrapper">
   <div class="form-card dashboard-card">
 
+    <!-- Page heading -->
     <h1 class="form-title">Contact</h1>
 
+    <!-- Form usage info -->
     <p class="form-info">
       Use this form to contact the Regulate admin team about your account,
       site feedback, or suggestions for improvements.
     </p>
 
+    <!-- Not a crisis channel -->
     <p class="form-info">
       This form is <strong>not monitored continuously</strong> and is not intended
       for mental health support.
       If you need urgent help, please visit the
-      <a href="{% url 'support' %}"
-      class="custom-link">Crisis & Support</a> page.
+      <a href="{% url 'support' %}" class="custom-link">Crisis & Support</a> page.
     </p>
 
-    <form method="post">
+    <!-- Support ticket form -->
+    <form method="post" aria-label="Contact form">
       {% csrf_token %}
 
+      <!-- Guest users: collect email -->
       {% if not request.user.is_authenticated %}
         <label for="email">Email</label>
         <input
@@ -44,10 +48,12 @@
           name="email"
           id="email"
           class="search-input"
+          autocomplete="email"
           required
         >
       {% endif %}
 
+      <!-- Subject -->
       <label for="subject">Subject</label>
       <input
         type="text"
@@ -58,6 +64,7 @@
         required
       >
 
+      <!-- Message -->
       <label for="message">Message</label>
       <textarea
         name="message"
@@ -68,6 +75,7 @@
         required
       ></textarea>
 
+      <!-- Submit -->
       <button class="select-btn mt-3" type="submit">
         Send message
       </button>

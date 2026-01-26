@@ -15,17 +15,19 @@
 <title>Regulate | Trial Started</title>
 {% endblock %}
 
-
 {% block content %}
 <div class="form-wrapper">
     <div class="form-card">
 
+        <!-- Page heading -->
         <h1 class="form-title">Regulate+ trial started</h1>
 
+        <!-- Trial confirmation message -->
         <p class="form-info">
             Thanks for starting your <strong>5-day free trial</strong> of Regulate+.
         </p>
 
+        <!-- Trial details -->
         <div class="entry-card">
             <p>
                 Your subscription is now in a <strong>trial period</strong>. Stripe will only
@@ -36,6 +38,7 @@
                 You’ll receive an email receipt/confirmation from Stripe with the details.
             </p>
 
+            <!-- Trial feature list -->
             <p>
                 During your trial you can:
             </p>
@@ -46,6 +49,7 @@
             </ul>
         </div>
 
+        <!-- Return to profile -->
         <div class="entry-actions justify-content-center">
             <a href="{% url 'profile' %}">
                 Go to your profile

@@ -1,6 +1,10 @@
 from django.apps import AppConfig
 
 
+# Core application configuration
 class CoreConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'core'
+    # Default primary key field type
+    default_auto_field = "django.db.models.BigAutoField"
+
+    # Application label
+    name = "core"

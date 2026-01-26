@@ -11,7 +11,7 @@
   --body-background-color: #c2e4d2;
   --video-overlay-color: #ffffff63;
   --primary-color: #2a5e4f;
-  --seconday-color: #ffffff;
+  --secondary-color: #ffffff;
   --secondary-color-transparent: #ffffff8c;
   --error-color: #ff0000;
 }
@@ -49,7 +49,7 @@
   height: 20px;
   border-radius: 50%;
   background: var(--primary-color);
-  border: 2px solid var(--seconday-color);
+  border: 2px solid var(--secondary-color);
   cursor: pointer;
   margin-top: -6px;
 }
@@ -67,7 +67,7 @@
   width: 20px;
   height: 20px;
   background: var(--primary-color);
-  border: 2px solid var(--seconday-color);
+  border: 2px solid var(--secondary-color);
   border-radius: 50%;
   cursor: pointer;
 }
@@ -96,7 +96,7 @@
   overflow-y: auto;
   border: 1px solid var(--primary-color);
   border-radius: 8px;
-  background: var(--seconday-color);
+  background: var(--secondary-color);
   padding: 0;
 }
 

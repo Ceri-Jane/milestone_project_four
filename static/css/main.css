@@ -7,7 +7,7 @@
   --body-background-color: #c2e4d2;
   --video-overlay-color: #ffffff63;
   --primary-color: #2a5e4f;
-  --seconday-color: #ffffff;
+  --secondary-color: #ffffff;
   --secondary-color-transparent: #ffffff8c;
   --error-color: #ff0000;
 }
@@ -167,7 +167,7 @@ main {
   padding: 0.8rem;
   border-radius: 8px;
   background-color: var(--primary-color);
-  color: var(--seconday-color);
+  color: var(--secondary-color);
   font-weight: bold;
   border: none;
   cursor: pointer;
@@ -236,12 +236,12 @@ main {
 
 .regulate-btn:hover {
   background-color: var(--primary-color);
-  color: var(--seconday-color);
+  color: var(--secondary-color);
   border-color: var(--primary-color);
 }
 
 .regulate-dropdown {
-  background: var(--seconday-color);
+  background: var(--secondary-color);
   border: 1px solid var(--primary-color);
 }
 
@@ -251,7 +251,7 @@ main {
 
 .regulate-dropdown .dropdown-item:hover {
   background-color: var(--primary-color);
-  color: var(--seconday-color)
+  color: var(--secondary-color)
 }
 
 
@@ -350,7 +350,7 @@ main {
   background: var(--primary-color);
   backdrop-filter: blur(6px);
   text-align: center;
-  color: var(--seconday-color);
+  color: var(--secondary-color);
 }
 
 .reg-footer-inner {
@@ -428,7 +428,7 @@ main {
 
 /* Inside the accordion */
 .accordion-body {
-  background: var(--seconday-color);
+  background: var(--secondary-color);
   padding: 1.2rem 1.4rem;
   border-top: 1px solid rgba(0,0,0,0.08);
   font-family: var(--primary-font);
@@ -555,7 +555,7 @@ main {
 .supportive-quote-box {
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
-  background: var(--seconday-color);
+  background: var(--secondary-color);
   border: 4px solid var(--primary-color);
   padding: 0.9rem 1rem;
   border-radius: 10px;
@@ -587,7 +587,7 @@ main {
   border-radius: 8px;
   font-family: var(--primary-font);
   font-size: 0.95rem;
-  background: var(--seconday-color);
+  background: var(--secondary-color);
   color: var(--primary-color);
 }
 

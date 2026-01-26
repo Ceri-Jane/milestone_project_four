@@ -10,17 +10,21 @@ from django.urls import reverse
 
 from .models import Subscription
 
+# Stripe API configuration
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+# Module logger
 logger = logging.getLogger(__name__)
 
 
+# Convert Stripe timestamps to timezone-aware datetimes
 def _to_dt(ts):
     if not ts:
         return None
     return datetime.fromtimestamp(ts, tz=dt_timezone.utc)
 
 
+# Create or update a user's subscription record from Stripe data
 def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     sub_id = stripe_sub.get("id")
     cust_id = stripe_customer_id or stripe_sub.get("customer")
@@ -29,6 +33,7 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     current_period_end = _to_dt(stripe_sub.get("current_period_end"))
     trial_end = _to_dt(stripe_sub.get("trial_end"))
 
+    # Ensure one subscription record per user
     obj, _ = Subscription.objects.get_or_create(user=user)
 
     obj.stripe_subscription_id = sub_id
@@ -37,6 +42,7 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
 
+    # Mark trial usage once a trial has occurred
     if trial_end or status == "trialing":
         obj.has_had_trial = True
 
@@ -44,14 +50,17 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     return obj
 
 
+# Start free trial checkout flow
 @login_required
 def start_trial(request):
     sub = Subscription.objects.filter(user=request.user).first()
 
+    # Prevent duplicate active plans
     if sub and sub.status in ["trialing", "active"]:
         messages.info(request, "You already have an active plan.")
         return redirect("dashboard")
 
+    # Enforce one-time trial usage
     if sub and sub.has_had_trial:
         messages.info(request, "You can only use the free trial once per user.")
         return redirect("dashboard")
@@ -90,10 +99,12 @@ def start_trial(request):
         return redirect("dashboard")
 
 
+# Start paid subscription checkout (no trial)
 @login_required
 def start_subscription(request):
     sub = Subscription.objects.filter(user=request.user).first()
 
+    # Prevent duplicate active plans
     if sub and sub.status in ["trialing", "active"]:
         messages.info(request, "You already have an active plan.")
         return redirect("dashboard")
@@ -131,11 +142,13 @@ def start_subscription(request):
         return redirect("dashboard")
 
 
+# Redirect user to Stripe billing portal
 @login_required
 def billing_details(request):
     sub = Subscription.objects.filter(user=request.user).first()
     stripe_customer_id = getattr(sub, "stripe_customer_id", None)
 
+    # No Stripe customer yet
     if not stripe_customer_id:
         messages.error(
             request,
@@ -156,10 +169,12 @@ def billing_details(request):
         return redirect("dashboard")
 
 
+# Handle successful checkout return
 @login_required
 def trial_success(request):
     session_id = request.GET.get("session_id")
 
+    # Sync subscription data after checkout
     if session_id:
         try:
             session = stripe.checkout.Session.retrieve(session_id)
@@ -180,6 +195,7 @@ def trial_success(request):
     return render(request, "billing/trial_success.html")
 
 
+# Trial cancellation landing page
 @login_required
 def trial_cancelled(request):
     return render(request, "billing/trial_cancelled.html")

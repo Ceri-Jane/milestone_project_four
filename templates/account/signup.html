@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {# Page-specific SEO overrides: custom title + meta tags #}
@@ -16,63 +15,77 @@
 <title>Regulate | Sign up</title>
 {% endblock %}
 
-
 {% block content %}
 
 <div class="form-wrapper">
     <div class="form-card">
 
+        <!-- Page heading -->
         <h1 class="form-title">Create Your Account</h1>
 
+        <!-- Account info / plan notice -->
         <p class="form-info text-center mt-2">
             New accounts start on the free basic plan with limited entries.
             You can upgrade with a 5-day free trial from your profile.
         </p>
 
+        <!-- Sign-up form -->
         <form method="post">
             {% csrf_token %}
 
+            <!-- Username input -->
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required>
 
+            <!-- Email input -->
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
 
-            <!-- Password 1 -->
+            <!-- Password input -->
             <label for="{{ form.password1.id_for_label }}">Password</label>
             <div class="password-field">
                 {{ form.password1 }}
-                <!-- Eye icon toggle -->
-                <button type="button"
-                class="toggle-password-btn"
-                data-target="{{ form.password1.id_for_label }}"
-                aria-label="Show password">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                    <circle cx="12" cy="12" r="2.5"/>
-                </svg>
-            </button>
-        </div>
 
-            <!-- Password 2 -->       
+                <!-- Password visibility toggle -->
+                <button
+                    type="button"
+                    class="toggle-password-btn"
+                    data-target="{{ form.password1.id_for_label }}"
+                    aria-label="Show password">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                        <circle cx="12" cy="12" r="2.5"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Password confirmation -->
             <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
             <div class="password-field">
                 {{ form.password2 }}
-                <!-- Eye icon toggle -->
-                <button type="button"
-                class="toggle-password-btn"
-                data-target="{{ form.password2.id_for_label }}"
-                aria-label="Show password">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                    <circle cx="12" cy="12" r="2.5"/>
-                </svg>
-            </button>
-        </div>
 
+                <!-- Password visibility toggle -->
+                <button
+                    type="button"
+                    class="toggle-password-btn"
+                    data-target="{{ form.password2.id_for_label }}"
+                    aria-label="Show password">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24"
+                         aria-hidden="true">
+                        <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                        <circle cx="12" cy="12" r="2.5"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Submit registration -->
             <button type="submit" class="select-btn">Sign Up</button>
         </form>
 
+        <!-- Existing account link -->
         <div class="auth-extra">
             <p>Already have an account? <a href="/accounts/login/">Sign in</a></p>
         </div>

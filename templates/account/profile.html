@@ -15,20 +15,21 @@
 <title>Regulate | Profile</title>
 {% endblock %}
 
-
 {% block content %}
 <div class="form-wrapper">
     <div class="form-card dashboard-card">
 
+        <!-- Page heading -->
         <h1 class="form-title">Your Profile</h1>
 
+        <!-- Page description -->
         <p class="form-info">
             Manage your Regulate account details in one place.
         </p>
 
         <hr>
 
-        <!-- Change Username -->
+        <!-- Username management -->
         <div class="entry-card">
             <p><strong>Your Username:</strong> {{ request.user.username }}</p>
             <p>Update the name shown on your Regulate account.</p>
@@ -38,7 +39,7 @@
             </a>
         </div>
 
-        <!-- Manage Email -->
+        <!-- Email management -->
         <div class="entry-card">
             <p><strong>Your Email:</strong> {{ request.user.email }}</p>
             <p>Update the email address linked to your account.</p>
@@ -48,7 +49,7 @@
             </a>
         </div>
 
-        <!-- Change Password -->
+        <!-- Password management -->
         <div class="entry-card">
             <p><strong>Your Password</strong></p>
             <p>Keep your account secure with a strong password.</p>
@@ -58,13 +59,15 @@
             </a>
         </div>
 
-        <!-- Regulate+ / Billing -->
+        <!-- Subscription and billing section -->
         <div class="entry-card regulate-plus-card">
             <p><strong>Regulate+ & Billing</strong></p>
 
             {% if subscription %}
 
+                <!-- Active free trial -->
                 {% if subscription.status == "trialing" %}
+
                     {% if subscription.cancel_at or subscription.cancel_at_period_end %}
                         <p>
                             <strong>Your free trial is active, but it’s set to end.</strong>
@@ -84,12 +87,14 @@
                         </p>
                     {% endif %}
 
+                    <!-- Stripe billing portal -->
                     <div class="text-center mt-3">
                         <a href="{% url 'billing_details' %}" class="select-btn">
                             Manage billing in Stripe
                         </a>
                     </div>
 
+                <!-- Active paid subscription -->
                 {% elif subscription.status == "active" %}
                     <p>
                         <strong>Your Regulate+ subscription is active.</strong>
@@ -108,12 +113,14 @@
                         </p>
                     {% endif %}
 
+                    <!-- Stripe billing portal -->
                     <div class="text-center mt-3">
                         <a href="{% url 'billing_details' %}" class="select-btn">
                             Manage billing in Stripe
                         </a>
                     </div>
 
+                <!-- Subscription inactive -->
                 {% else %}
                     <p>Your Regulate+ plan isn’t currently active.</p>
                     <p class="form-info">
@@ -132,6 +139,7 @@
                 {% endif %}
 
             {% else %}
+                <!-- No subscription -->
                 <p>
                     Try Regulate+ free for 5 days. You’ll enter card details on a secure Stripe checkout page,
                     but <strong>you won’t be charged until the trial ends</strong>. Cancel any time before then.
@@ -149,7 +157,7 @@
 
         <hr>
 
-        <!-- Logout -->
+        <!-- Logout action -->
         <div class="entry-card">
             <p><strong>Log Out</strong></p>
             <p>Log out of your Regulate account safely.</p>

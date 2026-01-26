@@ -21,7 +21,7 @@
     <title>Regulate | Home</title>
     {% endblock %}
      
-    
+
     <!-- Favicons for multiple device types -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
@@ -48,7 +48,7 @@
 
             <!-- SUCCESS / ERROR MESSAGE DISPLAY -->
             {% if messages %}
-                <div class="messages mt-3">
+                <div class="messages mt-3" aria-live="polite">
                     {% for message in messages %}
                         <div class="alert alert-success text-center mx-auto" role="alert" style="max-width: 800px;">
                             {{ message }}

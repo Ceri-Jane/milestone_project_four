@@ -5,8 +5,8 @@ from django.utils import timezone
 
 class EmotionWord(models.Model):
     """
-    Stores a single emotion word used as an option
-    in the Emotion Words checkbox list on the entry form.
+    Single emotion word used as an option
+    in the entry emotion selector.
     """
     word = models.CharField(max_length=50, unique=True)
 
@@ -20,7 +20,7 @@ class EmotionWord(models.Model):
 
 
 class Entry(models.Model):
-    """Single emotional entry for a logged-in user."""
+    """Single emotional entry created by a user."""
 
     MOOD_CHOICES = [
         (1, "Very low"),
@@ -61,7 +61,7 @@ class Entry(models.Model):
 
 
 class EntryRevision(models.Model):
-    """Snapshot of an Entry before it was edited."""
+    """Snapshot of an entry before it was edited."""
 
     entry = models.ForeignKey(
         Entry,
@@ -80,7 +80,7 @@ class EntryRevision(models.Model):
     emotion_words = models.CharField(
         max_length=255,
         blank=True,
-        help_text="Comma-separated emotion words at the time of this revision.",
+        help_text="Comma-separated emotion words at time of edit.",
     )
 
     notes = models.TextField(blank=True)
@@ -97,8 +97,8 @@ class EntryRevision(models.Model):
 
 class SiteAnnouncement(models.Model):
     """
-    Short site-wide announcements for users (e.g. maintenance, new features).
-    Safe: contains no private user content.
+    Short site-wide announcements (e.g. maintenance or updates).
+    Contains no private user content.
     """
     title = models.CharField(max_length=120)
     message = models.TextField(max_length=600)
@@ -115,11 +115,14 @@ class SiteAnnouncement(models.Model):
     def is_live(self):
         if not self.is_active:
             return False
+
         now = timezone.now()
+
         if self.starts_at and now < self.starts_at:
             return False
         if self.ends_at and now > self.ends_at:
             return False
+
         return True
 
     def __str__(self):
@@ -128,8 +131,8 @@ class SiteAnnouncement(models.Model):
 
 class SupportTicket(models.Model):
     """
-    Basic support inbox for users to contact admin.
-    Safe: should not contain entries; just support messages.
+    Simple support inbox for user contact.
+    Intended for account or site queries only.
     """
 
     STATUS_CHOICES = [
@@ -144,14 +147,18 @@ class SupportTicket(models.Model):
         null=True,
         blank=True,
         related_name="support_tickets",
-        help_text="Optional: set if user was logged in.",
+        help_text="Set if the user was logged in.",
     )
 
-    email = models.EmailField(blank=True, help_text="If user is logged out.")
+    email = models.EmailField(blank=True, help_text="Used if the user is logged out.")
     subject = models.CharField(max_length=140)
     message = models.TextField(max_length=3000)
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="new",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

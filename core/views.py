@@ -19,12 +19,12 @@ from .limits import is_free_locked, user_entry_count, FREE_ENTRY_LIMIT
 
 
 def home(request):
-    """Landing page."""
+    """Home page."""
     return render(request, "core/home.html")
 
 
 def faq(request):
-    """Static FAQ page."""
+    """FAQ page."""
     try:
         return render(request, "pages/faq.html")
     except Exception:
@@ -32,7 +32,7 @@ def faq(request):
 
 
 def support(request):
-    """Static crisis/support info page."""
+    """Crisis/support page."""
     try:
         return render(request, "pages/support.html")
     except Exception:
@@ -41,7 +41,7 @@ def support(request):
 
 @login_required
 def contact(request):
-    """Simple contact form that creates a SupportTicket."""
+    """Create a SupportTicket from the contact form."""
     if request.method == "POST":
         subject = request.POST.get("subject", "").strip()
         message = request.POST.get("message", "").strip()
@@ -64,15 +64,8 @@ def contact(request):
 
 @login_required
 def new_entry(request):
-    """
-    Create a new entry.
-
-    Notes:
-    - Hue is stored as 0–100 (slider), then mapped to a simple 1–5 mood score.
-    - Emotion words are stored as a comma-separated string for now (simple + fits CI scope).
-    - Hue meaning + notes are combined into one text field so the UI stays low-friction.
-    """
-    # Free plan gating: 10 entries total, then view-only
+    """Create a new entry."""
+    # Free plan gating: view-only after FREE_ENTRY_LIMIT entries
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -82,14 +75,16 @@ def new_entry(request):
         return redirect("my_entries")
 
     timestamp = timezone.localtime().strftime("%A %d %B %Y • %H:%M")
-    emotions = EmotionWord.objects.all()  # ordered via model Meta
+    emotions = EmotionWord.objects.all()
 
     if request.method == "POST":
-        hue = request.POST.get("hue")  # 0–100
+        # Form values
+        hue = request.POST.get("hue")
         hue_notes = request.POST.get("hue_notes")
         notes = request.POST.get("notes")
         selected_emotions = request.POST.getlist("emotion_words")
 
+        # Map hue slider (0–100) to mood score (1–5)
         mood = None
         hue_value = None
         if hue:
@@ -100,10 +95,10 @@ def new_entry(request):
                 mood = None
                 hue_value = None
 
-        # Store selected emotions as comma-separated string
+        # Store emotion words as a simple CSV string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
-        # Combine hue meaning + notes into one text field
+        # Combine hue meaning + notes into one notes field
         combined_notes = ""
         if hue_notes:
             combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
@@ -133,19 +128,15 @@ def new_entry(request):
 
 @login_required
 def my_entries(request):
-    """
-    User entries page (grouped by date, not a calendar).
-
-    UX intent:
-    - Avoid “empty days” and pressure to keep streaks.
-    - Optional date filter via ?date=YYYY-MM-DD.
-    """
+    """List entries grouped by date, with optional date filter."""
     user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
 
+    # Optional ?date=YYYY-MM-DD filter
     search_date = request.GET.get("date")
     if search_date:
         user_entries = user_entries.filter(created_at__date=search_date)
 
+    # Group entries by date for accordion display
     grouped_entries = {}
     for entry in user_entries:
         entry.has_revisions = entry.revisions.exists()
@@ -173,7 +164,7 @@ def dashboard(request):
     """Dashboard hub page."""
     subscription = Subscription.objects.filter(user=request.user).first()
 
-    # Pull active announcements then apply "live window" logic in Python
+    # Active announcements filtered by live window
     active_announcements = SiteAnnouncement.objects.filter(is_active=True).order_by(
         "-updated_at"
     )
@@ -197,7 +188,7 @@ def dashboard(request):
 
 @login_required
 def view_entry(request, entry_id):
-    """Read-only entry view + revision history. Ownership is enforced."""
+    """Entry detail view with revision history."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     revisions = EntryRevision.objects.filter(entry=entry).order_by("-created_at")
     last_updated = revisions[0].created_at if revisions else None
@@ -217,15 +208,10 @@ def view_entry(request, entry_id):
 
 @login_required
 def edit_entry(request, entry_id):
-    """
-    Edit an entry.
-
-    Dev note:
-    - Before saving changes, snapshot the previous values into EntryRevision.
-      This keeps the UI simple but still gives a clear audit trail of edits.
-    """
+    """Edit an entry and store a revision snapshot."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
+    # Free plan gating
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -260,7 +246,7 @@ def edit_entry(request, entry_id):
         if notes:
             combined_notes += notes.strip()
 
-        # Snapshot existing values before overwriting
+        # Save previous values before overwrite
         EntryRevision.objects.create(
             entry=entry,
             previous_hue=entry.hue,
@@ -278,7 +264,7 @@ def edit_entry(request, entry_id):
         messages.success(request, "Entry updated.")
         return redirect("view_entry", entry_id=entry.id)
 
-    # Prefill fields
+    # Prefill fields from combined notes format
     existing_hue_notes = ""
     existing_notes = entry.notes or ""
     if existing_notes.startswith("Hue meaning:"):
@@ -313,6 +299,7 @@ def delete_entry(request, entry_id):
     """Delete an entry (POST only)."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
+    # Free plan gating
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -332,12 +319,7 @@ def delete_entry(request, entry_id):
 
 @login_required
 def supportive_phrase(request):
-    """
-    Returns a supportive phrase for the UI.
-    - Intended for AJAX fetch from dashboard card/button.
-    - Uses an external API (primary) and falls back to a local list.
-    - Returns BOTH 'quote' and 'phrase' keys to support different front-end versions.
-    """
+    """Return a supportive phrase for the dashboard (AJAX)."""
     fallback_phrases = [
         "You’re allowed to take today slowly.",
         "Small steps count — even tiny ones.",
@@ -351,8 +333,7 @@ def supportive_phrase(request):
     phrase = None
     author = ""
 
-    # External API (no key required)
-    # Returns: {"affirmation": "..."}
+    # External API: {"affirmation": "..."}
     try:
         r = requests.get("https://www.affirmations.dev/", timeout=5)
         if r.status_code == 200:
@@ -364,18 +345,19 @@ def supportive_phrase(request):
         phrase = None
         author = ""
 
-    # Fallback if API fails / returns nothing
+    # Fallback if API fails/returns nothing
     if not phrase:
         phrase = random.choice(fallback_phrases)
         author = ""
 
     response = JsonResponse(
         {
-            "quote": phrase,   # for JS expecting data.quote
-            "phrase": phrase,  # for any code expecting data.phrase
+            "quote": phrase,   # backwards compatibility
+            "phrase": phrase,
             "author": author,
         }
     )
-    # Helps prevent “sticky” repeats caused by caching/CDN behaviour
+
+    # Prevent caching for repeated fetches
     response["Cache-Control"] = "no-store"
     return response

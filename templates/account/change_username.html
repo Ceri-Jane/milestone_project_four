@@ -15,20 +15,23 @@
 <title>Regulate | Change Username</title>
 {% endblock %}
 
-
 {% block content %}
 <div class="form-wrapper">
     <div class="form-card">
 
+        <!-- Page heading -->
         <h1 class="form-title">Change Username</h1>
 
+        <!-- Page description -->
         <p class="form-info">
             Update the name shown on your Regulate account.
         </p>
 
+        <!-- Username update form -->
         <form method="post">
             {% csrf_token %}
 
+            <!-- New username input -->
             <label for="id_username">New Username</label>
             <input
                 type="text"
@@ -38,11 +41,13 @@
                 required
             >
 
+            <!-- Submit update -->
             <button type="submit" class="select-btn">
                 Update Username
             </button>
         </form>
 
+        <!-- Back navigation -->
         <div class="auth-extra">
             <a href="{% url 'profile' %}">Back to Profile</a>
         </div>

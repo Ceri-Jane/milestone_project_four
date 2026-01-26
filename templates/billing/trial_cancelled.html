@@ -15,17 +15,19 @@
 <title>Regulate | Trial Cancelled</title>
 {% endblock %}
 
-
 {% block content %}
 <div class="form-wrapper">
     <div class="form-card">
 
+        <!-- Page heading -->
         <h1 class="form-title">Trial not started</h1>
 
+        <!-- Checkout cancellation message -->
         <p class="form-info">
             You left the Stripe checkout page before starting your Regulate+ trial.
         </p>
 
+        <!-- Trial information -->
         <div class="entry-card">
             <p>
                 That’s completely okay — you can keep using Regulate’s core features as
@@ -39,6 +41,7 @@
             </p>
         </div>
 
+        <!-- Return to profile -->
         <div class="entry-actions justify-content-center">
             <a href="{% url 'profile' %}">
                 Back to your profile

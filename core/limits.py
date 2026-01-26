@@ -1,15 +1,18 @@
-# core/limits.py
 from django.utils import timezone
 
 from billing.models import Subscription
 from .models import Entry
 
+
+# Free plan entry cap
 FREE_ENTRY_LIMIT = 10
+
+# Subscription statuses treated as paid access
 PAID_STATUSES = {"trialing", "active"}
 
 
 def get_subscription(user):
-    """Return the user's Subscription or None."""
+    """Return the user's Subscription, or None."""
     if not user or not user.is_authenticated:
         return None
     return Subscription.objects.filter(user=user).first()
@@ -17,8 +20,8 @@ def get_subscription(user):
 
 def has_paid_access(subscription):
     """
-    True if the user should be treated as Regulate+ (trialing/active),
-    or still within a paid/grace period window.
+    Return True if the user should be treated as Regulate+.
+    Includes active/trialing subscriptions and grace periods.
     """
     if not subscription:
         return False
@@ -26,7 +29,7 @@ def has_paid_access(subscription):
     if subscription.status in PAID_STATUSES:
         return True
 
-    # Grace period: canceled but current period not ended yet
+    # Grace period: canceled but access period not yet ended
     if (
         subscription.status == "canceled"
         and subscription.current_period_end
@@ -38,7 +41,7 @@ def has_paid_access(subscription):
 
 
 def user_entry_count(user):
-    """Total entries for this user."""
+    """Return total entry count for a user."""
     if not user or not user.is_authenticated:
         return 0
     return Entry.objects.filter(user=user).count()
@@ -46,12 +49,11 @@ def user_entry_count(user):
 
 def is_free_locked(user):
     """
-    Free users: once they have 10 entries total, they become view-only.
-    - can still view entries
-    - cannot create new entries
-    - cannot edit/delete entries
+    Return True if a free user has reached the entry limit.
+    Locked users can view entries but cannot create or modify them.
     """
     subscription = get_subscription(user)
+
     if has_paid_access(subscription):
         return False
 

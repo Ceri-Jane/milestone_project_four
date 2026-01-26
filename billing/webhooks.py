@@ -1,5 +1,3 @@
-# billing/webhooks.py
-
 from datetime import datetime, timezone as dt_timezone
 import logging
 
@@ -25,12 +23,8 @@ def _to_dt(ts):
 
 def _upsert_subscription(user, stripe_sub):
     """
-    Create/update the local Subscription record from a Stripe subscription payload.
-
-    Stripe can represent a scheduled end in two ways:
-      - cancel_at_period_end (bool)
-      - cancel_at (unix timestamp)
-    Cancelling during a trial often sets cancel_at but NOT cancel_at_period_end.
+    Upsert local Subscription from a Stripe subscription payload.
+    Handles cancel_at and cancel_at_period_end values from Stripe.
     """
     sub_id = stripe_sub.get("id")
     cust_id = stripe_sub.get("customer")
@@ -50,11 +44,11 @@ def _upsert_subscription(user, stripe_sub):
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
 
-    # Store the real Stripe values separately
+    # Persist Stripe cancellation fields
     obj.cancel_at_period_end = cancel_at_period_end
     obj.cancel_at = cancel_at
 
-    # Trial is only allowed once, so flag it as soon as we've seen a trial end timestamp.
+    # Mark trial used once trial_end is set
     if trial_end:
         obj.has_had_trial = True
 
@@ -63,12 +57,7 @@ def _upsert_subscription(user, stripe_sub):
 
 
 def _get_user_from_subscription_or_session(sub_obj=None, session_obj=None):
-    """
-    Try to find the user_id from:
-    - subscription.metadata.user_id
-    - session.subscription_data.metadata.user_id
-    - session.metadata.user_id
-    """
+    """Resolve user_id from Stripe metadata (subscription/session)"""
     user_id = None
 
     if sub_obj:

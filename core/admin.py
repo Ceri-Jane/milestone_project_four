@@ -67,10 +67,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
     # ---------- helpers ----------
 
     def _get_replied_status_value(self):
-        """
-        Pick the best 'replied/resolved/closed' status from the model field choices.
-        This keeps admin robust even if you rename statuses later.
-        """
+        """Resolve the best 'replied' status value from the status choices."""
         field = SupportTicket._meta.get_field("status")
         choices = [c[0] for c in (field.choices or []) if c and c[0] is not None]
 
@@ -82,7 +79,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
             if val in choices:
                 return val
 
-        # Fallback: last choice (often 'closed'/'resolved' in many enums)
+        # Fallback: last defined choice
         return choices[-1]
 
     def _set_replied(self, queryset):
@@ -97,7 +94,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
     def mark_replied_button(self, obj):
         target = self._get_replied_status_value()
 
-        # If we can't detect a valid target status, don't render a misleading button
+        # No valid target status -> no button
         if not target:
             return "—"
 
@@ -115,6 +112,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
             url,
         )
 
+    # Add per-row admin action URL
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -126,6 +124,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
+    # Admin view to mark a single ticket as replied
     def mark_replied_view(self, request, ticket_id):
         target = self._get_replied_status_value()
         if not target:
@@ -163,7 +162,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
             self.message_user(request, "No tickets were updated.", level=messages.INFO)
 
 
-# Lock down private user content in admin
+# Remove Entry/Revision from admin to avoid browsing user notes
 for model in (Entry, EntryRevision):
     try:
         admin.site.unregister(model)
