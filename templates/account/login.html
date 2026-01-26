@@ -2,8 +2,6 @@
 {% load static %}
 {% load account %}
 
-{# Page-specific SEO overrides: custom title + meta tags #}
-
 {% block meta_description %}
 <meta name="description" content="Log in to access your Regulate account and saved entries.">
 {% endblock %}
@@ -24,13 +22,30 @@
         <!-- Page heading -->
         <h1 class="form-title">Welcome Back</h1>
 
-        <!-- Login error message -->
+        {# -------------------------------- #}
+        {# LOGIN ERROR SUMMARY (ALERT)      #}
+        {# -------------------------------- #}
         {% if form.errors %}
-            <p class="form-error">Invalid login details.</p>
+            <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3"
+                 role="alert"
+                 style="max-width: 800px;">
+                <strong>Sign in failed.</strong>
+                <div class="mt-2">
+                    Please check your username/email and password, then try again.
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="mt-2">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endif %}
 
         <!-- Login form -->
-        <form method="post" action="{% url 'account_login' %}">
+        <form method="post" action="{% url 'account_login' %}" novalidate>
             {% csrf_token %}
 
             <!-- Username / email input -->
@@ -39,9 +54,14 @@
                 type="text"
                 id="id_login"
                 name="login"
-                value="{{ request.COOKIES.username|default:'' }}"
+                value="{{ form.data.login|default:'' }}"
                 required
             >
+            {% if form.login.errors %}
+                <div class="text-danger small mt-1">
+                    {{ form.login.errors|striptags }}
+                </div>
+            {% endif %}
 
             <!-- Password input -->
             <label for="id_password">Password</label>
@@ -67,11 +87,16 @@
                     </svg>
                 </button>
             </div>
+            {% if form.password.errors %}
+                <div class="text-danger small mt-1">
+                    {{ form.password.errors|striptags }}
+                </div>
+            {% endif %}
 
             <!-- Remember me option -->
             <label class="text-center">
                 Remember me
-                <input type="checkbox" name="remember" id="remember" checked>
+                <input type="checkbox" name="remember" id="remember" {% if form.data.remember or not form.data %}checked{% endif %}>
             </label>
 
             <!-- Submit login -->
