@@ -42,45 +42,60 @@
             </p>
 
             <label for="hue_notes">What does this hue mean today? (optional)</label>
-            <textarea id="hue_notes" name="hue_notes" rows="3"
-                placeholder="Describe the feelings behind choosing this hue..."></textarea>
-                
-                <!-- Emotion Words -->
-                <label for="emotion-search">Emotion Words (optional)</label>
-                <p class="form-section-hint">
-                    Start typing to filter the list, then tick any words that fit.
-                </p>
+            <textarea
+                id="hue_notes"
+                name="hue_notes"
+                rows="3"
+                aria-describedby="hue-notes-hint"
+            ></textarea>
+            <p class="form-section-hint" id="hue-notes-hint">
+                Describe the feelings behind choosing this hue (optional).
+            </p>
 
-                <div class="emotion-select-wrapper">
+            <!-- Emotion Words -->
+            <label for="emotion-search">Emotion Words (optional)</label>
+            <p class="form-section-hint" id="emotion-search-hint">
+                Start typing to filter the list, then tick any words that fit.
+            </p>
 
-                    <!-- Search bar -->
-                    <input 
-                        type="text"
-                        id="emotion-search"
-                        class="search-input"
-                        placeholder="Search emotions..."
-                    >
+            <div class="emotion-select-wrapper">
 
-                    <!-- Scrollable checkbox list -->
-                    <div class="emotion-list" id="emotion-list">
-                        {% for word in emotions %}
-                        <label class="emotion-item">
-                            <input type="checkbox" name="emotion_words" value="{{ word.word }}">
-                            <span>{{ word.word }}</span>
-                        </label>
-                        {% endfor %}
-                    </div>
+                <!-- Search bar -->
+                <input
+                    type="text"
+                    id="emotion-search"
+                    class="search-input"
+                    aria-describedby="emotion-search-hint"
+                >
 
-                    <p class="emotion-helper">
-                        Tick as many feelings as you like — this helps you spot patterns over time.<br>
-                        You don’t have to pick any words if you don’t want to.
-                    </p>
+                <!-- Scrollable checkbox list -->
+                <div class="emotion-list" id="emotion-list">
+                    {% for word in emotions %}
+                    <label class="emotion-item">
+                        <input type="checkbox" name="emotion_words" value="{{ word.word }}">
+                        <span>{{ word.word }}</span>
+                    </label>
+                    {% endfor %}
                 </div>
+
+                <p class="emotion-helper">
+                    Tick as many feelings as you like — this helps you spot patterns over time.<br>
+                    You don’t have to pick any words if you don’t want to.
+                </p>
+            </div>
 
             <!-- Notes for the Day -->
             <label for="notes">Notes for the day (optional)</label>
-            <textarea id="notes" name="notes" rows="4" class="notes-box"
-                placeholder="Write anything else you want to reflect on today..."></textarea>
+            <textarea
+                id="notes"
+                name="notes"
+                rows="4"
+                class="notes-box"
+                aria-describedby="notes-hint"
+            ></textarea>
+            <p class="form-section-hint" id="notes-hint">
+                Add anything else you want to save for today (optional).
+            </p>
 
             <!-- Save Entry Button -->
             <button type="submit" class="select-btn">Save Entry</button>

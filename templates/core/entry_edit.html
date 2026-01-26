@@ -15,7 +15,6 @@
 <title>Regulate | Edit Entry</title>
 {% endblock %}
 
-
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/entry.css' %}">
 
@@ -57,12 +56,15 @@
                 id="hue_notes"
                 name="hue_notes"
                 rows="3"
-                placeholder="Describe the feelings behind choosing this hue..."
+                aria-describedby="hue-notes-hint"
             >{{ hue_notes_value }}</textarea>
+            <p class="form-section-hint" id="hue-notes-hint">
+                Describe the feelings behind choosing this hue (optional).
+            </p>
 
             <!-- Emotion Words -->
             <label for="emotion-search">Emotion Words (optional)</label>
-            <p class="form-section-hint">
+            <p class="form-section-hint" id="emotion-search-hint">
                 Start typing to filter the list, then tick any words that fit.
             </p>
 
@@ -73,7 +75,7 @@
                     type="text"
                     id="emotion-search"
                     class="search-input"
-                    placeholder="Search emotions..."
+                    aria-describedby="emotion-search-hint"
                 >
 
                 <!-- Scrollable checkbox list -->
@@ -104,8 +106,11 @@
                 name="notes"
                 rows="4"
                 class="notes-box"
-                placeholder="Write anything else you want to reflect on today..."
+                aria-describedby="notes-hint"
             >{{ notes_value }}</textarea>
+            <p class="form-section-hint" id="notes-hint">
+                Add anything else you want to save for today (optional).
+            </p>
 
             <!-- Save changes button -->
             <button type="submit" class="select-btn">Save changes</button>
