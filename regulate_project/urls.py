@@ -3,8 +3,6 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 
-from core import views as core_views
-
 urlpatterns = [
     # Admin logout → send back to admin login screen
     path(
@@ -18,14 +16,7 @@ urlpatterns = [
     # Standard admin URLs
     path("admin/", admin.site.urls),
 
-    # Home / landing
-    path("", core_views.home, name="home"),
-
-    # Static info pages
-    path("faq/", core_views.faq, name="faq"),
-    path("support/", core_views.support, name="support"),
-
-    # Core app routes (entries, dashboard, etc.)
+    # Core app routes (home, entries, dashboard, etc.)
     path("", include("core.urls")),
 
     # Accounts/profile routes
