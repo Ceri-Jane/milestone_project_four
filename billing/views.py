@@ -1,4 +1,5 @@
 from datetime import datetime, timezone as dt_timezone
+import logging
 
 import stripe
 from django.conf import settings
@@ -10,6 +11,8 @@ from django.urls import reverse
 from .models import Subscription
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+logger = logging.getLogger(__name__)
 
 
 def _to_dt(ts):
@@ -78,9 +81,12 @@ def start_trial(request):
         )
         return redirect(session.url)
 
-    except Exception as e:
-        print("Stripe Checkout Error (trial):", e)
-        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
+    except Exception:
+        logger.exception("Stripe Checkout Error (trial)")
+        messages.error(
+            request,
+            "Sorry — we couldn’t open Stripe Checkout. Please try again."
+        )
         return redirect("dashboard")
 
 
@@ -116,9 +122,12 @@ def start_subscription(request):
         )
         return redirect(session.url)
 
-    except Exception as e:
-        print("Stripe Checkout Error (subscribe):", e)
-        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
+    except Exception:
+        logger.exception("Stripe Checkout Error (subscribe)")
+        messages.error(
+            request,
+            "Sorry — we couldn’t open Stripe Checkout. Please try again."
+        )
         return redirect("dashboard")
 
 
@@ -141,8 +150,8 @@ def billing_details(request):
         )
         return redirect(portal_session.url)
 
-    except Exception as e:
-        print("Stripe Portal Error:", e)
+    except Exception:
+        logger.exception("Stripe Portal Error")
         messages.error(request, "Couldn’t open billing page right now.")
         return redirect("dashboard")
 
@@ -159,10 +168,14 @@ def trial_success(request):
 
             if sub_id:
                 stripe_sub = stripe.Subscription.retrieve(sub_id)
-                _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
+                _upsert_subscription(
+                    request.user,
+                    stripe_sub,
+                    stripe_customer_id=cust_id
+                )
 
-        except Exception as e:
-            print("Stripe sync on success failed:", e)
+        except Exception:
+            logger.warning("Stripe sync on success failed", exc_info=True)
 
     return render(request, "billing/trial_success.html")
 

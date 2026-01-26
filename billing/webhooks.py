@@ -1,6 +1,7 @@
 # billing/webhooks.py
 
 from datetime import datetime, timezone as dt_timezone
+import logging
 
 import stripe
 from django.conf import settings
@@ -11,6 +12,8 @@ from django.contrib.auth import get_user_model
 from .models import Subscription
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+logger = logging.getLogger(__name__)
 
 
 def _to_dt(ts):
@@ -38,20 +41,6 @@ def _upsert_subscription(user, stripe_sub):
 
     cancel_at_period_end = bool(stripe_sub.get("cancel_at_period_end", False))
     cancel_at = _to_dt(stripe_sub.get("cancel_at"))
-
-    will_end = bool(cancel_at) or cancel_at_period_end
-
-    # Handy while testing / reading logs
-    print(
-        "UPSERT:",
-        status,
-        "cancel_at_period_end=",
-        cancel_at_period_end,
-        "cancel_at=",
-        cancel_at,
-        "will_end=",
-        will_end,
-    )
 
     obj, _created = Subscription.objects.get_or_create(user=user)
 
@@ -150,7 +139,8 @@ def stripe_webhook(request):
     event_type = event["type"]
     data_object = event["data"]["object"]
 
-    print("STRIPE EVENT:", event_type)
+    # Keeping this as INFO is useful in production troubleshooting.
+    logger.info("Stripe event received: %s", event_type)
 
     if event_type in ("customer.subscription.created", "customer.subscription.updated"):
         # 1) First try to match by Stripe IDs (most reliable for portal updates/cancellations)
@@ -192,7 +182,7 @@ def stripe_webhook(request):
                     if customer_id and not obj.stripe_customer_id:
                         obj.stripe_customer_id = customer_id
                         obj.save()
-            except Exception as e:
-                print("checkout.session.completed handler error:", e)
+            except Exception:
+                logger.exception("checkout.session.completed handler error")
 
     return HttpResponse(status=200)
