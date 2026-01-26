@@ -62,17 +62,27 @@ document.addEventListener("DOMContentLoaded", function () {
             quoteAuthor.innerText = "";
 
             try {
-                const response = await fetch("/api/supportive-phrase/");
+                const response = await fetch("/api/supportive-phrase/", {
+                    cache: "no-store",
+                    headers: { "Accept": "application/json" },
+                });
+
                 const data = await response.json();
 
-                quoteText.innerText =
-                    data.quote || "You are doing better than you think.";
+                // Support multiple possible response shapes
+                const phrase =
+                    data.quote ||
+                    data.phrase ||
+                    data.affirmation ||
+                    data.message ||
+                    data.text ||
+                    (typeof data === "string" ? data : null);
 
-                if (data.author) {
-                    quoteAuthor.innerText = "— " + data.author;
-                } else {
-                    quoteAuthor.innerText = "";
-                }
+                quoteText.innerText = phrase || "You are doing better than you think.";
+
+                // Author is optional
+                const author = data.author || data.by || data.source || "";
+                quoteAuthor.innerText = author ? "— " + author : "";
 
             } catch (error) {
                 quoteText.innerText =

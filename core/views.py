@@ -91,12 +91,14 @@ def new_entry(request):
         selected_emotions = request.POST.getlist("emotion_words")
 
         mood = None
+        hue_value = None
         if hue:
             try:
                 hue_value = int(hue)
                 mood = max(1, min(5, (hue_value // 20) + 1))
             except ValueError:
                 mood = None
+                hue_value = None
 
         # Store selected emotions as comma-separated string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
@@ -110,7 +112,7 @@ def new_entry(request):
 
         Entry.objects.create(
             user=request.user,
-            hue=hue_value if hue else None,
+            hue=hue_value,
             mood=mood,
             emotion_words=emotion_words,
             notes=combined_notes,
@@ -241,12 +243,14 @@ def edit_entry(request, entry_id):
         selected_emotions = request.POST.getlist("emotion_words")
 
         mood = None
+        hue_value = None
         if hue:
             try:
                 hue_value = int(hue)
                 mood = max(1, min(5, (hue_value // 20) + 1))
             except ValueError:
                 mood = None
+                hue_value = None
 
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
@@ -265,7 +269,7 @@ def edit_entry(request, entry_id):
             previous_notes=entry.notes,
         )
 
-        entry.hue = hue_value if hue else None
+        entry.hue = hue_value
         entry.mood = mood
         entry.emotion_words = emotion_words
         entry.notes = combined_notes
@@ -287,7 +291,9 @@ def edit_entry(request, entry_id):
 
     selected_emotions = []
     if entry.emotion_words:
-        selected_emotions = [e.strip() for e in entry.emotion_words.split(",") if e.strip()]
+        selected_emotions = [
+            e.strip() for e in entry.emotion_words.split(",") if e.strip()
+        ]
 
     return render(
         request,
@@ -329,9 +335,10 @@ def supportive_phrase(request):
     """
     Returns a supportive phrase for the UI.
     - Intended for AJAX fetch from dashboard card/button.
-    - Keeps tone gentle and optional.
+    - Uses an external API (primary) and falls back to a local list.
+    - Returns BOTH 'quote' and 'phrase' keys to support different front-end versions.
     """
-    phrases = [
+    fallback_phrases = [
         "You’re allowed to take today slowly.",
         "Small steps count — even tiny ones.",
         "You don’t have to earn rest.",
@@ -340,4 +347,35 @@ def supportive_phrase(request):
         "Your feelings are real — and they can change.",
         "One kind thing for yourself is enough for now.",
     ]
-    return JsonResponse({"phrase": random.choice(phrases)})
+
+    phrase = None
+    author = ""
+
+    # External API (no key required)
+    # Returns: {"affirmation": "..."}
+    try:
+        r = requests.get("https://www.affirmations.dev/", timeout=5)
+        if r.status_code == 200:
+            data = r.json()
+            phrase = data.get("affirmation")
+            if phrase:
+                author = "Affirmations.dev"
+    except Exception:
+        phrase = None
+        author = ""
+
+    # Fallback if API fails / returns nothing
+    if not phrase:
+        phrase = random.choice(fallback_phrases)
+        author = ""
+
+    response = JsonResponse(
+        {
+            "quote": phrase,   # for JS expecting data.quote
+            "phrase": phrase,  # for any code expecting data.phrase
+            "author": author,
+        }
+    )
+    # Helps prevent “sticky” repeats caused by caching/CDN behaviour
+    response["Cache-Control"] = "no-store"
+    return response
