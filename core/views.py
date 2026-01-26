@@ -15,6 +15,7 @@ from .models import (
     SiteAnnouncement,
 )
 from billing.models import Subscription
+from .limits import is_free_locked, user_entry_count, FREE_ENTRY_LIMIT
 
 
 def home(request):
@@ -38,41 +39,21 @@ def support(request):
         return HttpResponseNotFound("Support page not created yet.")
 
 
+@login_required
 def contact(request):
-    """
-    Non-urgent contact form.
-    Creates SupportTicket entries to view/manage in admin.
-
-    IMPORTANT:
-    - Separate from the crisis/support page.
-    - Not monitored 24/7.
-    """
+    """Simple contact form that creates a SupportTicket."""
     if request.method == "POST":
-        subject = (request.POST.get("subject") or "").strip()
-        message_text = (request.POST.get("message") or "").strip()
-        email = (request.POST.get("email") or "").strip()
+        subject = request.POST.get("subject", "").strip()
+        message = request.POST.get("message", "").strip()
 
-        if not subject or not message_text:
-            messages.error(request, "Please add a subject and message.")
-            return redirect("contact")
-
-        user = request.user if request.user.is_authenticated else None
-
-        # If logged in, prefer account email, but allow fallback
-        if user:
-            email_to_store = (user.email or "").strip()
-        else:
-            email_to_store = email
-
-        if not user and not email_to_store:
-            messages.error(request, "Please enter an email address so we can reply.")
+        if not subject or not message:
+            messages.error(request, "Please fill in both the subject and message.")
             return redirect("contact")
 
         SupportTicket.objects.create(
-            user=user,
-            email=email_to_store,
+            user=request.user,
             subject=subject,
-            message=message_text,
+            message=message,
         )
 
         messages.success(request, "Message sent. Thank you — we’ll reply when we can.")
@@ -91,6 +72,15 @@ def new_entry(request):
     - Emotion words are stored as a comma-separated string for now (simple + fits CI scope).
     - Hue meaning + notes are combined into one text field so the UI stays low-friction.
     """
+    # Free plan gating: 10 entries total, then view-only
+    if is_free_locked(request.user):
+        messages.info(
+            request,
+            f"You’ve reached the free limit of {FREE_ENTRY_LIMIT} entries. "
+            "You can still view your entries, but creating and editing is paused on the free plan."
+        )
+        return redirect("my_entries")
+
     timestamp = timezone.localtime().strftime("%A %d %B %Y • %H:%M")
     emotions = EmotionWord.objects.all()  # ordered via model Meta
 
@@ -108,23 +98,25 @@ def new_entry(request):
             except ValueError:
                 mood = None
 
+        # Store selected emotions as comma-separated string
         emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
 
+        # Combine hue meaning + notes into one text field
         combined_notes = ""
         if hue_notes:
-            combined_notes += f"Hue meaning: {hue_notes}\n\n"
+            combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
         if notes:
-            combined_notes += notes
+            combined_notes += notes.strip()
 
         Entry.objects.create(
             user=request.user,
+            hue=hue_value if hue else None,
             mood=mood,
-            hue=hue,
             emotion_words=emotion_words,
             notes=combined_notes,
         )
 
-        messages.success(request, "Your entry has been saved.")
+        messages.success(request, "Entry saved.")
         return redirect("my_entries")
 
     return render(
@@ -158,12 +150,18 @@ def my_entries(request):
         date_key = entry.created_at.date()
         grouped_entries.setdefault(date_key, []).append(entry)
 
+    entry_count = user_entry_count(request.user)
+    locked = is_free_locked(request.user)
+
     return render(
         request,
         "core/my_entries.html",
         {
             "grouped_entries": grouped_entries,
             "search_date": search_date,
+            "is_free_locked": locked,
+            "entry_count": entry_count,
+            "free_entry_limit": FREE_ENTRY_LIMIT,
         },
     )
 
@@ -179,12 +177,18 @@ def dashboard(request):
     )
     live_announcements = [a for a in active_announcements if a.is_live]
 
+    entry_count = user_entry_count(request.user)
+    locked = is_free_locked(request.user)
+
     return render(
         request,
         "core/dashboard.html",
         {
             "subscription": subscription,
             "announcements": live_announcements,
+            "is_free_locked": locked,
+            "entry_count": entry_count,
+            "free_entry_limit": FREE_ENTRY_LIMIT,
         },
     )
 
@@ -195,6 +199,7 @@ def view_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
     revisions = EntryRevision.objects.filter(entry=entry).order_by("-created_at")
     last_updated = revisions[0].created_at if revisions else None
+    locked = is_free_locked(request.user)
 
     return render(
         request,
@@ -203,6 +208,7 @@ def view_entry(request, entry_id):
             "entry": entry,
             "revisions": revisions,
             "last_updated": last_updated,
+            "is_free_locked": locked,
         },
     )
 
@@ -217,6 +223,15 @@ def edit_entry(request, entry_id):
       This keeps the UI simple but still gives a clear audit trail of edits.
     """
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
+
+    if is_free_locked(request.user):
+        messages.info(
+            request,
+            "Editing is paused on the free plan once you reach the 10 entry limit. "
+            "You can still view your entries."
+        )
+        return redirect("view_entry", entry_id=entry.id)
+
     emotions = EmotionWord.objects.all()
 
     if request.method == "POST":
@@ -237,63 +252,51 @@ def edit_entry(request, entry_id):
 
         combined_notes = ""
         if hue_notes:
-            combined_notes += f"Hue meaning: {hue_notes}\n\n"
+            combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
         if notes:
-            combined_notes += notes
+            combined_notes += notes.strip()
 
-        has_changes = (
-            entry.mood != mood
-            or entry.hue != hue
-            or entry.emotion_words != emotion_words
-            or entry.notes != combined_notes
+        # Snapshot existing values before overwriting
+        EntryRevision.objects.create(
+            entry=entry,
+            previous_hue=entry.hue,
+            previous_mood=entry.mood,
+            previous_emotion_words=entry.emotion_words,
+            previous_notes=entry.notes,
         )
 
-        if has_changes:
-            EntryRevision.objects.create(
-                entry=entry,
-                mood=entry.mood,
-                hue=entry.hue,
-                emotion_words=entry.emotion_words,
-                notes=entry.notes,
-            )
+        entry.hue = hue_value if hue else None
+        entry.mood = mood
+        entry.emotion_words = emotion_words
+        entry.notes = combined_notes
+        entry.save()
 
-            entry.mood = mood
-            entry.hue = hue
-            entry.emotion_words = emotion_words
-            entry.notes = combined_notes
-            entry.save()
+        messages.success(request, "Entry updated.")
+        return redirect("view_entry", entry_id=entry.id)
 
-            messages.success(request, "Your entry has been updated.")
-        else:
-            messages.info(request, "No changes were made to your entry.")
-
-        return redirect("my_entries")
-
-    hue_value = entry.hue or ""
-    hue_notes_value = ""
-    notes_value = entry.notes or ""
-
-    if entry.notes and entry.notes.startswith("Hue meaning: "):
-        parts = entry.notes.split("\n\n", 1)
-        if len(parts) == 2:
-            hue_notes_value = parts[0].replace("Hue meaning:", "", 1).strip()
-            notes_value = parts[1]
+    # Prefill fields
+    existing_hue_notes = ""
+    existing_notes = entry.notes or ""
+    if existing_notes.startswith("Hue meaning:"):
+        try:
+            parts = existing_notes.split("\n\n", 1)
+            existing_hue_notes = parts[0].replace("Hue meaning:", "").strip()
+            existing_notes = parts[1] if len(parts) > 1 else ""
+        except Exception:
+            pass
 
     selected_emotions = []
     if entry.emotion_words:
-        selected_emotions = [
-            w.strip() for w in entry.emotion_words.split(",") if w.strip()
-        ]
+        selected_emotions = [e.strip() for e in entry.emotion_words.split(",") if e.strip()]
 
     return render(
         request,
-        "core/entry_edit.html",
+        "core/edit_entry.html",
         {
             "entry": entry,
             "emotions": emotions,
-            "hue_value": hue_value,
-            "hue_notes_value": hue_notes_value,
-            "notes_value": notes_value,
+            "existing_hue_notes": existing_hue_notes,
+            "existing_notes": existing_notes,
             "selected_emotions": selected_emotions,
         },
     )
@@ -303,6 +306,14 @@ def edit_entry(request, entry_id):
 def delete_entry(request, entry_id):
     """Delete an entry (POST only)."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
+
+    if is_free_locked(request.user):
+        messages.info(
+            request,
+            "Deleting is paused on the free plan once you reach the 10 entry limit. "
+            "You can still view your entries."
+        )
+        return redirect("my_entries")
 
     if request.method == "POST":
         entry.delete()
@@ -316,31 +327,17 @@ def delete_entry(request, entry_id):
 @login_required
 def supportive_phrase(request):
     """
-    Return a supportive phrase as JSON for the dashboard card.
+    Returns a supportive phrase for the UI.
+    - Intended for AJAX fetch from dashboard card/button.
+    - Keeps tone gentle and optional.
     """
-    fallback_quotes = [
-        "Even on hard days, you deserve kindness from yourself.",
-        "It’s okay to take things one small step at a time.",
-        "You are allowed to rest without earning it first.",
-        "Your feelings are valid, even when they are heavy.",
-        "You are doing the best you can with what you have today.",
+    phrases = [
+        "You’re allowed to take today slowly.",
+        "Small steps count — even tiny ones.",
+        "You don’t have to earn rest.",
+        "Try naming one feeling without judging it.",
+        "It’s okay to pause. You can come back when you’re ready.",
+        "Your feelings are real — and they can change.",
+        "One kind thing for yourself is enough for now.",
     ]
-
-    try:
-        response = requests.get("https://www.affirmations.dev/", timeout=6)
-        response.raise_for_status()
-
-        data = response.json()
-        quote = (data.get("affirmation") or "").strip()
-
-        if not quote:
-            raise ValueError("Affirmations.dev returned no affirmation text")
-
-        return JsonResponse({"quote": quote, "author": "Affirmations.dev"}, status=200)
-
-    except Exception as e:
-        print("Affirmations.dev API error:", e)
-        return JsonResponse(
-            {"quote": random.choice(fallback_quotes), "author": "Regulate"},
-            status=200,
-        )
+    return JsonResponse({"phrase": random.choice(phrases)})
