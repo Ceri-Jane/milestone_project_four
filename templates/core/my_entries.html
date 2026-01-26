@@ -92,8 +92,14 @@
                                 <a href="{% url 'view_entry' entry.id %}">View</a>
 
                                 {% if is_free_locked %}
-                                    <span class="disabled-link">Edit</span>
-                                    <span class="disabled-link">Delete</span>
+                                    <span class="disabled-action"
+                                          title="Free plan limit reached ({{ free_entry_limit }} entries). Upgrade to edit.">
+                                        Edit
+                                    </span>
+                                    <span class="disabled-action"
+                                          title="Free plan limit reached ({{ free_entry_limit }} entries). Upgrade to delete.">
+                                        Delete
+                                    </span>
                                 {% else %}
                                     <a href="{% url 'edit_entry' entry.id %}">Edit</a>
 

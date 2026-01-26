@@ -197,15 +197,6 @@ main {
   text-decoration: none;
 }
 
-.disabled-link {
-  opacity: 0.55;
-  cursor: not-allowed;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-right: 1rem;
-}
-
 /* Used under the disabled button copy */
 .small-text {
   font-size: 0.95rem;
@@ -490,6 +481,20 @@ main {
 
 .entry-delete-link:hover {
   text-decoration: underline;
+}
+
+/* Disabled action pills (used when free plan is locked) */
+.disabled-action {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(42, 94, 79, 0.35);
+  background: rgba(255, 255, 255, 0.55);
+  color: rgba(42, 94, 79, 0.6);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: not-allowed;
+  user-select: none;
 }
 
 /* Wider card layout just for the dashboard */

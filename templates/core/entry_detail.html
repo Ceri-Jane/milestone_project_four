@@ -42,7 +42,10 @@
         <!-- Actions for this entry -->
         <div class="entry-actions justify-content-center">
             {% if is_free_locked %}
-                <span class="disabled-link">Edit this entry</span>
+                <span class="disabled-action"
+                      title="Free plan limit reached (10 entries). Upgrade to edit.">
+                    Edit this entry
+                </span>
             {% else %}
                 <a href="{% url 'edit_entry' entry.id %}">Edit this entry</a>
             {% endif %}
