@@ -41,7 +41,12 @@
 
         <!-- Actions for this entry -->
         <div class="entry-actions justify-content-center">
-            <a href="{% url 'edit_entry' entry.id %}">Edit this entry</a>
+            {% if is_free_locked %}
+                <span class="disabled-link">Edit this entry</span>
+            {% else %}
+                <a href="{% url 'edit_entry' entry.id %}">Edit this entry</a>
+            {% endif %}
+
             <a href="{% url 'my_entries' %}">Back to your entries</a>
         </div>
 
