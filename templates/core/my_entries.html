@@ -31,9 +31,18 @@
 
         <!-- Add New Entry button -->
         <div class="text-center mb-3">
-            <a href="{% url 'new_entry' %}" class="select-btn">
-                Add New Entry
-            </a>
+            {% if is_free_locked %}
+                <button class="select-btn is-disabled" disabled>
+                    Entry limit reached ({{ entry_count }}/{{ free_entry_limit }})
+                </button>
+                <p class="form-info small-text">
+                    You can still view your entries, but creating and editing is paused on the free plan.
+                </p>
+            {% else %}
+                <a href="{% url 'new_entry' %}" class="select-btn">
+                    Add New Entry
+                </a>
+            {% endif %}
         </div>
 
         {% if grouped_entries %}
@@ -81,16 +90,22 @@
 
                             <div class="justify-content-center entry-actions">
                                 <a href="{% url 'view_entry' entry.id %}">View</a>
-                                <a href="{% url 'edit_entry' entry.id %}">Edit</a>
 
-                                <form method="post"
-                                      action="{% url 'delete_entry' entry.id %}"
-                                      class="d-inline delete-entry-form">
-                                      {% csrf_token %}
-                                      <button type="submit" class="entry-delete-link">
-                                          Delete
-                                      </button>
-                                </form>
+                                {% if is_free_locked %}
+                                    <span class="disabled-link">Edit</span>
+                                    <span class="disabled-link">Delete</span>
+                                {% else %}
+                                    <a href="{% url 'edit_entry' entry.id %}">Edit</a>
+
+                                    <form method="post"
+                                          action="{% url 'delete_entry' entry.id %}"
+                                          class="d-inline delete-entry-form">
+                                          {% csrf_token %}
+                                          <button type="submit" class="entry-delete-link">
+                                              Delete
+                                          </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -110,9 +125,15 @@
 
             <!-- Encourage gentle first step -->
             <div class="text-center mt-3">
-                <a href="{% url 'new_entry' %}" class="select-btn">
-                    Create Your First Entry
-                </a>
+                {% if is_free_locked %}
+                    <button class="select-btn is-disabled" disabled>
+                        Entry limit reached
+                    </button>
+                {% else %}
+                    <a href="{% url 'new_entry' %}" class="select-btn">
+                        Create Your First Entry
+                    </a>
+                {% endif %}
             </div>
         {% endif %}
 
