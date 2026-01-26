@@ -39,19 +39,26 @@ def support(request):
         return HttpResponseNotFound("Support page not created yet.")
 
 
-@login_required
 def contact(request):
-    """Create a SupportTicket from the contact form."""
+    """Create a SupportTicket from the contact form (public page)."""
     if request.method == "POST":
         subject = request.POST.get("subject", "").strip()
         message = request.POST.get("message", "").strip()
+
+        # Only required when the user is logged out
+        email = request.POST.get("email", "").strip().lower()
 
         if not subject or not message:
             messages.error(request, "Please fill in both the subject and message.")
             return redirect("contact")
 
+        if not request.user.is_authenticated and not email:
+            messages.error(request, "Please provide an email address so we can reply.")
+            return redirect("contact")
+
         SupportTicket.objects.create(
-            user=request.user,
+            user=request.user if request.user.is_authenticated else None,
+            email=email if not request.user.is_authenticated else "",
             subject=subject,
             message=message,
         )
