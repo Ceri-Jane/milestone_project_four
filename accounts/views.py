@@ -26,11 +26,19 @@ def change_username(request):
 
         if not new_username:
             messages.error(request, "Please enter a username.")
-            return redirect("change_username")
+            return render(
+                request,
+                "account/change_username.html",
+                {"current_username": new_username},
+            )
 
         if User.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
             messages.error(request, "That username is already taken.")
-            return redirect("change_username")
+            return render(
+                request,
+                "account/change_username.html",
+                {"current_username": new_username},
+            )
 
         request.user.username = new_username
         request.user.save()
@@ -55,11 +63,19 @@ def change_email(request):
 
         if not new_email:
             messages.error(request, "Please enter an email address.")
-            return redirect("change_email")
+            return render(
+                request,
+                "account/change_email.html",
+                {"current_email": new_email},
+            )
 
         if User.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
             messages.error(request, "That email address is already in use.")
-            return redirect("change_email")
+            return render(
+                request,
+                "account/change_email.html",
+                {"current_email": new_email},
+            )
 
         request.user.email = new_email
         request.user.save()
