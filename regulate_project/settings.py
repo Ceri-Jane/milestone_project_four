@@ -17,13 +17,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------------
 
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = True
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     ".herokuapp.com",
     "127.0.0.1",
     "localhost",
-    "*",
 ]
 
 # Needed for Heroku + Stripe redirects

@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Page-specific SEO blocks -->
-
     {% block meta_description %}
     <meta name="description" content="Regulate helps you track emotions, add optional notes, tag emotion words, and search entries.">
     {% endblock %}
@@ -21,8 +20,7 @@
     <title>Regulate | Home</title>
     {% endblock %}
      
-
-    <!-- Favicons for multiple device types -->
+    <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
@@ -30,11 +28,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Main site CSS -->
+    <!-- Site CSS -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <!-- Auth CSS -->
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
-    <!-- Entry CSS -->
     <link rel="stylesheet" href="{% static 'css/entry.css' %}">
 </head>
 
@@ -46,13 +42,29 @@
 
         <main class="content">
 
-            <!-- SUCCESS / ERROR MESSAGE DISPLAY -->
+            <!-- MESSAGE DISPLAY -->
             {% if messages %}
                 <div class="messages mt-3" aria-live="polite">
                     {% for message in messages %}
-                        <div class="alert alert-success text-center mx-auto" role="alert" style="max-width: 800px;">
-                            {{ message }}
-                        </div>
+                        {% if message.tags == "error" %}
+                            {% with tag="danger" %}
+                                <div class="alert alert-{{ tag }} alert-dismissible fade show text-center mx-auto"
+                                     role="alert"
+                                     style="max-width: 800px;">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                            {% endwith %}
+                        {% else %}
+                            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show text-center mx-auto"
+                                 role="alert"
+                                 style="max-width: 800px;">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% endif %}
@@ -67,11 +79,9 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Main site JS -->
+    <!-- JS -->
     <script src="{% static 'js/main.js' %}"></script>
-    <!-- Auth JS -->
     <script src="{% static 'js/auth.js' %}"></script>
-    <!-- Entry JS -->
     <script src="{% static 'js/entry.js' %}"></script>
 
 </body>
