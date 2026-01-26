@@ -1,6 +1,20 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Regulate helps you track emotions, add optional notes, tag emotion words, and search entries.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="regulate, emotion tracking, mood tracker, bpd, adhd, mental health, emotion tags, entry search">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Home</title>
+{% endblock %}
+
 {% block content %}
 
 <!-- HERO SECTION -->

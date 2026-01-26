@@ -1,4 +1,20 @@
 {% extends "base.html" %}
+{% load static %}
+
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Contact form for support tickets and general enquiries.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="contact, support ticket, help, regulate">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Contact</title>
+{% endblock %}
+
 {% block content %}
 <div class="form-wrapper">
   <div class="form-card dashboard-card">

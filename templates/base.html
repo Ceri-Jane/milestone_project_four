@@ -6,7 +6,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Regulate</title>
+    <!-- ================================================================== -->
+    <!--  PAGE-SPECIFIC SEO BLOCKS                                          -->
+    <!--  Each page can now override:                                       -->
+    <!--   - title                                                          -->
+    <!--   - description                                                    -->
+    <!--   - keywords                                                       -->
+    <!--                                                                    -->
+    <!--  If a page does NOT override them, these sensible defaults below   -->
+    <!--  are used. This improves SEO and accessibility without breaking    -->
+    <!--  the existing design.                                              -->
+    <!-- ================================================================== -->
+
+    {% block meta_description %}
+    <meta name="description" content="Regulate helps you track emotions, add optional notes, tag emotion words, and search entries.">
+    {% endblock %}
+
+    {% block meta_keywords %}
+    <meta name="keywords" content="regulate, emotion tracking, mood tracker, bpd, adhd, mental health, emotion tags, entry search">
+    {% endblock %}
+
+    <!-- Title -->
+    <title>Regulate | Home</title>
 
     <!-- Favicons for multiple device types -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">

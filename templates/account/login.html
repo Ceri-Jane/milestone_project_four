@@ -2,6 +2,21 @@
 {% load static %}
 {% load account %}
 
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Log in to access your Regulate account and saved entries.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="login, sign in, account, regulate">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Log in</title>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="form-wrapper">

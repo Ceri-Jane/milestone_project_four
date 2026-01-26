@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
 
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Edit an existing entry and update notes, mood data, or emotion tags.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="edit entry, update entry, emotion tags, regulate">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Edit Entry</title>
+{% endblock %}
+
+
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/entry.css' %}">
 

@@ -1,4 +1,20 @@
 {% extends "base.html" %}
+{% load static %}
+
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="View a single entry including notes, mood data, and selected emotion tags.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="entry detail, emotion tags, mood notes, regulate">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Entry</title>
+{% endblock %}
+
 
 {% block content %}
 

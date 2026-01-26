@@ -1,6 +1,22 @@
 {% extends "base.html" %}
 {% load static %}
 
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+
+{% block meta_description %}
+<meta name="description" content="View, filter, and search entries by date, keywords, and emotion tags.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="my entries, entry search, emotion tags, mood notes, regulate">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | My entries</title>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="form-wrapper">

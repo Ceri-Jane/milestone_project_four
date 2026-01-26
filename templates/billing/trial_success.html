@@ -1,4 +1,20 @@
 {% extends "base.html" %}
+{% load static %}
+
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Trial activation confirmation page.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="trial started, subscription, regulate plus">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Trial Started</title>
+{% endblock %}
+
 
 {% block content %}
 <div class="form-wrapper">
