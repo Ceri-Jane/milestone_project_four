@@ -137,13 +137,15 @@
 
                                     <!-- Delete entry form -->
                                     <form method="post"
-                                          action="{% url 'delete_entry' entry.id %}"
-                                          class="d-inline delete-entry-form">
-                                          {% csrf_token %}
-                                          <button type="submit" class="entry-delete-link">
-                                              Delete
-                                          </button>
+                                        action="{% url 'delete_entry' entry.id %}"
+                                        class="d-inline delete-entry-form"
+                                        onsubmit="return confirm('Are you sure you want to delete this entry? This cannot be undone.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="entry-delete-link" aria-label="Delete this entry permanently">
+                                            Delete
+                                        </button>
                                     </form>
+
                                 {% endif %}
                             </div>
                         </div>

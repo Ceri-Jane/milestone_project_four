@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseNotFound
+from django.views.decorators.http import require_POST
 
 import random
 import requests
@@ -37,7 +38,7 @@ def support(request):
     try:
         return render(request, "pages/support.html")
     except Exception:
-        return HttpResponseNotFound("FAQ page not created yet.")
+        return HttpResponseNotFound("Support page not created yet.")
 
 
 def contact(request):
@@ -84,7 +85,6 @@ def new_entry(request):
     timestamp = timezone.localtime().strftime("%A %d %B %Y • %H:%M")
     emotions = EmotionWord.objects.all()
 
-    # Use ModelForm for server-side validation
     if request.method == "POST":
         form = EntryForm(request.POST)
 
@@ -139,15 +139,33 @@ def new_entry(request):
             messages.success(request, "Entry saved.")
             return redirect("my_entries")
 
+        # IMPORTANT: keep form errors instead of redirecting (better UX + robustness)
         messages.error(request, "Please check the form and try again.")
-        return redirect("new_entry")
+        return render(
+            request,
+            "core/new_entry.html",
+            {
+                "timestamp": timestamp,
+                "emotions": emotions,
+                "form": form,
+                "is_free_locked": False,
+                "entry_count": user_entry_count(request.user),
+                "free_entry_limit": FREE_ENTRY_LIMIT,
+            },
+        )
 
+    # GET request: provide empty form
+    form = EntryForm()
     return render(
         request,
         "core/new_entry.html",
         {
             "timestamp": timestamp,
             "emotions": emotions,
+            "form": form,
+            "is_free_locked": is_free_locked(request.user),
+            "entry_count": user_entry_count(request.user),
+            "free_entry_limit": FREE_ENTRY_LIMIT,
         },
     )
 
@@ -232,6 +250,8 @@ def view_entry(request, entry_id):
             "revisions": revisions,
             "last_updated": last_updated,
             "is_free_locked": locked,
+            "entry_count": user_entry_count(request.user),
+            "free_entry_limit": FREE_ENTRY_LIMIT,
         },
     )
 
@@ -313,10 +333,29 @@ def edit_entry(request, entry_id):
             messages.success(request, "Entry updated.")
             return redirect("view_entry", entry_id=entry.id)
 
+        # IMPORTANT: keep form errors instead of redirecting (better UX + robustness)
         messages.error(request, "Please check the form and try again.")
-        return redirect("edit_entry", entry_id=entry.id)
+        selected_emotions = request.POST.getlist("emotion_words")
+        return render(
+            request,
+            "core/entry_edit.html",
+            {
+                "entry": entry,
+                "emotions": emotions,
+                "selected_emotions": selected_emotions,
+                "form": form,
+                "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
+                "hue_notes_value": request.POST.get("hue_notes", ""),
+                "notes_value": request.POST.get("notes", ""),
+                "existing_hue_notes": request.POST.get("hue_notes", ""),
+                "existing_notes": request.POST.get("notes", ""),
+                "is_free_locked": False,
+                "entry_count": user_entry_count(request.user),
+                "free_entry_limit": FREE_ENTRY_LIMIT,
+            },
+        )
 
-    # Split out hue meaning from saved notes (so the UI can edit it separately)
+    # GET: Split out hue meaning from saved notes (so the UI can edit it separately)
     existing_hue_notes = ""
     existing_notes = entry.notes or ""
 
@@ -331,6 +370,7 @@ def edit_entry(request, entry_id):
     # Pre-select checkboxes in the template
     selected_emotions = list(entry.emotion_word_tags.values_list("word", flat=True))
 
+    form = EntryForm(instance=entry)
     return render(
         request,
         "core/entry_edit.html",
@@ -338,18 +378,22 @@ def edit_entry(request, entry_id):
             "entry": entry,
             "emotions": emotions,
             "selected_emotions": selected_emotions,
-
+            "form": form,
             # Matches template variables
             "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
             "hue_notes_value": existing_hue_notes,
             "notes_value": existing_notes,
             "existing_hue_notes": existing_hue_notes,
             "existing_notes": existing_notes,
+            "is_free_locked": is_free_locked(request.user),
+            "entry_count": user_entry_count(request.user),
+            "free_entry_limit": FREE_ENTRY_LIMIT,
         },
     )
 
 
 @login_required
+@require_POST
 def delete_entry(request, entry_id):
     """Delete an entry (POST only)."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
@@ -362,12 +406,8 @@ def delete_entry(request, entry_id):
         )
         return redirect("my_entries")
 
-    if request.method == "POST":
-        entry.delete()
-        messages.success(request, "Your entry has been deleted.")
-        return redirect("my_entries")
-
-    messages.info(request, "Delete action was not completed.")
+    entry.delete()
+    messages.success(request, "Your entry has been deleted.")
     return redirect("my_entries")
 
 
