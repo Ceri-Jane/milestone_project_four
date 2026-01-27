@@ -14,6 +14,7 @@ from .models import (
     SupportTicket,
     SiteAnnouncement,
 )
+from .forms import EntryForm  # Entry create/edit ModelForm
 from billing.models import Subscription
 from .limits import is_free_locked, user_entry_count, FREE_ENTRY_LIMIT
 
@@ -83,53 +84,63 @@ def new_entry(request):
     timestamp = timezone.localtime().strftime("%A %d %B %Y • %H:%M")
     emotions = EmotionWord.objects.all()
 
+    # Use ModelForm for server-side validation
     if request.method == "POST":
-        hue = request.POST.get("hue")
-        hue_notes = request.POST.get("hue_notes")
-        notes = request.POST.get("notes")
-        selected_emotions = request.POST.getlist("emotion_words")
+        form = EntryForm(request.POST)
 
-        # Defaults so Entry.mood never ends up None
-        mood = 3
-        hue_value = 50
+        if form.is_valid():
+            hue_notes = request.POST.get("hue_notes")
+            notes = request.POST.get("notes")
 
-        if hue is not None:
-            try:
-                hue_value = int(hue)
-                hue_value = max(0, min(100, hue_value))
-                mood = max(1, min(5, (hue_value // 20) + 1))
-            except (TypeError, ValueError):
-                # Leave defaults (neutral)
-                pass
+            # Templates submit checkboxes as name="emotion_words"
+            selected_words = request.POST.getlist("emotion_words")
 
-        emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
+            # Defaults so Entry.mood never ends up None
+            mood = 3
+            hue_value = 50
 
-        combined_notes = ""
-        if hue_notes:
-            combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
-        if notes:
-            combined_notes += notes.strip()
+            # Hue is cleaned in the form, but we still clamp + compute mood here
+            hue = form.cleaned_data.get("hue")
+            if hue not in (None, ""):
+                try:
+                    hue_value = int(hue)
+                    hue_value = max(0, min(100, hue_value))
+                    mood = max(1, min(5, (hue_value // 20) + 1))
+                except (TypeError, ValueError):
+                    pass
 
-        entry = Entry.objects.create(
-            user=request.user,
-            hue=str(hue_value) if hue_value is not None else "",
-            mood=mood,
-            emotion_words=emotion_words,
-            notes=combined_notes,
-        )
+            combined_notes = ""
+            if hue_notes:
+                combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
+            if notes:
+                combined_notes += notes.strip()
 
-        # --------------------------------------------------
-        # Sync relational emotion tags (ManyToMany)
-        # --------------------------------------------------
-        if selected_emotions:
-            emotion_objects = []
-            for word in selected_emotions:
-                obj, _ = EmotionWord.objects.get_or_create(word=word)
-                emotion_objects.append(obj)
-            entry.emotion_word_tags.set(emotion_objects)
+            entry = form.save(commit=False)
+            entry.user = request.user
+            entry.hue = str(hue_value)
+            entry.mood = mood
+            entry.notes = combined_notes
 
-        messages.success(request, "Entry saved.")
-        return redirect("my_entries")
+            # Keep comma-separated field in sync for display/backwards compatibility
+            entry.emotion_words = ", ".join(selected_words) if selected_words else ""
+
+            entry.save()
+
+            # Sync relational tags (ManyToMany)
+            if selected_words:
+                objs = []
+                for w in selected_words:
+                    obj, _ = EmotionWord.objects.get_or_create(word=w)
+                    objs.append(obj)
+                entry.emotion_word_tags.set(objs)
+            else:
+                entry.emotion_word_tags.clear()
+
+            messages.success(request, "Entry saved.")
+            return redirect("my_entries")
+
+        messages.error(request, "Please check the form and try again.")
+        return redirect("new_entry")
 
     return render(
         request,
@@ -242,63 +253,71 @@ def edit_entry(request, entry_id):
     emotions = EmotionWord.objects.all()
 
     if request.method == "POST":
-        hue = request.POST.get("hue")
-        hue_notes = request.POST.get("hue_notes")
-        notes = request.POST.get("notes")
-        selected_emotions = request.POST.getlist("emotion_words")
+        form = EntryForm(request.POST, instance=entry)
 
-        # Start with current values, only overwrite if the POST value is valid
-        mood = entry.mood
-        hue_value = entry.hue
+        if form.is_valid():
+            hue_notes = request.POST.get("hue_notes")
+            notes = request.POST.get("notes")
 
-        if hue is not None:
-            try:
-                hv = int(hue)
-                hv = max(0, min(100, hv))
-                hue_value = hv
-                mood = max(1, min(5, (hv // 20) + 1))
-            except (TypeError, ValueError):
-                # Keep existing values if the slider value is invalid
-                pass
+            # Templates submit checkboxes as name="emotion_words"
+            selected_words = request.POST.getlist("emotion_words")
 
-        emotion_words = ", ".join(selected_emotions) if selected_emotions else ""
+            # Start with current values, only overwrite if the POST value is valid
+            mood = entry.mood
+            hue_value = entry.hue
 
-        combined_notes = ""
-        if hue_notes:
-            combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
-        if notes:
-            combined_notes += notes.strip()
+            hue = form.cleaned_data.get("hue")
+            if hue not in (None, ""):
+                try:
+                    hv = int(hue)
+                    hv = max(0, min(100, hv))
+                    hue_value = hv
+                    mood = max(1, min(5, (hv // 20) + 1))
+                except (TypeError, ValueError):
+                    pass
 
-        # Save previous values before overwrite (fields match EntryRevision model)
-        EntryRevision.objects.create(
-            entry=entry,
-            hue=entry.hue,
-            mood=entry.mood,
-            emotion_words=entry.emotion_words,
-            notes=entry.notes,
-        )
+            combined_notes = ""
+            if hue_notes:
+                combined_notes += f"Hue meaning: {hue_notes.strip()}\n\n"
+            if notes:
+                combined_notes += notes.strip()
 
-        entry.hue = str(hue_value) if hue_value is not None else ""
-        entry.mood = mood
-        entry.emotion_words = emotion_words
-        entry.notes = combined_notes
-        entry.save()
+            # Save previous values before overwrite (fields match EntryRevision model)
+            EntryRevision.objects.create(
+                entry=entry,
+                hue=entry.hue,
+                mood=entry.mood,
+                emotion_words=entry.emotion_words,
+                notes=entry.notes,
+            )
 
-        # --------------------------------------------------
-        # Update relational emotion tags
-        # --------------------------------------------------
-        if selected_emotions:
-            emotion_objects = []
-            for word in selected_emotions:
-                obj, _ = EmotionWord.objects.get_or_create(word=word)
-                emotion_objects.append(obj)
-            entry.emotion_word_tags.set(emotion_objects)
-        else:
-            entry.emotion_word_tags.clear()
+            updated_entry = form.save(commit=False)
+            updated_entry.hue = str(hue_value) if hue_value is not None else ""
+            updated_entry.mood = mood
+            updated_entry.notes = combined_notes
 
-        messages.success(request, "Entry updated.")
-        return redirect("view_entry", entry_id=entry.id)
+            # Keep comma-separated field in sync for display/backwards compatibility
+            updated_entry.emotion_words = ", ".join(selected_words) if selected_words else ""
 
+            updated_entry.save()
+
+            # Sync relational tags (ManyToMany)
+            if selected_words:
+                objs = []
+                for w in selected_words:
+                    obj, _ = EmotionWord.objects.get_or_create(word=w)
+                    objs.append(obj)
+                updated_entry.emotion_word_tags.set(objs)
+            else:
+                updated_entry.emotion_word_tags.clear()
+
+            messages.success(request, "Entry updated.")
+            return redirect("view_entry", entry_id=entry.id)
+
+        messages.error(request, "Please check the form and try again.")
+        return redirect("edit_entry", entry_id=entry.id)
+
+    # Split out hue meaning from saved notes (so the UI can edit it separately)
     existing_hue_notes = ""
     existing_notes = entry.notes or ""
 
@@ -310,11 +329,8 @@ def edit_entry(request, entry_id):
         except Exception:
             pass
 
-    selected_emotions = []
-    if entry.emotion_words:
-        selected_emotions = [
-            e.strip() for e in entry.emotion_words.split(",") if e.strip()
-        ]
+    # Pre-select checkboxes in the template
+    selected_emotions = list(entry.emotion_word_tags.values_list("word", flat=True))
 
     return render(
         request,
@@ -323,6 +339,8 @@ def edit_entry(request, entry_id):
             "entry": entry,
             "emotions": emotions,
             "selected_emotions": selected_emotions,
+
+            # Matches template variables
             "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
             "hue_notes_value": existing_hue_notes,
             "notes_value": existing_notes,
