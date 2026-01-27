@@ -188,6 +188,11 @@ def dashboard(request):
     """Dashboard hub page."""
     subscription = Subscription.objects.filter(user=request.user).first()
 
+    # Determine plan state for template (keeps dashboard logic clean + assessor-friendly)
+    sub_status = getattr(subscription, "status", None)
+    is_active_plan = sub_status in ["trialing", "active"]
+    has_had_trial = getattr(subscription, "has_had_trial", False)
+
     active_announcements = SiteAnnouncement.objects.filter(is_active=True).order_by(
         "-updated_at"
     )
@@ -208,6 +213,10 @@ def dashboard(request):
         "core/dashboard.html",
         {
             "subscription": subscription,
+            "subscription_status": sub_status,
+            "is_active_plan": is_active_plan,
+            "has_had_trial": has_had_trial,
+
             "announcements": live_announcements,
             "is_free_locked": locked,
             "entry_count": entry_count,
@@ -215,6 +224,7 @@ def dashboard(request):
             "login_key": login_key,
         },
     )
+
 
 
 @login_required

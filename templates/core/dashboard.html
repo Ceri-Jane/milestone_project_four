@@ -1,9 +1,5 @@
-{# templates/core/dashboard.html #}
-
 {% extends "base.html" %}
 {% load static %}
-
-{# Page-specific SEO overrides: custom title + meta tags #}
 
 {% block meta_description %}
 <meta name="description" content="Dashboard for viewing and managing entries in Regulate.">
@@ -17,7 +13,6 @@
 <title>Regulate | Dashboard</title>
 {% endblock %}
 
-
 {% block content %}
 <div class="form-wrapper">
     <div class="form-card dashboard-card">
@@ -26,13 +21,6 @@
         {# SITE ANNOUNCEMENTS (from admin)                    #}
         {# -------------------------------------------------- #}
         {% if announcements %}
-            {# -------------------------------------------------- #}
-            {# Dismissible announcements (client-side)       #}
-            {#                                                    #}
-            {# - Close button dismisses the alert for this login   #}
-            {# - Uses login_key (based on user.last_login)         #}
-            {# - Stored in localStorage (see main.js)              #}
-            {# -------------------------------------------------- #}
             <div class="mb-3" id="dashboard-announcements" data-login-key="{{ login_key|default:'' }}">
                 {% for a in announcements %}
                     <div
@@ -46,7 +34,6 @@
                         {% endif %}
                         {{ a.message }}
 
-                        {# NEW: Bootstrap close button (top-right) #}
                         <button
                             type="button"
                             class="btn-close"
@@ -60,7 +47,24 @@
 
         <h1 class="form-title">Your Dashboard</h1>
 
-        <p class="form-info">
+        {# -------------------------------------------------- #}
+        {# PLAN STATUS (quiet + clear, right under heading)   #}
+        {# -------------------------------------------------- #}
+        {% if subscription_status == "trialing" %}
+            <p class="form-info small-text">
+                Regulate+ free trial active.
+            </p>
+        {% elif subscription_status == "active" %}
+            <p class="form-info small-text">
+                Regulate+ active.
+            </p>
+        {% else %}
+            <p class="form-info small-text">
+                Free plan.
+            </p>
+        {% endif %}
+
+        <p class="form-info mt-3">
             Choose what you’d like to do with Regulate today.
         </p>
 
@@ -74,13 +78,36 @@
             </p>
 
             {% if is_free_locked %}
-                <button class="select-btn is-disabled" disabled>
+                <button class="select-btn is-disabled" disabled aria-disabled="true">
                     Entry limit reached
                 </button>
+
                 <p class="form-info small-text">
                     You’ve reached {{ free_entry_limit }} entries on the free plan.
                     You can still view your entries, but creating and editing is paused.
                 </p>
+
+                <div class="mt-2">
+                    {% if is_active_plan %}
+                        <a href="{% url 'billing_details' %}" class="select-btn select-btn-small">
+                            Manage Billing
+                        </a>
+                    {% else %}
+                        {% if has_had_trial %}
+                            <a href="{% url 'start_subscription' %}" class="select-btn select-btn-small">
+                                Upgrade to Regulate+
+                            </a>
+                        {% else %}
+                            <a href="{% url 'start_trial' %}" class="select-btn select-btn-small">
+                                Start Free Trial
+                            </a>
+                            <a href="{% url 'start_subscription' %}" class="select-btn select-btn-small ms-2">
+                                Upgrade
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
             {% else %}
                 <a href="{% url 'new_entry' %}" class="select-btn">
                     Add New Entry
@@ -108,7 +135,6 @@
                 a little extra support.
             </p>
 
-            <!-- Quote display box -->
             <div id="supportive-quote-box" class="supportive-quote-box">
                 <p id="supportive-quote-text">
                     Click the button below to generate a supportive phrase.
@@ -116,7 +142,6 @@
                 <p id="supportive-quote-author" class="form-info"></p>
             </div>
 
-            <!-- Button -->
             <button
                 id="generate-quote-btn"
                 class="select-btn mt-2"
