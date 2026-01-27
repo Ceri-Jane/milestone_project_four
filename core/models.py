@@ -39,10 +39,23 @@ class Entry(models.Model):
     mood = models.IntegerField(choices=MOOD_CHOICES)
     hue = models.CharField(max_length=7, blank=True)
 
+    # --------------------------------------------------
+    # Original comma-separated emotion words (UX-friendly)
+    # --------------------------------------------------
     emotion_words = models.CharField(
         max_length=255,
         blank=True,
         help_text="Comma-separated emotion words.",
+    )
+
+    # --------------------------------------------------
+    # Relational emotion word tags (for data modelling)
+    # --------------------------------------------------
+    emotion_word_tags = models.ManyToManyField(
+        EmotionWord,
+        blank=True,
+        related_name="entries",
+        help_text="Relational emotion word tags linked to this entry.",
     )
 
     notes = models.TextField(blank=True)

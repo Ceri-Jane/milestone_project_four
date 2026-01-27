@@ -110,13 +110,23 @@ def new_entry(request):
         if notes:
             combined_notes += notes.strip()
 
-        Entry.objects.create(
+        entry = Entry.objects.create(
             user=request.user,
             hue=str(hue_value) if hue_value is not None else "",
             mood=mood,
             emotion_words=emotion_words,
             notes=combined_notes,
         )
+
+        # --------------------------------------------------
+        # Sync relational emotion tags (ManyToMany)
+        # --------------------------------------------------
+        if selected_emotions:
+            emotion_objects = []
+            for word in selected_emotions:
+                obj, _ = EmotionWord.objects.get_or_create(word=word)
+                emotion_objects.append(obj)
+            entry.emotion_word_tags.set(emotion_objects)
 
         messages.success(request, "Entry saved.")
         return redirect("my_entries")
@@ -178,10 +188,6 @@ def dashboard(request):
     # --------------------------------------------------
     # Per-login key for dismissible dashboard alerts
     # --------------------------------------------------
-    # Use last_login as a stable "session marker" so:
-    # - User can dismiss announcements while logged in
-    # - They re-appear after logout + next login (last_login changes)
-    # This is handled client-side via localStorage in main.js
     login_key = ""
     if request.user.last_login:
         login_key = request.user.last_login.isoformat()
@@ -195,8 +201,6 @@ def dashboard(request):
             "is_free_locked": locked,
             "entry_count": entry_count,
             "free_entry_limit": FREE_ENTRY_LIMIT,
-
-            # NEW
             "login_key": login_key,
         },
     )
@@ -280,6 +284,18 @@ def edit_entry(request, entry_id):
         entry.notes = combined_notes
         entry.save()
 
+        # --------------------------------------------------
+        # Update relational emotion tags
+        # --------------------------------------------------
+        if selected_emotions:
+            emotion_objects = []
+            for word in selected_emotions:
+                obj, _ = EmotionWord.objects.get_or_create(word=word)
+                emotion_objects.append(obj)
+            entry.emotion_word_tags.set(emotion_objects)
+        else:
+            entry.emotion_word_tags.clear()
+
         messages.success(request, "Entry updated.")
         return redirect("view_entry", entry_id=entry.id)
 
@@ -307,8 +323,6 @@ def edit_entry(request, entry_id):
             "entry": entry,
             "emotions": emotions,
             "selected_emotions": selected_emotions,
-
-            # Matches template variables
             "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
             "hue_notes_value": existing_hue_notes,
             "notes_value": existing_notes,
