@@ -25,8 +25,32 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-# Needed for Heroku + Stripe redirects
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# Live https origins allowed to POST (set in Heroku config vars)
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="",
+    cast=lambda v: [s.strip() for s in v.split(",") if s.strip()],
+)
+
+
+# -----------------------------
+# Production security only
+# -----------------------------
+if not DEBUG:
+    # Heroku forwards https via this header
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+    # Force https on live site
+    SECURE_SSL_REDIRECT = True
+
+    # Secure cookies over https only
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # HSTS (tell browsers to stick to https)
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 
 # -----------------------------
@@ -195,7 +219,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 # -----------------------------
-# Stripe (env-only — nothing committed)
+# Stripe (env-only)
 # -----------------------------
 
 STRIPE_PUBLIC_KEY = config("STRIPE_PUBLIC_KEY", default="")
