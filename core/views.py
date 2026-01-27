@@ -36,7 +36,7 @@ def support(request):
     try:
         return render(request, "pages/support.html")
     except Exception:
-        return HttpResponseNotFound("Support page not created yet.")
+        return HttpResponseNotFound("FAQ page not created yet.")
 
 
 def contact(request):
@@ -175,6 +175,17 @@ def dashboard(request):
     entry_count = user_entry_count(request.user)
     locked = is_free_locked(request.user)
 
+    # --------------------------------------------------
+    # Per-login key for dismissible dashboard alerts
+    # --------------------------------------------------
+    # Use last_login as a stable "session marker" so:
+    # - User can dismiss announcements while logged in
+    # - They re-appear after logout + next login (last_login changes)
+    # This is handled client-side via localStorage in main.js
+    login_key = ""
+    if request.user.last_login:
+        login_key = request.user.last_login.isoformat()
+
     return render(
         request,
         "core/dashboard.html",
@@ -184,6 +195,9 @@ def dashboard(request):
             "is_free_locked": locked,
             "entry_count": entry_count,
             "free_entry_limit": FREE_ENTRY_LIMIT,
+
+            # NEW
+            "login_key": login_key,
         },
     )
 
@@ -294,12 +308,10 @@ def edit_entry(request, entry_id):
             "emotions": emotions,
             "selected_emotions": selected_emotions,
 
-            # Matches your template variables
+            # Matches template variables
             "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
             "hue_notes_value": existing_hue_notes,
             "notes_value": existing_notes,
-
-            # Also keep these for any older template versions you still have around
             "existing_hue_notes": existing_hue_notes,
             "existing_notes": existing_notes,
         },

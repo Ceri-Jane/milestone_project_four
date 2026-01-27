@@ -1,3 +1,5 @@
+{# templates/core/dashboard.html #}
+
 {% extends "base.html" %}
 {% load static %}
 
@@ -24,13 +26,33 @@
         {# SITE ANNOUNCEMENTS (from admin)                    #}
         {# -------------------------------------------------- #}
         {% if announcements %}
-            <div class="mb-3">
+            {# -------------------------------------------------- #}
+            {# Dismissible announcements (client-side)       #}
+            {#                                                    #}
+            {# - Close button dismisses the alert for this login   #}
+            {# - Uses login_key (based on user.last_login)         #}
+            {# - Stored in localStorage (see main.js)              #}
+            {# -------------------------------------------------- #}
+            <div class="mb-3" id="dashboard-announcements" data-login-key="{{ login_key|default:'' }}">
                 {% for a in announcements %}
-                    <div class="alert alert-banner align-items-center" role="alert">
+                    <div
+                        class="alert alert-banner alert-dismissible fade show align-items-center"
+                        role="alert"
+                        data-announcement-id="{{ a.id }}"
+                        data-announcement-updated="{{ a.updated_at|date:'c' }}"
+                    >
                         {% if a.title %}
                             <strong>{{ a.title }}</strong><br>
                         {% endif %}
                         {{ a.message }}
+
+                        {# NEW: Bootstrap close button (top-right) #}
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                        </button>
                     </div>
                 {% endfor %}
             </div>

@@ -1,3 +1,5 @@
+// static/js/main.js
+
 // Stop the hero video from looping.
 // Runs when the page has loaded.
 document.addEventListener("DOMContentLoaded", function () {
@@ -41,6 +43,65 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    // ----------------------------------------
+    // Dismissible dashboard announcements
+    // ----------------------------------------
+    // Behaviour:
+    // - Announcement shows when user logs in
+    // - User can dismiss it with the "X"
+    // - It stays hidden while they remain logged in
+    // - It re-appears after logout + login (because login_key changes)
+    //
+    // Implementation:
+    // - dashboard.html sets #dashboard-announcements with data-login-key
+    // - Each alert includes data-announcement-id and data-announcement-updated
+    // - Store a dismissal in localStorage keyed by login + announcement + updated_at
+    const announceWrap = document.getElementById("dashboard-announcements");
+
+    if (announceWrap) {
+        const loginKey = announceWrap.dataset.loginKey || "no-last-login";
+
+        // Want the alert to come back after "a few days" even without logging out.
+        // Set ttlDays = 0, if not (change as an when required).
+        const ttlDays = 5;
+        const ttlMs = ttlDays * 24 * 60 * 60 * 1000;
+
+        const announceAlerts = announceWrap.querySelectorAll("[data-announcement-id]");
+
+        announceAlerts.forEach((alertEl) => {
+            const announcementId = alertEl.dataset.announcementId;
+            const updatedAt = alertEl.dataset.announcementUpdated || "";
+
+            // Include updatedAt so if admin edits an announcement, it shows again
+            const storageKey =
+                `regulate_announce_dismissed_${loginKey}_${announcementId}_${updatedAt}`;
+
+            const stored = localStorage.getItem(storageKey);
+
+            // If dismissed before, hide it (TTL optional)
+            if (stored) {
+                if (ttlDays > 0) {
+                    const dismissedAt = parseInt(stored, 10);
+                    if (!Number.isNaN(dismissedAt) && (Date.now() - dismissedAt) < ttlMs) {
+                        alertEl.remove();
+                        return;
+                    }
+                    // TTL expired → allow it to show again
+                    localStorage.removeItem(storageKey);
+                } else {
+                    // No TTL mode: hide until next login
+                    alertEl.remove();
+                    return;
+                }
+            }
+
+            // When Bootstrap alert is closed, store dismissal timestamp
+            alertEl.addEventListener("closed.bs.alert", () => {
+                localStorage.setItem(storageKey, String(Date.now()));
+            });
+        });
+    }
 
     // ----------------------------------------
     // Supportive phrases (external API)
