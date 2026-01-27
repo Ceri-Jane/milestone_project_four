@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Manage your Regulate+ subscription, free trial, or billing details.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="regulate plus, subscription, free trial, billing, account management">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Regulate+</title>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card dashboard-card">
+
+        <h1 class="form-title">Regulate+</h1>
+
+        {# -------------------------------------------------- #}
+        {# CURRENT PLAN STATUS                               #}
+        {# -------------------------------------------------- #}
+        {% if subscription_status == "trialing" %}
+            <p class="form-info small-text">
+                Current plan: <strong>Free trial active</strong>
+            </p>
+        {% elif subscription_status == "active" %}
+            <p class="form-info small-text">
+                Current plan: <strong>Regulate+ active</strong>
+            </p>
+        {% else %}
+            <p class="form-info small-text">
+                Current plan: <strong>Free plan</strong>
+            </p>
+        {% endif %}
+
+        <hr>
+
+        {# -------------------------------------------------- #}
+        {# REGULATE+ ACCESS                                  #}
+        {# -------------------------------------------------- #}
+        <div class="entry-card">
+            <p><strong>Unlimited access</strong></p>
+            <p class="form-info">
+                Regulate+ removes the free entry limit so you can continue creating
+                and editing entries without interruption.
+            </p>
+
+            {% if is_active_plan %}
+                <a href="{% url 'billing_details' %}" class="select-btn">
+                    Manage Billing
+                </a>
+
+            {% else %}
+                {% if has_had_trial %}
+                    <p class="form-info small-text">
+                        Your free trial has already been used on this account.
+                    </p>
+                    <a href="{% url 'start_subscription' %}" class="select-btn">
+                        Upgrade to Regulate+
+                    </a>
+                {% else %}
+                    <a href="{% url 'start_trial' %}" class="select-btn">
+                        Start Free Trial
+                    </a>
+                    <a href="{% url 'start_subscription' %}" class="select-btn mt-2">
+                        Upgrade to Regulate+
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {# -------------------------------------------------- #}
+        {# SUPPORT                                           #}
+        {# -------------------------------------------------- #}
+        <div class="entry-card">
+            <p><strong>Need help?</strong></p>
+            <p class="form-info">
+                If your plan doesn’t update immediately after checkout,
+                try refreshing the page. If the issue continues, you can contact support.
+            </p>
+
+            <a href="{% url 'contact' %}" class="select-btn">
+                Contact Support
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
