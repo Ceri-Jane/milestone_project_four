@@ -48,8 +48,8 @@ def _upsert_subscription(user, stripe_sub):
     obj.cancel_at_period_end = cancel_at_period_end
     obj.cancel_at = cancel_at
 
-    # Mark trial used once trial_end is set
-    if trial_end:
+    # Mark trial used once a trial has occurred (belt & braces)
+    if trial_end or status == "trialing":
         obj.has_had_trial = True
 
     obj.save()
@@ -57,7 +57,7 @@ def _upsert_subscription(user, stripe_sub):
 
 
 def _get_user_from_subscription_or_session(sub_obj=None, session_obj=None):
-    """Resolve user_id from Stripe metadata (subscription/session)"""
+    """Resolve user_id from Stripe metadata (subscription/session)."""
     user_id = None
 
     if sub_obj:
@@ -149,6 +149,23 @@ def stripe_webhook(request):
             local.status = "canceled"
             local.cancel_at_period_end = False
             local.cancel_at = None
+            local.save()
+
+    elif event_type == "invoice.payment_failed":
+        # Payment failed; subscription may become past_due/unpaid depending on retry rules.
+        # We defensively mark the local status if we can resolve the subscription/customer.
+        sub_id = data_object.get("subscription")
+        customer_id = data_object.get("customer")
+
+        local = None
+        if sub_id:
+            local = Subscription.objects.filter(stripe_subscription_id=sub_id).first()
+        if not local and customer_id:
+            local = Subscription.objects.filter(stripe_customer_id=customer_id).first()
+
+        if local:
+            # Keep it simple and explicit for access control
+            local.status = "past_due"
             local.save()
 
     elif event_type == "checkout.session.completed":
