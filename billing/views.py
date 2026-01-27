@@ -172,30 +172,50 @@ def billing_details(request):
 # Handle successful checkout return
 @login_required
 def trial_success(request):
+    """
+    Stripe redirects here after Checkout. Webhooks are the source of truth,
+    but we also attempt a best-effort sync for a smoother UX.
+    """
     session_id = request.GET.get("session_id")
 
-    # Sync subscription data after checkout
-    if session_id:
-        try:
-            session = stripe.checkout.Session.retrieve(session_id)
-            sub_id = session.get("subscription")
-            cust_id = session.get("customer")
+    if not session_id:
+        messages.info(
+            request,
+            "Checkout completed. If your plan doesn’t update immediately, refresh in a moment."
+        )
+        return redirect("dashboard")
 
-            if sub_id:
-                stripe_sub = stripe.Subscription.retrieve(sub_id)
-                _upsert_subscription(
-                    request.user,
-                    stripe_sub,
-                    stripe_customer_id=cust_id
-                )
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        sub_id = session.get("subscription")
+        cust_id = session.get("customer")
 
-        except Exception:
-            logger.warning("Stripe sync on success failed", exc_info=True)
+        if sub_id:
+            stripe_sub = stripe.Subscription.retrieve(sub_id)
+            _upsert_subscription(
+                request.user,
+                stripe_sub,
+                stripe_customer_id=cust_id
+            )
+            messages.success(request, "Your plan is now active.")
+        else:
+            messages.info(
+                request,
+                "Checkout completed. Your plan will update shortly."
+            )
 
-    return render(request, "billing/trial_success.html")
+    except Exception:
+        logger.warning("Stripe sync on success failed", exc_info=True)
+        messages.info(
+            request,
+            "Checkout completed. If your plan doesn’t update, refresh or contact support."
+        )
+
+    return redirect("dashboard")
 
 
 # Trial cancellation landing page
 @login_required
 def trial_cancelled(request):
+    messages.info(request, "Checkout cancelled — no changes were made.")
     return render(request, "billing/trial_cancelled.html")
