@@ -13,7 +13,6 @@ from .models import Subscription
 # Stripe API configuration
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-# Module logger
 logger = logging.getLogger(__name__)
 
 
@@ -41,6 +40,7 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
 
+    # Mark trial usage once a trial has occurred
     if trial_end or status == "trialing":
         obj.has_had_trial = True
 
@@ -50,10 +50,7 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
 
 @login_required
 def regulate_plus(request):
-    """
-    Regulate+ hub page (trial / upgrade / manage billing).
-    Template + URL will be added in the next step.
-    """
+    """Regulate+ hub page (trial / upgrade / manage billing)."""
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
 
@@ -72,11 +69,11 @@ def start_trial(request):
 
     if sub and sub.status in ["trialing", "active"]:
         messages.info(request, "You already have an active plan.")
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
     if sub and sub.has_had_trial:
         messages.info(request, "You can only use the free trial once per user.")
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
     try:
         session = stripe.checkout.Session.create(
@@ -109,7 +106,7 @@ def start_trial(request):
             request,
             "Sorry — we couldn’t open Stripe Checkout. Please try again."
         )
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
 
 @login_required
@@ -118,7 +115,7 @@ def start_subscription(request):
 
     if sub and sub.status in ["trialing", "active"]:
         messages.info(request, "You already have an active plan.")
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
     try:
         session = stripe.checkout.Session.create(
@@ -150,7 +147,7 @@ def start_subscription(request):
             request,
             "Sorry — we couldn’t open Stripe Checkout. Please try again."
         )
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
 
 @login_required
@@ -163,20 +160,20 @@ def billing_details(request):
             request,
             "We couldn’t find your billing details yet. Try refreshing and clicking again.",
         )
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
     try:
         portal_session = stripe.billing_portal.Session.create(
             customer=stripe_customer_id,
-            # Return users back into the app hub (fits the upcoming Regulate+ page)
-            return_url=request.build_absolute_uri(reverse("dashboard")),
+            # Return users back into the billing hub
+            return_url=request.build_absolute_uri(reverse("regulate_plus")),
         )
         return redirect(portal_session.url)
 
     except Exception:
         logger.exception("Stripe Portal Error")
         messages.error(request, "Couldn’t open billing page right now.")
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
 
 @login_required
@@ -192,7 +189,7 @@ def trial_success(request):
             request,
             "Checkout completed. If your plan doesn’t update immediately, refresh in a moment."
         )
-        return redirect("dashboard")
+        return redirect("regulate_plus")
 
     try:
         session = stripe.checkout.Session.retrieve(session_id)
@@ -220,7 +217,7 @@ def trial_success(request):
             "Checkout completed. If your plan doesn’t update, refresh or contact support."
         )
 
-    return redirect("dashboard")
+    return redirect("regulate_plus")
 
 
 @login_required
