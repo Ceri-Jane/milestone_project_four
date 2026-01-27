@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+<title>Regulate | Something went wrong</title>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+  <div class="form-card dashboard-card text-center">
+    <h1 class="form-title">Something went wrong</h1>
+    <p class="form-section-hint">
+      Sorry — an unexpected error occurred. Please try again.
+    </p>
+
+    <div class="entry-actions justify-content-center">
+      {% if user.is_authenticated %}
+        <a class="select-btn" href="{% url 'dashboard' %}">Go to dashboard</a>
+      {% else %}
+        <a class="select-btn" href="{% url 'home' %}">Back to home</a>
+      {% endif %}
+    </div>
+
+    <p class="form-section-hint mt-3">
+      Error code: 500
+    </p>
+  </div>
+</div>
+{% endblock %}
