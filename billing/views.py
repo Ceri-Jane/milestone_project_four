@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from .models import Subscription
 
@@ -46,6 +47,17 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
 
     obj.save()
     return obj
+
+
+def _checkout_delayed_message(request):
+    """
+    Consistent message for the common webhook-delay case (assessor-friendly).
+    """
+    messages.info(
+        request,
+        "Checkout completed. Your plan usually updates within a few seconds. "
+        "If it doesn’t, refresh this page or try again in a minute."
+    )
 
 
 @login_required
@@ -94,18 +106,15 @@ def start_trial(request):
             },
             customer_email=request.user.email,
             success_url=request.build_absolute_uri(
-                reverse("trial_success")
+                reverse("checkout_success")
             ) + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
+            cancel_url=request.build_absolute_uri(reverse("checkout_cancelled")),
         )
         return redirect(session.url)
 
     except Exception:
         logger.exception("Stripe Checkout Error (trial)")
-        messages.error(
-            request,
-            "Sorry — we couldn’t open Stripe Checkout. Please try again."
-        )
+        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
         return redirect("regulate_plus")
 
 
@@ -135,18 +144,15 @@ def start_subscription(request):
             },
             customer_email=request.user.email,
             success_url=request.build_absolute_uri(
-                reverse("trial_success")
+                reverse("checkout_success")
             ) + "?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url=request.build_absolute_uri(reverse("trial_cancelled")),
+            cancel_url=request.build_absolute_uri(reverse("checkout_cancelled")),
         )
         return redirect(session.url)
 
     except Exception:
         logger.exception("Stripe Checkout Error (subscribe)")
-        messages.error(
-            request,
-            "Sorry — we couldn’t open Stripe Checkout. Please try again."
-        )
+        messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
         return redirect("regulate_plus")
 
 
@@ -165,7 +171,6 @@ def billing_details(request):
     try:
         portal_session = stripe.billing_portal.Session.create(
             customer=stripe_customer_id,
-            # Return users back into the billing hub
             return_url=request.build_absolute_uri(reverse("regulate_plus")),
         )
         return redirect(portal_session.url)
@@ -177,18 +182,16 @@ def billing_details(request):
 
 
 @login_required
-def trial_success(request):
+@require_GET
+def checkout_success(request):
     """
-    Stripe redirects here after Checkout. Webhooks are the source of truth,
-    but we also attempt a best-effort sync for a smoother UX.
+    Stripe redirects here after Checkout.
+    Webhooks are the source of truth, but we also attempt a best-effort sync for UX.
     """
     session_id = request.GET.get("session_id")
 
     if not session_id:
-        messages.info(
-            request,
-            "Checkout completed. If your plan doesn’t update immediately, refresh in a moment."
-        )
+        _checkout_delayed_message(request)
         return redirect("regulate_plus")
 
     try:
@@ -198,29 +201,20 @@ def trial_success(request):
 
         if sub_id:
             stripe_sub = stripe.Subscription.retrieve(sub_id)
-            _upsert_subscription(
-                request.user,
-                stripe_sub,
-                stripe_customer_id=cust_id
-            )
-            messages.success(request, "Your plan is now active.")
+            _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
+            messages.success(request, "Thanks — your plan is now active.")
         else:
-            messages.info(
-                request,
-                "Checkout completed. Your plan will update shortly."
-            )
+            _checkout_delayed_message(request)
 
     except Exception:
         logger.warning("Stripe sync on success failed", exc_info=True)
-        messages.info(
-            request,
-            "Checkout completed. If your plan doesn’t update, refresh or contact support."
-        )
+        _checkout_delayed_message(request)
 
     return redirect("regulate_plus")
 
 
 @login_required
-def trial_cancelled(request):
+@require_GET
+def checkout_cancelled(request):
     messages.info(request, "Checkout cancelled — no changes were made.")
     return render(request, "billing/trial_cancelled.html")

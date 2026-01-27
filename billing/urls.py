@@ -13,9 +13,9 @@ urlpatterns = [
     # Start paid subscription checkout
     path("start-subscription/", views.start_subscription, name="start_subscription"),
 
-    # Trial flow callbacks
-    path("trial-success/", views.trial_success, name="trial_success"),
-    path("trial-cancelled/", views.trial_cancelled, name="trial_cancelled"),
+    # Checkout flow callbacks (trial + paid)
+    path("checkout-success/", views.checkout_success, name="checkout_success"),
+    path("checkout-cancelled/", views.checkout_cancelled, name="checkout_cancelled"),
 
     # Stripe billing portal
     path("manage/", views.billing_details, name="billing_details"),
