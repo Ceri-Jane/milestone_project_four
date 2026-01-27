@@ -34,10 +34,26 @@
 
             <!-- Mood Hue -->
             <label for="hue">Mood Hue</label>
+
+            <!-- Live range label (matches Entry.mood bands) -->
+            <p class="form-info small-text" id="hue-range-label" aria-live="polite">
+                Current range:
+            </p>
+
             <div class="hue-slider-wrapper">
-                <input type="range" id="hue" name="hue" min="0" max="100" class="hue-slider" value="50">
+                <input
+                    type="range"
+                    id="hue"
+                    name="hue"
+                    min="0"
+                    max="100"
+                    class="hue-slider"
+                    value="50"
+                    aria-describedby="hue-hint hue-range-label"
+                >
             </div>
-            <p class="form-section-hint">
+
+            <p class="form-section-hint" id="hue-hint">
                 Move the slider to pick a colour that matches how you feel.
             </p>
 

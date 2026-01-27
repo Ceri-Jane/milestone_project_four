@@ -35,6 +35,12 @@
 
             <!-- Mood Hue -->
             <label for="hue">Mood Hue</label>
+
+            <!-- Live range label (matches Entry.mood bands) -->
+            <p class="form-info small-text" id="hue-range-label" aria-live="polite">
+                Current range:
+            </p>
+
             <div class="hue-slider-wrapper">
                 <input
                     type="range"
@@ -43,10 +49,12 @@
                     min="0"
                     max="100"
                     class="hue-slider"
-                    value="{{ hue_value|default:0 }}"
+                    value="{{ hue_value|default:50 }}"
+                    aria-describedby="hue-hint hue-range-label"
                 >
             </div>
-            <p class="form-section-hint">
+
+            <p class="form-section-hint" id="hue-hint">
                 Move the slider to pick a colour that matches how you feel.
             </p>
 
@@ -76,6 +84,7 @@
                     id="emotion-search"
                     class="search-input"
                     aria-describedby="emotion-search-hint"
+                    aria-label="Search emotion words"
                 >
 
                 <!-- Scrollable checkbox list -->
@@ -124,4 +133,5 @@
     </div>
 </div>
 
+<script src="{% static 'js/entry.js' %}" defer></script>
 {% endblock %}
