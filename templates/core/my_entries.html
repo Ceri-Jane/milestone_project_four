@@ -55,6 +55,11 @@
                 <p class="form-info small-text">
                     You can still view your entries, but creating and editing is paused on the free plan.
                 </p>
+
+                <a href="{% url 'regulate_plus' %}" class="select-btn mt-2" aria-label="Go to Regulate+ to start a trial or manage billing">
+                    Go to Regulate+
+                </a>
+
             {% else %}
                 <!-- Create new entry -->
                 <a href="{% url 'new_entry' %}" class="select-btn">

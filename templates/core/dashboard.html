@@ -87,26 +87,9 @@
                     You can still view your entries, but creating and editing is paused.
                 </p>
 
-                <div class="mt-2">
-                    {% if is_active_plan %}
-                        <a href="{% url 'billing_details' %}" class="select-btn select-btn-small">
-                            Manage Billing
-                        </a>
-                    {% else %}
-                        {% if has_had_trial %}
-                            <a href="{% url 'start_subscription' %}" class="select-btn select-btn-small">
-                                Upgrade to Regulate+
-                            </a>
-                        {% else %}
-                            <a href="{% url 'start_trial' %}" class="select-btn select-btn-small">
-                                Start Free Trial
-                            </a>
-                            <a href="{% url 'start_subscription' %}" class="select-btn select-btn-small ms-2">
-                                Upgrade
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                </div>
+                <a href="{% url 'regulate_plus' %}" class="select-btn mt-2" aria-label="Go to Regulate+ to start a trial or manage billing">
+                    Go to Regulate+
+                </a>
 
             {% else %}
                 <a href="{% url 'new_entry' %}" class="select-btn">
