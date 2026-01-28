@@ -11,19 +11,24 @@ User = get_user_model()
 
 
 # -----------------------------
+# ADMIN BRANDING (CONFIRM LOAD)
+# -----------------------------
+admin.site.site_header = "Regulate Admin"
+admin.site.site_title = "Regulate Admin"
+admin.site.index_title = "Administration"
+
+
+# -----------------------------
 # HIDE UNUSED ALLAUTH MODELS
 # -----------------------------
 for model in (EmailAddress, SocialAccount, SocialApp, SocialToken):
-    try:
+    if model in admin.site._registry:
         admin.site.unregister(model)
-    except admin.sites.NotRegistered:
-        pass
 
 
 # -----------------------------
 # USER ADMIN
 # -----------------------------
-
 class CustomUserAdmin(UserAdmin):
     list_display = (
         "username",
@@ -34,7 +39,6 @@ class CustomUserAdmin(UserAdmin):
         "is_superuser",
         "group_list",
     )
-
     list_filter = ("is_active", "is_staff", "is_superuser", "groups")
     search_fields = ("username", "email")
     ordering = ("username",)
@@ -51,7 +55,7 @@ class CustomUserAdmin(UserAdmin):
                     "is_superuser",
                     "groups",
                     "user_permissions",
-                ),
+                )
             },
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
@@ -59,9 +63,7 @@ class CustomUserAdmin(UserAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(
-            _entry_count=Count("entries", distinct=True)
-        ).prefetch_related("groups")
+        return qs.annotate(_entry_count=Count("entries", distinct=True)).prefetch_related("groups")
 
     def entries_count(self, obj):
         return getattr(obj, "_entry_count", 0)
@@ -74,19 +76,15 @@ class CustomUserAdmin(UserAdmin):
     group_list.short_description = "Groups"
 
 
-# Replace default User admin
-try:
+# Replace default User admin (safe)
+if User in admin.site._registry:
     admin.site.unregister(User)
-except admin.sites.NotRegistered:
-    pass
-
 admin.site.register(User, CustomUserAdmin)
 
 
 # -----------------------------
 # GROUP ADMIN
 # -----------------------------
-
 class CustomGroupAdmin(admin.ModelAdmin):
     list_display = ("name", "member_count")
 
@@ -96,9 +94,6 @@ class CustomGroupAdmin(admin.ModelAdmin):
     member_count.short_description = "Members"
 
 
-try:
+if Group in admin.site._registry:
     admin.site.unregister(Group)
-except admin.sites.NotRegistered:
-    pass
-
 admin.site.register(Group, CustomGroupAdmin)
