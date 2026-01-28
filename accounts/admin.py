@@ -11,7 +11,7 @@ User = get_user_model()
 
 
 # -----------------------------
-# ADMIN BRANDING (CONFIRM LOAD)
+# ADMIN BRANDING
 # -----------------------------
 admin.site.site_header = "Regulate Admin"
 admin.site.site_title = "Regulate Admin"
@@ -24,6 +24,15 @@ admin.site.index_title = "Administration"
 for model in (EmailAddress, SocialAccount, SocialApp, SocialToken):
     if model in admin.site._registry:
         admin.site.unregister(model)
+
+
+# -----------------------------
+# OPTIONAL BILLING INLINE
+# -----------------------------
+try:
+    from billing.admin import SubscriptionInline
+except Exception:
+    SubscriptionInline = None
 
 
 # -----------------------------
@@ -63,7 +72,9 @@ class CustomUserAdmin(UserAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.annotate(_entry_count=Count("entries", distinct=True)).prefetch_related("groups")
+        return qs.annotate(
+            _entry_count=Count("entries", distinct=True)
+        ).prefetch_related("groups")
 
     def entries_count(self, obj):
         return getattr(obj, "_entry_count", 0)
@@ -76,7 +87,11 @@ class CustomUserAdmin(UserAdmin):
     group_list.short_description = "Groups"
 
 
-# Replace default User admin (safe)
+if SubscriptionInline:
+    CustomUserAdmin.inlines = [SubscriptionInline]
+
+
+# Replace default User admin
 if User in admin.site._registry:
     admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

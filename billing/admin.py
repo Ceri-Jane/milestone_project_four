@@ -1,12 +1,11 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin
 
 from .models import Subscription
 
-User = get_user_model()
 
-
+# -----------------------------
+# SUBSCRIPTION ADMIN
+# -----------------------------
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
@@ -46,6 +45,9 @@ class SubscriptionAdmin(admin.ModelAdmin):
     )
 
 
+# -----------------------------
+# INLINE (USED BY ACCOUNTS ADMIN)
+# -----------------------------
 class SubscriptionInline(admin.StackedInline):
     model = Subscription
     can_delete = False
@@ -68,15 +70,3 @@ class SubscriptionInline(admin.StackedInline):
         ("Stripe", {"fields": ("stripe_customer_id", "stripe_subscription_id")}),
         ("System", {"fields": ("created_at", "updated_at")}),
     )
-
-
-class CustomUserAdmin(UserAdmin):
-    inlines = [SubscriptionInline]
-
-
-try:
-    admin.site.unregister(User)
-except admin.sites.NotRegistered:
-    pass
-
-admin.site.register(User, CustomUserAdmin)
