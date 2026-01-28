@@ -33,6 +33,12 @@
         <form method="post">
             {% csrf_token %}
 
+            {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    Please correct the errors below.
+                </div>
+            {% endif %}
+
             <!-- Mood Hue -->
             <label for="hue">Mood Hue</label>
 

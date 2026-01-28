@@ -27,6 +27,12 @@
         <form method="post">
             {% csrf_token %}
 
+            {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    Please correct the errors below.
+                </div>
+            {% endif %}
+
             <!-- Timestamp -->
             {% if timestamp %}
                 <p class="form-info">Entry at: {{ timestamp }}</p>
