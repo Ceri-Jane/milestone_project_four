@@ -1,16 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Count
 
-# Hide Allauth admin panels we do not need
+# Hide unused allauth models
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 
 
 # -----------------------------
-# REMOVE EMAIL + SOCIAL MODELS
+# HIDE ALLAUTH MODELS
 # -----------------------------
-# These still exist — just hidden from admin UI
 admin.site.unregister(EmailAddress)
 admin.site.unregister(SocialAccount)
 admin.site.unregister(SocialApp)
@@ -18,20 +18,23 @@ admin.site.unregister(SocialToken)
 
 
 # -----------------------------
-# USER ADMIN CUSTOMISATIONS
+# USER ADMIN
 # -----------------------------
 
+@admin.display(description="Groups")
 def group_list(obj):
     return ", ".join(g.name for g in obj.groups.all()) or "—"
 
 
-group_list.short_description = "Groups"
+@admin.display(description="Entries")
+def entries_count(obj):
+    return getattr(obj, "_entry_count", 0)
 
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        ("Personal info", {"fields": ("email",)}),
+        ("Contact", {"fields": ("email",)}),
         (
             "Permissions",
             {
@@ -50,6 +53,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         "username",
         "email",
+        entries_count,
         "is_active",
         "is_staff",
         "is_superuser",
@@ -57,30 +61,34 @@ class CustomUserAdmin(UserAdmin):
     )
 
     list_filter = (
+        "is_active",
         "is_staff",
         "is_superuser",
-        "is_active",
         "groups",
     )
 
+    search_fields = ("username", "email")
+    ordering = ("username",)
 
-# Replace default User admin
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(_entry_count=Count("entries", distinct=True)).prefetch_related("groups")
+
+
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 
 # -----------------------------
-# GROUP ADMIN CUSTOMISATIONS
+# GROUP ADMIN
 # -----------------------------
 
 class CustomGroupAdmin(admin.ModelAdmin):
     list_display = ("name", "member_count")
 
+    @admin.display(description="Members")
     def member_count(self, obj):
-        UserModel = admin.site._registry[User].model
-        return UserModel.objects.filter(groups=obj).count()
-
-    member_count.short_description = "Members"
+        return User.objects.filter(groups=obj).count()
 
 
 admin.site.unregister(Group)
