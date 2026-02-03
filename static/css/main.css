@@ -81,12 +81,35 @@ main {
   margin: 0 auto;
 }
 
-.plan-banner {
-    color: var(--primary-color);
-    border: 1px solid;
-    border-color: #000000;
-    font-weight: 700;
+/* ----------------------------------------
+  PLAN BANNER (ACCOUNT TYPE)
+---------------------------------------- */
+
+.plan-wrap {
+  width: 100%;
+  padding: 0.75rem 1rem 0;
 }
+
+/* Matches site content width and keeps it centred */
+.plan-inner {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.plan-banner {
+  width: 100%;
+  background: var(--secondary-color-transparent);
+  color: var(--primary-color);
+  padding: 0.55rem 1.2rem;
+  border-radius: 14px;
+  font-family: var(--primary-font);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
 
 /* ----------------------------------------
   CARD STYLES

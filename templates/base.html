@@ -40,11 +40,16 @@
 
         {% include 'partials/navbar.html' %}
 
-        {% if user.is_authenticated %}
-            <div class="plan-banner text-center py-2 small">
+        {% if user.is_authenticated and plan_status %}
+        <div class="plan-wrap" aria-label="Account plan">
+            <div class="plan-inner">
+            <div class="plan-banner plan-{{ plan_status.badge }}">
                 {{ plan_status.label }}
             </div>
+            </div>
+        </div>
         {% endif %}
+
 
         <main class="content">
 
