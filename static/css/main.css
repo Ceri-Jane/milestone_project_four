@@ -782,3 +782,22 @@ main {
     text-align: center;
   }
 }
+
+  /* Sign in / Sign up buttons to adapt to smaller screens */
+@media (max-width: 424px) {
+  .navbar {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+
+  /* slightly smaller buttons */
+  .regulate-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.55rem;
+  }
+
+  /* tiny gap between buttons */
+  .navbar .d-flex {
+    gap: 0.1rem;
+  }
+}
