@@ -4,32 +4,44 @@ from billing.models import Subscription
 
 def plan_status(request):
     """
-    Global plan label for the navbar/banner.
-    Intentionally minimal: plan type only.
+    Adds current account plan info to all templates.
+    Used for the small banner under the navbar.
     """
+
+    # Only show plan info to authenticated users
     if not request.user.is_authenticated:
         return {}
 
+    # Each user has at most one subscription (OneToOne)
     sub = Subscription.objects.filter(user=request.user).first()
+
     now = timezone.now()
 
-    label = "Free"
-    badge = "free"   # optional: for CSS styling
+    # Default state
+    label = "Free plan"
+    badge = "free"
 
     if sub:
-        # Trial (trial_end in future)
-        if getattr(sub, "trial_end", None) and sub.trial_end > now:
-            label = "Regulate+ (Free Trial)"
+        status = getattr(sub, "status", "")
+
+        # Trial still active
+        if sub.trial_end and sub.trial_end > now:
+            label = "Regulate+ free trial"
             badge = "trial"
 
-        # Active subscription
-        elif getattr(sub, "status", "") in ("active", "trialing"):
-            label = "Regulate+"
+        # Stripe trial status
+        elif status == "trialing":
+            label = "Regulate+ free trial"
+            badge = "trial"
+
+        # Paid subscription
+        elif status == "active":
+            label = "Regulate+ subscription"
             badge = "plus"
 
-        # Optional: if you have cancel-at-period-end + current_period_end
-        elif getattr(sub, "current_period_end", None) and sub.current_period_end > now:
-            label = "Regulate+ (Ending Soon)"
+        # Subscription scheduled to end
+        elif sub.current_period_end and sub.current_period_end > now:
+            label = "Regulate+ (ending soon)"
             badge = "ending"
 
     return {

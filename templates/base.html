@@ -40,6 +40,12 @@
 
         {% include 'partials/navbar.html' %}
 
+        {% if user.is_authenticated %}
+            <div class="plan-banner text-center py-2 small">
+                {{ plan_status.label }}
+            </div>
+        {% endif %}
+
         <main class="content">
 
             <!-- MESSAGE DISPLAY -->
