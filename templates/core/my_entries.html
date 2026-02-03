@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 
-{# Page-specific SEO overrides: custom title + meta tags #}
-
 {% block meta_description %}
 <meta name="description" content="View, filter, and search entries by date, keywords, and emotion tags.">
 {% endblock %}
@@ -28,18 +26,25 @@
             Browse and search your past entries. No streaks, no guilt — just a record when you needed it.
         </p>
 
+        {% if not is_free_locked and entry_count < free_entry_limit %}
+            <p class="form-info small-text">
+                Free plan: {{ free_entries_remaining }}
+                {% if free_entries_remaining == 1 %}entry{% else %}entries{% endif %}
+                left.
+            </p>
+        {% endif %}
+
         <hr>
 
         <!-- Date filter form -->
         <form method="get" class="dashboard-filter-form mb-3">
-            <input 
-                type="date" 
-                name="date" 
+            <input
+                type="date"
+                name="date"
                 value="{{ search_date }}"
                 class="search-input"
                 aria-label="Filter entries by date"
             >
-            <!-- Apply date filter -->
             <button class="select-btn select-btn-small">
                 Search
             </button>
@@ -48,7 +53,6 @@
         <!-- Add new entry / free plan limit -->
         <div class="text-center mb-3">
             {% if is_free_locked %}
-                <!-- Free plan entry limit reached -->
                 <button class="select-btn is-disabled" disabled>
                     Entry limit reached ({{ entry_count }}/{{ free_entry_limit }})
                 </button>
@@ -61,7 +65,6 @@
                 </a>
 
             {% else %}
-                <!-- Create new entry -->
                 <a href="{% url 'new_entry' %}" class="select-btn">
                     Add New Entry
                 </a>
@@ -69,16 +72,13 @@
         </div>
 
         {% if grouped_entries %}
-        <!-- Entries grouped by date -->
         <div class="accordion dashboard-accordion" id="entriesAccordion">
 
             {% for date, entries in grouped_entries.items %}
-            <!-- Entry group -->
             <div class="accordion-item">
 
-                <!-- Accordion header -->
                 <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
-                    <button 
+                    <button
                         class="accordion-button collapsed"
                         type="button"
                         data-bs-toggle="collapse"
@@ -88,18 +88,15 @@
                     </button>
                 </h2>
 
-                <!-- Accordion body -->
-                <div 
-                    id="collapse-{{ forloop.counter }}" 
+                <div
+                    id="collapse-{{ forloop.counter }}"
                     class="accordion-collapse collapse"
                 >
                     <div class="accordion-body">
-                        
+
                         {% for entry in entries %}
-                        <!-- Single entry card -->
                         <div class="entry-card">
 
-                            <!-- Entry summary -->
                             <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
                             <p><strong>Hue:</strong> {{ entry.hue }}</p>
 
@@ -112,18 +109,15 @@
                             {% endif %}
 
                             {% if entry.has_revisions %}
-                                <!-- Edited entry indicator -->
                                 <p class="text-center">
                                     <strong>*Edited — revision history available</strong>
                                 </p>
                             {% endif %}
 
-                            <!-- Entry actions -->
                             <div class="justify-content-center entry-actions">
                                 <a href="{% url 'view_entry' entry.id %}">View</a>
 
                                 {% if is_free_locked %}
-                                    <!-- Disabled actions for free plan -->
                                     <span class="disabled-action"
                                           title="Free plan limit reached ({{ free_entry_limit }} entries). Upgrade to edit.">
                                         Edit
@@ -135,7 +129,6 @@
                                 {% else %}
                                     <a href="{% url 'edit_entry' entry.id %}">Edit</a>
 
-                                    <!-- Delete entry form -->
                                     <form method="post"
                                         action="{% url 'delete_entry' entry.id %}"
                                         class="d-inline delete-entry-form"
@@ -160,12 +153,10 @@
         </div>
 
         {% else %}
-            <!-- Empty state -->
             <p class="form-info empty-state">
                 You haven’t created any entries yet — and that’s okay.
             </p>
 
-            <!-- First entry prompt -->
             <div class="text-center mt-3">
                 {% if is_free_locked %}
                     <button class="select-btn is-disabled" disabled>

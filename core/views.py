@@ -99,7 +99,7 @@ def new_entry(request):
             mood = 3
             hue_value = 50
 
-            # Hue is cleaned in the form, but we still clamp + compute mood here
+            # Clamp hue + map to mood band (1-5)
             hue = form.cleaned_data.get("hue")
             if hue not in (None, ""):
                 try:
@@ -139,7 +139,6 @@ def new_entry(request):
             messages.success(request, "Entry saved.")
             return redirect("my_entries")
 
-        # IMPORTANT: keep form errors instead of redirecting (better UX + robustness)
         messages.error(request, "Please check the form and try again.")
         return render(
             request,
@@ -154,7 +153,6 @@ def new_entry(request):
             },
         )
 
-    # GET request: provide empty form
     form = EntryForm()
     return render(
         request,
@@ -188,6 +186,9 @@ def my_entries(request):
     entry_count = user_entry_count(request.user)
     locked = is_free_locked(request.user)
 
+    # Free plan counter (int so templates can compare properly)
+    free_entries_remaining = max(0, FREE_ENTRY_LIMIT - entry_count)
+
     return render(
         request,
         "core/my_entries.html",
@@ -197,6 +198,7 @@ def my_entries(request):
             "is_free_locked": locked,
             "entry_count": entry_count,
             "free_entry_limit": FREE_ENTRY_LIMIT,
+            "free_entries_remaining": free_entries_remaining,
         },
     )
 
@@ -215,6 +217,9 @@ def dashboard(request):
     entry_count = user_entry_count(request.user)
     locked = is_free_locked(request.user)
 
+    # Free plan counter for the dashboard line
+    entries_left = max(0, FREE_ENTRY_LIMIT - entry_count)
+
     # Per-login key for dismissible dashboard alerts
     login_key = ""
     if request.user.last_login:
@@ -229,6 +234,7 @@ def dashboard(request):
             "is_free_locked": locked,
             "entry_count": entry_count,
             "free_entry_limit": FREE_ENTRY_LIMIT,
+            "entries_left": entries_left,
             "login_key": login_key,
         },
     )
@@ -277,11 +283,8 @@ def edit_entry(request, entry_id):
         if form.is_valid():
             hue_notes = request.POST.get("hue_notes")
             notes = request.POST.get("notes")
-
-            # Templates submit checkboxes as name="emotion_words"
             selected_words = request.POST.getlist("emotion_words")
 
-            # Start with current values, only overwrite if the POST value is valid
             mood = entry.mood
             hue_value = entry.hue
 
@@ -301,7 +304,6 @@ def edit_entry(request, entry_id):
             if notes:
                 combined_notes += notes.strip()
 
-            # Save previous values before overwrite (fields match EntryRevision model)
             EntryRevision.objects.create(
                 entry=entry,
                 hue=entry.hue,
@@ -314,13 +316,10 @@ def edit_entry(request, entry_id):
             updated_entry.hue = str(hue_value) if hue_value is not None else ""
             updated_entry.mood = mood
             updated_entry.notes = combined_notes
-
-            # Keep comma-separated field in sync for display/backwards compatibility
             updated_entry.emotion_words = ", ".join(selected_words) if selected_words else ""
 
             updated_entry.save()
 
-            # Sync relational tags (ManyToMany)
             if selected_words:
                 objs = []
                 for w in selected_words:
@@ -333,7 +332,6 @@ def edit_entry(request, entry_id):
             messages.success(request, "Entry updated.")
             return redirect("view_entry", entry_id=entry.id)
 
-        # IMPORTANT: keep form errors instead of redirecting (better UX + robustness)
         messages.error(request, "Please check the form and try again.")
         selected_emotions = request.POST.getlist("emotion_words")
         return render(
@@ -355,7 +353,6 @@ def edit_entry(request, entry_id):
             },
         )
 
-    # GET: Split out hue meaning from saved notes (so the UI can edit it separately)
     existing_hue_notes = ""
     existing_notes = entry.notes or ""
 
@@ -367,7 +364,6 @@ def edit_entry(request, entry_id):
         except Exception:
             pass
 
-    # Pre-select checkboxes in the template
     selected_emotions = list(entry.emotion_word_tags.values_list("word", flat=True))
 
     form = EntryForm(instance=entry)
@@ -379,7 +375,6 @@ def edit_entry(request, entry_id):
             "emotions": emotions,
             "selected_emotions": selected_emotions,
             "form": form,
-            # Matches template variables
             "hue_value": int(entry.hue) if str(entry.hue).isdigit() else 50,
             "hue_notes_value": existing_hue_notes,
             "notes_value": existing_notes,

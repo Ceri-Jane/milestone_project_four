@@ -48,19 +48,24 @@
         <h1 class="form-title">Your Dashboard</h1>
 
         {# -------------------------------------------------- #}
-        {# PLAN STATUS (quiet + clear, right under heading)   #}
+        {# PLAN STATUS + FREE ENTRIES LEFT                    #}
         {# -------------------------------------------------- #}
         {% if subscription_status == "trialing" %}
             <p class="form-info small-text">
                 Regulate+ free trial active.
             </p>
+
         {% elif subscription_status == "active" %}
             <p class="form-info small-text">
-                Regulate+ active.
+                Regulate+ subscription active.
             </p>
+
         {% else %}
             <p class="form-info small-text">
                 Free plan.
+                ({{ entries_left }}
+                {% if entries_left == 1 %}entry{% else %}entries{% endif %}
+                left)
             </p>
         {% endif %}
 
