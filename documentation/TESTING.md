@@ -1,7 +1,7 @@
 # Testing
 ----------
 
-Here you will find all tests performed on the QuickFlicks site.
+Here you will find all tests performed on the Regulate site.
 
 Return to [README.md](../README.md)
 
@@ -257,9 +257,20 @@ Return to [README.md](../README.md)
 
 ---
 
+### Test-First Workflow Evidence
 
+For selected business rules, tests were written before implementing fixes/features. This is reflected in commit history using paired commits such as:
 
+- `test: add failing test for ...`
+- `fix/feat: ...`
 
+This provides clear traceability between requirements, automated tests, and implementation.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
 
 
 
