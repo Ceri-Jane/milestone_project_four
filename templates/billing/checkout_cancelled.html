@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{# Page-specific SEO overrides: custom title + meta tags #}
+
+{% block meta_description %}
+<meta name="description" content="Checkout cancelled confirmation page for Regulate+ subscription or trial.">
+{% endblock %}
+
+{% block meta_keywords %}
+<meta name="keywords" content="checkout cancelled, subscription, regulate plus, stripe">
+{% endblock %}
+
+{% block title %}
+<title>Regulate | Checkout Cancelled</title>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card">
+
+        <!-- Page heading -->
+        <h1 class="form-title">Checkout cancelled</h1>
+
+        <!-- Checkout cancellation message -->
+        <p class="form-info">
+            You left the Stripe checkout page before completing your Regulate+ setup.
+        </p>
+
+        <!-- Information card -->
+        <div class="entry-card">
+            <p>
+                No changes have been made to your account.
+            </p>
+
+            <p>
+                You can continue using Regulate according to your current plan.
+                If you were starting a free trial or upgrading to a subscription,
+                you can try again at any time from the Regulate+ page.
+            </p>
+
+            <p>
+                You will never be charged unless checkout is successfully completed,
+                and full billing details are always shown clearly within Stripe before confirmation.
+            </p>
+        </div>
+
+        <!-- Return to Regulate+ -->
+        <div class="entry-actions justify-content-center">
+            <a href="{% url 'regulate_plus' %}">
+                Back to Regulate+
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

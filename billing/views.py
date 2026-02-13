@@ -217,4 +217,4 @@ def checkout_success(request):
 @require_GET
 def checkout_cancelled(request):
     messages.info(request, "Checkout cancelled — no changes were made.")
-    return render(request, "billing/trial_cancelled.html")
+    return render(request, "billing/checkout_cancelled.html")
