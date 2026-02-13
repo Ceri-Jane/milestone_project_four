@@ -2,21 +2,6 @@
    ENTRY PAGE
 ----------------------------------------- */
 
-/* Google fonts import */
-@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-
-/* CSS Variables */
-:root {
-  --primary-font: "Shantell Sans", sans-serif;
-  --body-background-color: #c2e4d2;
-  --video-overlay-color: #ffffff63;
-  --primary-color: #2a5e4f;
-  --secondary-color: #ffffff;
-  --secondary-color-transparent: #ffffff8c;
-  --error-color: #ff0000;
-}
-
-
 /* ----------------------------------------
    MOOD HUE SLIDER
 ----------------------------------------- */
@@ -36,10 +21,10 @@
 /* WebKit track */
 .hue-slider::-webkit-slider-runnable-track {
   height: 10px;
-  background: linear-gradient(to right, #a5dfc6, #2a5e4f);
+  background: linear-gradient(to right, var(--hue-gradient-start), var(--hue-gradient-end));
   border-radius: 999px;
   border: 2px solid var(--primary-color);
-  box-shadow: 0 0 4px rgba(0,0,0,0.12);
+  box-shadow: 0 0 4px var(--shadow-color-strong);
 }
 
 /* WebKit thumb */
@@ -57,7 +42,7 @@
 /* Firefox track */
 .hue-slider::-moz-range-track {
   height: 10px;
-  background: linear-gradient(to right, #a5dfc6, #2a5e4f);
+  background: linear-gradient(to right, var(--hue-gradient-start), var(--hue-gradient-end));
   border-radius: 999px;
   border: 2px solid var(--primary-color);
 }
@@ -110,7 +95,7 @@
   font-family: var(--primary-font);
   font-size: 0.95rem;
   color: var(--primary-color);
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+  border-bottom: 1px solid var(--divider-border);;
 }
 
 .emotion-item:last-child {

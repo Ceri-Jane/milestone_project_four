@@ -3,17 +3,49 @@
 
 /* CSS Variables */
 :root {
+  /* Typography */
   --primary-font: "Shantell Sans", sans-serif;
+
+  /* Base surfaces & layout */
   --body-background-color: #c2e4d2;
-  --video-overlay-color: #ffffff63;
-  --primary-color: #2a5e4f;
   --secondary-color: #ffffff;
   --secondary-color-transparent: #ffffff8c;
-  --error-color: #ff0000;
-  --box-shadow-color: rgba(0,0,0,0.10);
 
-  /* Sticky offsets */
-  --navbar-height: 96px; /* tweak if needed */
+  /* Brand & primary colours */
+  --primary-color: #2a5e4f;
+  --primary-color-hover: #234c41;
+
+  /* Overlays & media */
+  --video-overlay-color: #ffffff63;
+
+  /* Feedback & status colours */
+  --error-color: #ff0000;
+  --success-bg: #d6f5e3;
+  --success-border: #a2d9c9;
+
+  /* Shadows & depth */
+  --shadow-color: rgba(0,0,0,0.10);
+  --divider-border: rgba(0, 0, 0, 0.08);
+
+  /* Entry / slider accents */
+  --hue-gradient-start: #a5dfc6;
+  --hue-gradient-end: #2a5e4f;  
+
+  /* Accordion UI */
+  --accordion-bg: #d8e9df;
+  --accordion-bg-open: #c9e4d6;
+
+  /* Sticky UI surfaces */
+  --sticky-surface-bg: rgba(194, 228, 210, 0.85);
+  --sticky-surface-bg-soft: rgba(194, 228, 210, 0.65);
+
+  /* Disabled / locked UI states */
+  --disabled-border: rgba(42, 94, 79, 0.35);
+  --disabled-bg: rgba(255, 255, 255, 0.55);
+  --disabled-text: rgba(42, 94, 79, 0.6);
+
+  /* Layout offsets */
+  --navbar-height: 96px;
 }
 
 /* ----------------------------------------
@@ -53,6 +85,27 @@ main {
   flex: 1 0 auto;
 }
 
+/* ----------------------------------------
+  GLOBAL LINK STYLES
+---------------------------------------- */
+
+a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Custom themed link */
 .custom-link {
   color: var(--primary-color);
@@ -72,16 +125,16 @@ main {
 }
 
 .alert-banner {
-  background: #d6f5e3;
+  background: var(--success-bg);
   color: var(--primary-color);
-  border: 1px solid #a2d9c9;
+  border: 1px solid var(--success-border);
   padding: 0.9rem 1.2rem;
   border-radius: 12px;
   font-family: var(--primary-font);
   font-size: 1.05rem;
   width: 90%;
   text-align: center;
-  box-shadow: 0 3px 8px var(--box-shadow-color);
+  box-shadow: 0 3px 8px var(--shadow-color);
   margin: 0 auto;
 }
 
@@ -99,7 +152,7 @@ main {
   z-index: 1040; /* below navbar, above page content */
 
   /* Helps prevent "scrolling behind" look */
-  background: rgba(194, 228, 210, 0.65);
+  background: var(--sticky-surface-bg-soft);
   backdrop-filter: blur(12px);
 }
 
@@ -120,7 +173,7 @@ main {
   font-size: 1rem;
   font-weight: 500;
   text-align: center;
-  box-shadow: 0 10px 24px var(--box-shadow-color);
+  box-shadow: 0 10px 24px var(--shadow-color);
 }
 
 /* ----------------------------------------
@@ -144,7 +197,7 @@ main {
   backdrop-filter: blur(6px);
   padding: 2rem;
   border-radius: 14px;
-  box-shadow: 0 4px 12px var(--box-shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 /* Form title */
@@ -180,7 +233,7 @@ main {
 .form-card textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 4px var(--box-shadow-color);
+  box-shadow: 0 0 4px var(--shadow-color);
 }
 
 /* Wider layout for info pages (FAQ / Crisis & Support) */
@@ -220,7 +273,7 @@ main {
 }
 
 .select-btn:hover {
-  background-color: #234c41;
+  background-color: var(--primary-color-hover);
   text-decoration: none;
 }
 
@@ -270,7 +323,7 @@ main {
   position: sticky;
   top: 0;
   z-index: 1050; /* above plan banner */
-  background: rgba(194, 228, 210, 0.85); /* prevents content looking like it slides underneath */
+  background: var(--sticky-surface-bg-soft); /* prevents content looking like it slides underneath */
 }
 
 .regulate-btn {
@@ -444,12 +497,12 @@ main {
   overflow: hidden;
   background: var(--secondary-color-transparent);
   backdrop-filter: blur(4px);
-  box-shadow: 0 3px 8px var(--box-shadow-color);
+  box-shadow: 0 3px 8px var(--shadow-color);
 }
 
 /* Header button */
 .accordion-button {
-  background: #d8e9df;
+  background: var(--accordion-bg);
   font-family: var(--primary-font);
   font-size: 1.05rem;
   color: var(--primary-color);
@@ -458,20 +511,20 @@ main {
 }
 
 .accordion-button:not(.collapsed) {
-  background: #c9e4d6;
+  background: var(--accordion-bg-open);
   color: var(--primary-color);
   box-shadow: none;
 }
 
 .accordion-button:focus {
-  box-shadow: 0 0 0 2px var(--box-shadow-color);
+  box-shadow: 0 0 0 2px var(--shadow-color);
 }
 
 /* Inside the accordion */
 .accordion-body {
   background: var(--secondary-color);
   padding: 1.2rem 1.4rem;
-  border-top: 1px solid rgba(0,0,0,0.08);
+  border-top: 1px solid var(--divider-border);
   font-family: var(--primary-font);
   color: var(--primary-color);
 }
@@ -484,7 +537,7 @@ main {
   padding: 1rem 1.2rem;
   border-radius: 10px;
   margin-bottom: 1rem;
-  box-shadow: 0 2px 6px var(--box-shadow-color);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 /* Inline action links */
@@ -529,9 +582,9 @@ main {
   display: inline-block;
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid rgba(42, 94, 79, 0.35);
-  background: rgba(255, 255, 255, 0.55);
-  color: rgba(42, 94, 79, 0.6);
+  border: 1px solid var(--disabled-border);
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: not-allowed;
@@ -635,7 +688,7 @@ main {
 .search-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 4px var(--box-shadow-color);
+  box-shadow: 0 0 4px var(--shadow-color);
 }
 
 /* ----------------------------------------
@@ -676,9 +729,9 @@ main {
 }
 
 .alert-success {
-  background: #d6f5e3; /* soft green to match palette */
+  background: var(--success-bg);
   color: var(--primary-color);
-  border: 1px solid #a2d9c9;
+  border: 1px solid var(--success-border);
   padding: 0.9rem 1.2rem;
   border-radius: 12px;
   font-family: var(--primary-font);
@@ -686,7 +739,7 @@ main {
   max-width: 800px;
   width: 90%;
   text-align: center;
-  box-shadow: 0 3px 8px var(--box-shadow-color);
+  box-shadow: 0 3px 8px var(--shadow-color);
   animation: fadeSlideIn 0.4s ease-out;
 }
 
