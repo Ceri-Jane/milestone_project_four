@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.utils import timezone
 
 from billing.models import Subscription
 from core.limits import FREE_ENTRY_LIMIT, is_free_locked
@@ -20,7 +23,9 @@ class TestFreePlanLimits(TestCase):
 
     def _make_entries(self, user, count):
         """Create minimal valid entries for a user (mood is required)."""
-        Entry.objects.bulk_create([Entry(user=user, mood=3, hue="50") for _ in range(count)])
+        Entry.objects.bulk_create(
+            [Entry(user=user, mood=3, hue="50") for _ in range(count)]
+        )
 
     def test_free_user_below_limit_is_not_locked(self):
         user = self._make_user("u_below")
@@ -45,5 +50,26 @@ class TestFreePlanLimits(TestCase):
         user = self._make_user("u_trial")
         Subscription.objects.create(user=user, status="trialing")
         self._make_entries(user, FREE_ENTRY_LIMIT + 25)
+
+        self.assertFalse(is_free_locked(user))
+
+    # -------------------------------
+    # TDD: Trial End Future Scenario
+    # -------------------------------
+    def test_trial_end_in_future_user_is_never_locked(self):
+        """
+        If a subscription has trial_end in the future, the user should
+        be treated as having trial access even if status is not exactly 'trialing'.
+        """
+
+        user = self._make_user("u_trial_end_future")
+
+        Subscription.objects.create(
+            user=user,
+            status="incomplete",
+            trial_end=timezone.now() + timedelta(days=7),
+        )
+
+        self._make_entries(user, FREE_ENTRY_LIMIT + 5)
 
         self.assertFalse(is_free_locked(user))
