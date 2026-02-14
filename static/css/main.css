@@ -606,6 +606,19 @@ a:focus-visible {
   margin-bottom: 1rem;
 }
 
+/* New: wrapper blocks so each filter can flex cleanly without overflow */
+.dashboard-filter-form .filter-field {
+  flex: 1 1 auto;
+
+  /* Prevents inputs from overflowing the card in narrow viewports */
+  min-width: 0;
+}
+
+/* New: keeps the action button from shrinking */
+.dashboard-filter-form .filter-actions {
+  flex: 0 0 auto;
+}
+
 /* Tweak spacing for search input when used in filter row */
 .dashboard-filter-form .search-input {
   margin-bottom: 0;
@@ -816,6 +829,22 @@ a:focus-visible {
   .reg-footer-links a {
     font-weight: 200;
     font-size: 0.8rem;
+  }
+}
+
+/* New: stack entry search filters on mobile */
+@media (max-width: 767.98px) {
+
+  /* Stack filter controls to prevent keyword field overflow */
+  .dashboard-filter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Make the search button easier to tap on mobile */
+  .dashboard-filter-form .select-btn-small {
+    width: 100%;
+    max-width: none;
   }
 }
 

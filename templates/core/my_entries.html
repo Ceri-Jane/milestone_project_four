@@ -44,28 +44,35 @@
         <form method="get" class="dashboard-filter-form mb-3">
 
             <!-- Date filter input -->
-            <input
-                type="date"
-                name="date"
-                value="{{ search_date }}"
-                class="search-input"
-                aria-label="Filter entries by date"
-            >
+            <div class="filter-field">
+                <input
+                    type="date"
+                    name="date"
+                    value="{{ search_date }}"
+                    class="search-input"
+                    aria-label="Filter entries by date"
+                >
+            </div>
 
             <!-- Keyword search input -->
-            <input
-                type="text"
-                name="q"
-                value="{{ search_query }}"
-                class="search-input"
-                placeholder="Search notes or emotions…"
-                aria-label="Search entries by keyword"
-            >
+            <div class="filter-field">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ search_query }}"
+                    class="search-input"
+                    placeholder="Search notes or emotions…"
+                    aria-label="Search entries by keyword"
+                >
+            </div>
 
             <!-- Filter submit button -->
-            <button class="select-btn select-btn-small">
-                Search
-            </button>
+            <div class="filter-actions">
+                <button class="select-btn select-btn-small" type="submit">
+                    Search
+                </button>
+            </div>
+
         </form>
 
         <!-- Add new entry / locked state section -->
