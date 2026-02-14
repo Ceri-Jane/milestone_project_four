@@ -413,16 +413,18 @@ def delete_entry(request, entry_id):
     """Delete an entry (POST only)."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
-    if is_free_locked(request.user):
-        messages.info(
-            request,
-            "Deleting is paused on the free plan once you reach the 10 entry limit. "
-            "You can still view your entries."
-        )
-        return redirect("my_entries")
-
+    # Allow deletes even when locked so users can drop back under the free limit
     entry.delete()
-    messages.success(request, "Your entry has been deleted.")
+
+    # If they were locked, deleting may restore create/edit access
+    if not is_free_locked(request.user):
+        messages.success(
+            request,
+            "Your entry has been deleted. You can now create and edit entries again."
+        )
+    else:
+        messages.success(request, "Your entry has been deleted.")
+
     return redirect("my_entries")
 
 
