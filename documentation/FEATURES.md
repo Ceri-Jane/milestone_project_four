@@ -56,6 +56,13 @@ Return to [README.md](../README.md)
 7. [Dashboard](#dashboard)
     - [Entry Overview & Plan Status](#entry-overview--plan-status)
     - [Creating Entries](#creating-entries)
+    - [Browsing & Managing Entries](#browsing--managing-entries)
+        - [Search & Filtering](#search--filtering)
+        - [Grouped Date Accordion Layout](#grouped-date-accordion-layout)
+        - [Entry Summary Display](#entry-summary-display)
+        - [Viewing Entry Details](#viewing-entry-details)
+        - [Editing Entries](#editing-entries)
+        - [Deleting Entries](#deleting-entries)
     - [Supportive Phrases (External API Integration)](#supportive-phrases-external-api-integration)
     - [Site Announcements](#site-announcements)
 
@@ -566,12 +573,16 @@ This separation supports both technical maintainability and long-term scalabilit
 Return to [README.md](../README.md)
 
 ---
-
 ## Dashboard
+---
 
 The Dashboard acts as the user’s calm “home base” within Regulate. It provides a structured overview of activity, account status, and supportive features without introducing urgency, metrics, or performance pressure.
 
 The layout prioritises clarity and emotional neutrality while keeping core actions immediately accessible.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
 
 ---
 
@@ -590,6 +601,10 @@ When the free entry limit is reached:
 
 This ensures transparency without sudden lock-outs or hidden restrictions.
 
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
 ---
 
 ### Creating Entries
@@ -601,9 +616,151 @@ If a user has not yet created any entries, the dashboard presents a clear, suppo
 If entries already exist, users can:
 
 - Add a new entry  
-- Navigate directly to their entries list  
+- Navigate directly to their entries list via **“Go to Your Entries”**
 
 This ensures the primary feature of the platform is always accessible without searching through menus.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+### Browsing & Managing Entries
+
+Selecting **“Go to Your Entries”** takes users to the dedicated entries page, where they can browse, search, view, edit, and delete previous entries in a structured and calm format.
+
+#### Search & Filtering
+
+Users can filter their entries using:
+
+- A **date filter** (HTML date input)
+- A **keyword search field** (searches both notes and emotion words)
+
+Search behaviour:
+
+- Only the logged-in user’s entries are queried
+- Filters use `GET` parameters
+- Date and keyword filters can be combined
+- Empty search returns the full grouped list
+
+This supports reflection and pattern recognition without requiring chronological scrolling.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+#### Grouped Date Accordion Layout
+
+Entries are grouped by date and displayed within collapsible accordion dropdown sections.
+
+This:
+
+- Reduces visual overwhelm  
+- Keeps the interface clean and structured  
+- Organises entries chronologically  
+
+Each accordion header displays a specific date. Expanding it reveals all entries created on that day.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+#### Entry Summary Display
+
+Within each expanded section, entries display:
+
+- Mood (human-readable label)  
+- Hue value  
+- Selected emotion words (if any)  
+- Notes (if provided)  
+
+If an entry has revision history, the following indicator appears:
+
+> *Edited — revision history available*
+
+This provides transparency while maintaining a neutral tone.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+#### Viewing Entry Details
+
+Selecting **“View”** opens a dedicated Entry Details page.
+
+This page displays:
+
+- Original creation timestamp  
+- Last updated timestamp  
+- Full entry content  
+- Complete revision history  
+
+Revision history entries show:
+
+- Timestamp of revision  
+- Previous mood, hue, emotion words, and notes  
+
+Older versions remain accessible for reflective purposes.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+#### Editing Entries
+
+Users can edit entries unless:
+
+- They are on the Free plan **and**
+- They have reached the entry limit
+
+If locked:
+
+- Edit controls are disabled  
+- Clear messaging explains the restriction  
+- Users are directed toward Regulate+  
+
+If unlocked:
+
+- Users can update mood, hue, emotion words, and notes  
+- A revision record is created **only if changes were made**  
+- No revision is created for unchanged submissions (validated via automated testing)
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+#### Deleting Entries
+
+Users can delete entries directly from the accordion list.
+
+Deletion includes:
+
+- JavaScript confirmation prompt  
+- Clear irreversible warning message  
+- Secure POST request with CSRF protection  
+
+If a free-plan user deletes an entry while locked:
+
+- Their entry count decreases  
+- Create/edit access is automatically restored  
+- A confirmation message is displayed  
+
+This prevents permanent lockout and maintains fairness in the free plan logic.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
 
 ---
 
@@ -619,6 +776,10 @@ If the external API is unavailable or fails, the system automatically falls back
 
 This prevents broken UI states and avoids user-facing error messages.
 
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
 ---
 
 ### Site Announcements
@@ -626,11 +787,13 @@ This prevents broken UI states and avoids user-facing error messages.
 Administrative announcements can be displayed on the dashboard.
 
 Users can:
+
 - Dismiss announcements during their session  
 
-Announcements will reappear on the next login if still active.  
+Announcements reappear on the next login if still active.
 
 This design ensures:
+
 - Important updates remain visible  
 - Users are not permanently hiding relevant information  
 - Interruptions remain minimal and non-intrusive  
@@ -639,7 +802,7 @@ This design ensures:
 
 **UX considerations:**
 
-The dashboard is intentionally:
+The dashboard and entries flow are intentionally:
 
 - Calm and visually uncluttered  
 - Free from performance metrics or streak tracking  
@@ -654,8 +817,8 @@ The dashboard supports both new and returning users while maintaining the core e
 Return to [README.md](../README.md)
 
 ---
-
 ## Regulate+ Page
+---
 
 The **Regulate+ page** functions as the subscription control centre of the application. It provides users with clear visibility of their current plan and dynamically updates based on subscription status.
 
