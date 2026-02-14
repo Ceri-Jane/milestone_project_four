@@ -21,19 +21,31 @@ def get_subscription(user):
 def has_paid_access(subscription):
     """
     Return True if the user should be treated as Regulate+.
-    Includes active/trialing subscriptions and grace periods.
+    Includes:
+    - active subscriptions
+    - trialing subscriptions
+    - trial_end still in the future
+    - canceled subscriptions still within paid period (grace period)
     """
     if not subscription:
         return False
 
-    if subscription.status in PAID_STATUSES:
+    now = timezone.now()
+    status = (subscription.status or "").lower()
+
+    # Active or trialing subscriptions
+    if status in PAID_STATUSES:
+        return True
+
+    # Treat any future trial_end as active trial access
+    if subscription.trial_end and subscription.trial_end > now:
         return True
 
     # Grace period: canceled but access period not yet ended
     if (
-        subscription.status == "canceled"
+        status == "canceled"
         and subscription.current_period_end
-        and subscription.current_period_end > timezone.now()
+        and subscription.current_period_end > now
     ):
         return True
 
