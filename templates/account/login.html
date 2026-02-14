@@ -23,7 +23,7 @@
         <h1 class="form-title">Welcome Back</h1>
 
         {# -------------------------------- #}
-        {# LOGIN ERROR SUMMARY (ALERT)      #}
+        {# SIGN IN ERROR SUMMARY (ALERT)      #}
         {# -------------------------------- #}
         {% if form.errors %}
             <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3"
@@ -44,7 +44,7 @@
             </div>
         {% endif %}
 
-        <!-- Login form -->
+        <!-- Sign in form -->
         <form method="post" action="{% url 'account_login' %}" novalidate>
             {% csrf_token %}
 
@@ -99,7 +99,7 @@
                 <input type="checkbox" name="remember" id="remember" {% if form.data.remember or not form.data %}checked{% endif %}>
             </label>
 
-            <!-- Submit login -->
+            <!-- Submit sign in -->
             <button type="submit" class="select-btn">Sign In</button>
 
             <!-- Redirect target -->
