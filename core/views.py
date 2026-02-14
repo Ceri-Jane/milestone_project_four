@@ -267,6 +267,12 @@ def edit_entry(request, entry_id):
     """Edit an entry and store a revision snapshot."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
+    # Snapshot original values so we can avoid creating revisions for no-op edits
+    original_hue = entry.hue or ""
+    original_mood = entry.mood
+    original_emotion_words = entry.emotion_words or ""
+    original_notes = entry.notes or ""
+
     if is_free_locked(request.user):
         messages.info(
             request,
@@ -304,19 +310,33 @@ def edit_entry(request, entry_id):
             if notes:
                 combined_notes += notes.strip()
 
-            EntryRevision.objects.create(
-                entry=entry,
-                hue=entry.hue,
-                mood=entry.mood,
-                emotion_words=entry.emotion_words,
-                notes=entry.notes,
+            # Normalise "new" values so we can detect real changes
+            new_hue_str = str(hue_value) if hue_value is not None else ""
+            new_emotion_words = ", ".join(selected_words) if selected_words else ""
+            new_notes = combined_notes
+
+            has_changes = (
+                new_hue_str != original_hue
+                or mood != original_mood
+                or new_emotion_words != original_emotion_words
+                or new_notes != original_notes
             )
 
+            # Only create a revision if something actually changed
+            if has_changes:
+                EntryRevision.objects.create(
+                    entry=entry,
+                    hue=original_hue,
+                    mood=original_mood,
+                    emotion_words=original_emotion_words,
+                    notes=original_notes,
+                )
+
             updated_entry = form.save(commit=False)
-            updated_entry.hue = str(hue_value) if hue_value is not None else ""
+            updated_entry.hue = new_hue_str
             updated_entry.mood = mood
-            updated_entry.notes = combined_notes
-            updated_entry.emotion_words = ", ".join(selected_words) if selected_words else ""
+            updated_entry.notes = new_notes
+            updated_entry.emotion_words = new_emotion_words
 
             updated_entry.save()
 
