@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseNotFound
 from django.views.decorators.http import require_POST
+from django.db.models import Q
 
 import random
 import requests
@@ -170,12 +171,18 @@ def new_entry(request):
 
 @login_required
 def my_entries(request):
-    """List entries grouped by date, with optional date filter."""
+    """List entries grouped by date, with optional filters."""
     user_entries = Entry.objects.filter(user=request.user).order_by("-created_at")
 
     search_date = request.GET.get("date")
     if search_date:
         user_entries = user_entries.filter(created_at__date=search_date)
+
+    search_query = request.GET.get("q", "").strip()
+    if search_query:
+        user_entries = user_entries.filter(
+            Q(notes__icontains=search_query) | Q(emotion_words__icontains=search_query)
+        )
 
     grouped_entries = {}
     for entry in user_entries:
@@ -186,7 +193,6 @@ def my_entries(request):
     entry_count = user_entry_count(request.user)
     locked = is_free_locked(request.user)
 
-    # Free plan counter (int so templates can compare properly)
     free_entries_remaining = max(0, FREE_ENTRY_LIMIT - entry_count)
 
     return render(
@@ -195,6 +201,7 @@ def my_entries(request):
         {
             "grouped_entries": grouped_entries,
             "search_date": search_date,
+            "search_query": search_query,
             "is_free_locked": locked,
             "entry_count": entry_count,
             "free_entry_limit": FREE_ENTRY_LIMIT,
@@ -217,10 +224,8 @@ def dashboard(request):
     entry_count = user_entry_count(request.user)
     locked = is_free_locked(request.user)
 
-    # Free plan counter for the dashboard line
     entries_left = max(0, FREE_ENTRY_LIMIT - entry_count)
 
-    # Per-login key for dismissible dashboard alerts
     login_key = ""
     if request.user.last_login:
         login_key = request.user.last_login.isoformat()
@@ -267,7 +272,7 @@ def edit_entry(request, entry_id):
     """Edit an entry and store a revision snapshot."""
     entry = get_object_or_404(Entry, pk=entry_id, user=request.user)
 
-    # Snapshot original values so we can avoid creating revisions for no-op edits
+    # Snapshot original values to avoid creating revisions for no-op edits
     original_hue = entry.hue or ""
     original_mood = entry.mood
     original_emotion_words = entry.emotion_words or ""
@@ -310,7 +315,6 @@ def edit_entry(request, entry_id):
             if notes:
                 combined_notes += notes.strip()
 
-            # Normalise "new" values so we can detect real changes
             new_hue_str = str(hue_value) if hue_value is not None else ""
             new_emotion_words = ", ".join(selected_words) if selected_words else ""
             new_notes = combined_notes
@@ -322,7 +326,6 @@ def edit_entry(request, entry_id):
                 or new_notes != original_notes
             )
 
-            # Only create a revision if something actually changed
             if has_changes:
                 EntryRevision.objects.create(
                     entry=entry,

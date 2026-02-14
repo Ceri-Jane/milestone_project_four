@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 
+<!-- SEO meta description -->
 {% block meta_description %}
 <meta name="description" content="View, filter, and search entries by date, keywords, and emotion tags.">
 {% endblock %}
 
+<!-- SEO meta keywords -->
 {% block meta_keywords %}
 <meta name="keywords" content="my entries, entry search, emotion tags, mood notes, regulate">
 {% endblock %}
 
+<!-- Page title -->
 {% block title %}
 <title>Regulate | My entries</title>
 {% endblock %}
@@ -26,6 +29,7 @@
             Browse and search your past entries. No streaks, no guilt — just a record when you needed it.
         </p>
 
+        <!-- Free plan remaining counter -->
         {% if not is_free_locked and entry_count < free_entry_limit %}
             <p class="form-info small-text">
                 Free plan: {{ free_entries_remaining }}
@@ -36,8 +40,10 @@
 
         <hr>
 
-        <!-- Date filter form -->
+        <!-- Date + keyword filter -->
         <form method="get" class="dashboard-filter-form mb-3">
+
+            <!-- Date filter input -->
             <input
                 type="date"
                 name="date"
@@ -45,38 +51,60 @@
                 class="search-input"
                 aria-label="Filter entries by date"
             >
+
+            <!-- Keyword search input -->
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                class="search-input"
+                placeholder="Search notes or emotions…"
+                aria-label="Search entries by keyword"
+            >
+
+            <!-- Filter submit button -->
             <button class="select-btn select-btn-small">
                 Search
             </button>
         </form>
 
-        <!-- Add new entry / free plan limit -->
+        <!-- Add new entry / locked state section -->
         <div class="text-center mb-3">
             {% if is_free_locked %}
+
+                <!-- Locked state button -->
                 <button class="select-btn is-disabled" disabled>
                     Entry limit reached ({{ entry_count }}/{{ free_entry_limit }})
                 </button>
+
+                <!-- Locked state helper text -->
                 <p class="form-info small-text">
-                    You can still view your entries, but creating and editing is paused on the free plan.
+                    Creating and editing are paused on the free plan, but you can delete entries to regain access.
                 </p>
 
-                <a href="{% url 'regulate_plus' %}" class="select-btn mt-2" aria-label="Go to Regulate+ to start a trial or manage billing">
+                <!-- Upgrade CTA -->
+                <a href="{% url 'regulate_plus' %}" class="select-btn mt-2">
                     Go to Regulate+
                 </a>
 
             {% else %}
+
+                <!-- Primary create CTA -->
                 <a href="{% url 'new_entry' %}" class="select-btn">
                     Add New Entry
                 </a>
+
             {% endif %}
         </div>
 
+        <!-- Entries accordion -->
         {% if grouped_entries %}
         <div class="accordion dashboard-accordion" id="entriesAccordion">
 
             {% for date, entries in grouped_entries.items %}
             <div class="accordion-item">
 
+                <!-- Accordion header (date group) -->
                 <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
                     <button
                         class="accordion-button collapsed"
@@ -88,6 +116,7 @@
                     </button>
                 </h2>
 
+                <!-- Accordion body -->
                 <div
                     id="collapse-{{ forloop.counter }}"
                     class="accordion-collapse collapse"
@@ -97,50 +126,68 @@
                         {% for entry in entries %}
                         <div class="entry-card">
 
+                            <!-- Entry summary fields -->
                             <p><strong>Mood:</strong> {{ entry.get_mood_display }}</p>
                             <p><strong>Hue:</strong> {{ entry.hue }}</p>
 
+                            <!-- Emotion tags -->
                             {% if entry.emotion_words %}
                                 <p><strong>Emotions:</strong> {{ entry.emotion_words }}</p>
                             {% endif %}
 
+                            <!-- Entry notes -->
                             {% if entry.notes %}
                                 <p><strong>Notes:</strong><br>{{ entry.notes|linebreaks }}</p>
                             {% endif %}
 
+                            <!-- Revision indicator -->
                             {% if entry.has_revisions %}
                                 <p class="text-center">
                                     <strong>*Edited — revision history available</strong>
                                 </p>
                             {% endif %}
 
+                            <!-- Entry action links -->
                             <div class="justify-content-center entry-actions">
                                 <a href="{% url 'view_entry' entry.id %}">View</a>
 
                                 {% if is_free_locked %}
-                                    <span class="disabled-action"
-                                          title="Free plan limit reached ({{ free_entry_limit }} entries). Upgrade to edit.">
+
+                                    <!-- Disabled edit when locked -->
+                                    <span class="disabled-action">
                                         Edit
                                     </span>
-                                    <span class="disabled-action"
-                                          title="Free plan limit reached ({{ free_entry_limit }} entries). Upgrade to delete.">
-                                        Delete
-                                    </span>
-                                {% else %}
-                                    <a href="{% url 'edit_entry' entry.id %}">Edit</a>
 
+                                    <!-- Delete still allowed when locked -->
                                     <form method="post"
                                         action="{% url 'delete_entry' entry.id %}"
                                         class="d-inline delete-entry-form"
                                         onsubmit="return confirm('Are you sure you want to delete this entry? This cannot be undone.');">
                                         {% csrf_token %}
-                                        <button type="submit" class="entry-delete-link" aria-label="Delete this entry permanently">
+                                        <button type="submit" class="entry-delete-link">
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                {% else %}
+
+                                    <!-- Edit link -->
+                                    <a href="{% url 'edit_entry' entry.id %}">Edit</a>
+
+                                    <!-- Delete form -->
+                                    <form method="post"
+                                        action="{% url 'delete_entry' entry.id %}"
+                                        class="d-inline delete-entry-form"
+                                        onsubmit="return confirm('Are you sure you want to delete this entry? This cannot be undone.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="entry-delete-link">
                                             Delete
                                         </button>
                                     </form>
 
                                 {% endif %}
                             </div>
+
                         </div>
                         {% endfor %}
 
@@ -153,10 +200,13 @@
         </div>
 
         {% else %}
+
+            <!-- Empty state -->
             <p class="form-info empty-state">
                 You haven’t created any entries yet — and that’s okay.
             </p>
 
+            <!-- Empty state CTA -->
             <div class="text-center mt-3">
                 {% if is_free_locked %}
                     <button class="select-btn is-disabled" disabled>
@@ -168,6 +218,7 @@
                     </a>
                 {% endif %}
             </div>
+
         {% endif %}
 
     </div>
