@@ -152,6 +152,14 @@ When signed in, users can:
 
 These links focus only on **core actions**, keeping the interface minimal and reducing cognitive load during emotionally difficult moments.
 
+![Feature 02](readme-media/images/02nav-not-signed-in.png)
+
+![Feature 01](readme-media/images/01nav-signed-in.png)
+
+![Feature 03](readme-media/images/03nav-status-bar.png)
+
+![Feature 04](readme-media/gifs/04nav-responsive.gif)
+
 ---
 
 ### Persistent account status
@@ -186,6 +194,12 @@ Return to [README.md](../README.md)
 The home page is designed to be a **calm, welcoming first touchpoint** that introduces the purpose and tone of Regulate before any interaction is required.
 
 Rather than presenting dashboards or data immediately, the page focuses on reassurance, safety, and approachability.
+
+![Feature 05](readme-media/images/05-landing-signed-in.png)
+
+![Feature 06](readme-media/images/06-landing-signed-out.png)
+
+![Feature 07](readme-media/gifs/07landing-video-adaptive.gif)
 
 ---
 
@@ -258,6 +272,10 @@ Return to [README.md](../README.md)
 The sign-in page is designed to be **simple, calm, and low effort**, allowing users to access their private space quickly without unnecessary friction or visual noise.
 
 Rather than presenting dense forms or complex options, the interface focuses only on the essentials required for secure authentication.
+
+![Feature 08](readme-media/gifs/08sign-in.gif)
+
+![Feature 09](readme-media/images/09-sign-in-error.png)
 
 ---
 
@@ -345,6 +363,16 @@ Regulate provides a straightforward and reassuring password recovery process, en
 
 The design mirrors the sign-in and sign-up pages, using the same calm, centred layout and minimal inputs to keep the experience focused and low effort.
 
+![Feature 10](readme-media/images/10-sign-in-forgot-password-error.png)
+
+![Feature 11](readme-media/images/11-terminal-email-link.png)
+
+![Feature 12](readme-media/images/12-choose-new-email.png)
+
+![Feature 13](readme-media/images/13-email-change-success.png)
+
+![Feature 14](readme-media/images/14-invalid-link.png)
+
 ---
 
 ### Requesting a reset
@@ -419,6 +447,8 @@ The sign-up page provides a **simple, reassuring onboarding experience**, allowi
 Like the sign-in page, the layout uses a centred card design with soft colours and generous spacing to maintain a calm, distraction-free environment.
 
 The goal is to make registration feel approachable rather than clinical or overwhelming.
+
+![Feature 15](readme-media/images/15sign-up.png)
 
 ---
 
