@@ -52,19 +52,19 @@ Return to [README.md](../README.md)
 
 ### Regulate Main Site Access
 
-#### Standard Site User 1 (Free plan)
+#### Standard Site User 1
 
 Username: TestSiteUser1  
 Email: testsiteuser1@testuser.com  
 Password: Password98765  
 
-#### Standard Site User 2 (Free Trial)
+#### Standard Site User 2
 
 Username: TestSiteUser2  
 Email: testsiteuser2@testuser.com  
 Password: Password99999  
 
-#### Standard Site User 3 (Full Subscription)
+#### Standard Site User 3
 
 Username: TestSiteUser3  
 Email: testsiteuser3@testuser.com  
@@ -80,7 +80,276 @@ Return to [README.md](../README.md)
 ## Manual Testing
 ---
 
-(To be completed – validation screenshots, feature interaction walkthroughs, and browser/device checks will be added here.)
+### CSS Validation
+
+All CSS files were tested using the **W3C CSS Validator**.
+
+| File Tested | Result | Notes / Fixes Applied |
+|------------|--------|------------------------|
+| `static/css/main.css` | ☐ Pending | |
+| `static/css/auth.css` | ☐ Pending | |
+| `static/css/entry.css` | ☐ Pending | |
+
+Evidence:
+- ☐ Screenshot(s): `documentation/testing-media/images/css-validation-*.png`
+
+#### Additional UI Fixes (if required)
+
+Before fix:
+- ☐ Screenshot: `documentation/testing-media/images/css-before-*.png`
+
+After fix:
+- ☐ Screenshot: `documentation/testing-media/images/css-after-*.png`
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+### JavaScript Validation
+
+All custom JavaScript files were validated using a linting tool (e.g. **JSHint**, **JSLint**, or **ESLint**).
+
+| File Tested | Result | Notes / Fixes Applied |
+|------------|--------|------------------------|
+| `static/js/main.js` | ☐ Pending | |
+| `static/js/auth.js` | ☐ Pending | Password visibility toggle |
+| `static/js/entry.js` | ☐ Pending | Emotion filter + hue label behaviour |
+
+Checks performed:
+- ☐ No syntax errors
+- ☐ No console errors on pages that don’t include certain DOM elements
+- ☐ Event listeners guarded where needed
+- ☐ No unused / unreachable code (where flagged)
+
+Evidence:
+- ☐ Screenshot(s): `documentation/testing-media/images/js-validation-*.png`
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+### HTML Validation
+
+All user-facing pages were validated using the **W3C HTML Validator** by testing the rendered HTML output.
+
+Partials not validated standalone:
+- `templates/base.html`
+- `templates/partials/navbar.html`
+- `templates/partials/footer.html`
+
+#### HTML Summary
+
+| Page / Template | Errors Found | Warnings Found | Fixes Applied | Notes |
+|----------------|--------------|----------------|--------------|------|
+| `core/home.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/dashboard.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/my_entries.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/new_entry.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/entry_detail.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/entry_edit.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `pages/faq.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `pages/support.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `pages/contact.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `billing/regulate_plus.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `billing/checkout_cancelled.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/signup.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/login.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/profile.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/change_username.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/change_email.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/password_change.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/password_reset.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/password_reset_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/password_reset_from_key.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/password_reset_from_key_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `404.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `500.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `partials/footer.html` | *N/A* | *N/A* | Not applicable | Not applicable |
+| `partials/navbar.html` | *N/A* | *N/A* | Not applicable | Not applicable |
+| `base.html` | *N/A* | *N/A* | Not applicable | Not applicable |
+
+Common checks:
+- ☐ No invalid `aria-describedby`
+- ☐ Labels correctly linked to inputs
+- ☐ No invalid nested interactive elements
+- ☐ No invalid HTML comments
+- ☐ SVG attributes valid
+
+Evidence:
+- ☐ Screenshot(s): `documentation/testing-media/images/html-validation-*.png`
+
+#### HTML Full Details (collapsible example)
+
+<details>
+<summary><strong>Example – Page Name</strong></summary>
+
+Describe warnings, errors, and whether fixes were required.
+
+</details>
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Lighthouse Testing
+
+Key pages tested:
+- Home
+- Dashboard
+- My Entries
+- New Entry
+- Regulate+
+
+### Desktop Results
+
+| Page | Performance | Accessibility | Best Practices | SEO | Notes |
+|------|------------|---------------|---------------|-----|------|
+| Home | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| Dashboard | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| My Entries | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| New Entry | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| Regulate+ | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+
+### Mobile Results
+
+| Page | Performance | Accessibility | Best Practices | SEO | Notes |
+|------|------------|---------------|---------------|-----|------|
+| Home | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| Dashboard | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| My Entries | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| New Entry | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| Regulate+ | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+
+Evidence:
+- ☐ `documentation/testing-media/images/lighthouse-*.png`
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Responsiveness Testing
+
+| Device / Screen Size | Result | Notes |
+|----------------------|--------|------|
+| Mobile – 360px | ☐ Pending | |
+| Mobile – 390px | ☐ Pending | |
+| Mobile – 375px | ☐ Pending | |
+| Tablet – 768px | ☐ Pending | |
+| Laptop – 1366px | ☐ Pending | |
+| Desktop – 1920px | ☐ Pending | |
+
+Critical checks:
+- ☐ Entry form usable on mobile
+- ☐ Emotion list scroll behaves correctly
+- ☐ Regulate+ CTA responsive
+- ☐ Navbar collapses correctly
+
+Evidence:
+- ☐ `documentation/testing-media/gifs/responsive-*.gif`
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Browser Compatibility Testing
+
+| Browser | Version Tested | Result | Notes |
+|--------|----------------|--------|------|
+| Chrome | Latest | ☐ Pending | |
+| Firefox | Latest | ☐ Pending | |
+| Edge | Latest | ☐ Pending | |
+| Safari | Latest | ☐ Pending | |
+| Samsung Internet | Latest | ☐ Pending | |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## User Story Testing
+
+| Feature | What Was Checked | Pass/Fail |
+|---------|------------------|----------|
+| Authentication | Signup, login, logout | ☐ Pending |
+| Create entry | Hue, emotions, notes save | ☐ Pending |
+| View entries | Date grouping, detail page | ☐ Pending |
+| Edit entry | Updates persist, revision logic | ☐ Pending |
+| Delete entry | Removes correctly | ☐ Pending |
+| Keyword search | Notes + emotions matched | ☐ Pending |
+| Free plan limit | Lock at limit, unlock on delete | ☐ Pending |
+| Subscription gating | Trial/active/grace logic | ☐ Pending |
+| Support ticket | Logged-in vs logged-out validation | ☐ Pending |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Feature Interaction Testing
+
+| Area Tested | What Was Checked | Result |
+|------------|------------------|--------|
+| Forms | Validation, accessibility labels | ☐ Pending |
+| Buttons | Create/edit/delete behaviour | ☐ Pending |
+| Links | Navigation and redirects | ☐ Pending |
+| Business Logic | Locking logic + plan messaging | ☐ Pending |
+| Stripe (Test Mode) | Checkout success/cancel flows | ☐ Pending |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Admin Area Security Testing
+
+| Security Check | Description | Status |
+|----------------|-------------|--------|
+| Admin restricted | `/admin/` blocked for non-staff | ☐ Pending |
+| Ownership enforced | Cannot edit others’ entries | ☐ Pending |
+| CSRF protection | Tokens present | ☐ Pending |
+| Confirmation prompts | Dangerous actions gated | ☐ Pending |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Error Handling
+
+| Error Type | Behaviour | Result |
+|------------|-----------|--------|
+| 404 | Custom 404 template renders | ☐ Pending |
+| 500 | Custom 500 template renders | ☐ Pending |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+## Security Testing
+
+| Security Area | What Was Tested | Result |
+|---------------|----------------|--------|
+| Authentication protection | Login required for protected pages | ☐ Pending |
+| Authorisation checks | Ownership enforced | ☐ Pending |
+| CSRF | Forms protected | ☐ Pending |
+| Environment variables | Keys not exposed | ☐ Pending |
+| Production settings | DEBUG off | ☐ Pending |
 
 [Back to contents](#contents)
 
