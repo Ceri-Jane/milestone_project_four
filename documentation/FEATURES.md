@@ -534,6 +534,10 @@ Because mood tracking is the backbone of the platform, access to creating a new 
 
 Providing multiple predictable access points reduces friction and ensures users never need to search for the platform’s primary function. This is particularly important during moments of distress, when cognitive load and decision-making capacity may be reduced.
 
+![Feature 16](readme-media/gifs/16new-entry.gif)
+
+![Feature 17](readme-media/gifs/17new-entry-adaptive.gif)
+
 ---
 
 ### Mood Hue Slider
@@ -609,6 +613,14 @@ Return to [README.md](../README.md)
 The Dashboard acts as the user’s calm “home base” within Regulate. It provides a structured overview of activity, account status, and supportive features without introducing urgency, metrics, or performance pressure.
 
 The layout prioritises clarity and emotional neutrality while keeping core actions immediately accessible.
+
+![Feature 18](readme-media/gifs/18dashboard.gif)
+
+![Feature 19](readme-media/images/19.dashboard-large-screen.png)
+
+![Feature 23](readme-media/images/23dashboard-free-plan.png)
+
+![Feature 20](readme-media/gifs/20dashboard-mobile.gif)
 
 [Back to contents](#contents)
 
@@ -854,13 +866,17 @@ The **Regulate+ page** functions as the subscription control centre of the appli
 
 Access to this page is permanently available via the **“Regulate+” link in the navbar** once authenticated, ensuring users can review or manage their plan at any time without interruption.
 
+![Feature 21](readme-media/images/21regulate-plus-free-trial.png)
+
+![Feature 22](readme-media/images/22regulate-plus-free-plan.png)
+
 ---
 
 ### Dynamic Plan State Behaviour
 
 The Regulate+ page renders different content depending on the user’s current subscription tier.
 
-#### <u>When on the Free Plan</u>
+#### When on the Free Plan
 
 If the user is on the **Free plan**, the page displays:
 
@@ -878,7 +894,7 @@ The upgrade pathway is always user-initiated and never forced.
 
 If a user reaches their free entry limit elsewhere in the application, they are signposted to this page — but remain fully in control of whether to upgrade.
 
-#### <u>When on Free Trial or Active Subscription</u>
+#### When on Free Trial or Active Subscription
 
 Once a user activates either:
 
@@ -952,6 +968,14 @@ Stripe was selected to ensure:
 - PCI compliance  
 - Reliable subscription lifecycle management  
 - Minimal exposure of sensitive payment data to the application  
+
+![Feature 24](readme-media/images/24stripe-free-trial.png)
+
+![Feature 25](readme-media/images/25checkout-cancelled.png)
+
+![Feature 26](readme-media/images/26free-trial-active.png)
+
+![Feature 27](readme-media/images/27stripe-manage-billing.png)
 
 ---
 
@@ -1153,6 +1177,14 @@ The **Profile page** provides a central location for users to manage their Regul
 
 It is accessible at all times via the **“My Account”** dropdown in the navbar once a user is authenticated. This ensures account management is always available without disrupting the core mood tracking experience.
 
+![Feature 28](readme-media/images/28profile-username.png)
+
+![Feature 29](readme-media/images/29profile-email.png)
+
+![Feature 30](readme-media/images/30profile-password.png)
+
+![Feature 31](readme-media/gifs/31profile-logout.gif)
+
 ---
 
 ### Account Overview
@@ -1255,6 +1287,12 @@ Footer links include:
 - Back to top shortcut  
 
 Separating these links from the main navigation helps maintain a calm, task-focused interface while still ensuring assistance remains easy to find when needed.
+
+![Feature 32](readme-media/gifs/32footer.gif)
+
+![Feature 33](readme-media/gifs/33support.gif)
+
+![Feature 34](readme-media/gifs/34contact-us-not-signed-in.gif)
 
 ---
 
@@ -1376,6 +1414,30 @@ Messages are displayed in a consistent banner format and are:
 - Dismissible where appropriate
 - Never emotionally alarmist
 
+Just some examples
+
+![Feature 35](readme-media/images/35success-01.png)
+
+![Feature 36](readme-media/images/36success-02.png)
+
+![Feature 37](readme-media/images/37success-03.png)
+
+![Feature 38](readme-media/images/38success-04.png)
+
+![Feature 39](readme-media/images/39success-05.png)
+
+![Feature 40](readme-media/images/40success-06.png)
+
+![Feature 41](readme-media/images/41error-01.png)
+
+![Feature 42](readme-media/images/42error-02.png)
+
+![Feature 43](readme-media/images/43error-03.png)
+
+![Feature 44](readme-media/images/44error-04.png)
+
+![Feature 45](readme-media/images/45error-05.png)
+
 ---
 
 ### Success Messages
@@ -1402,8 +1464,6 @@ These messages:
 - Confirm secure handling of user actions  
 
 Success messages use a visually distinct success style to differentiate them from informational notices.
-
-<!-- Add success message screenshots here -->
 
 ---
 
@@ -1435,8 +1495,6 @@ Sensitive system information (such as Stripe exceptions or backend errors) is ne
 
 This protects security while maintaining clarity.
 
-<!-- Add error message screenshots here -->
-
 ---
 
 ### Informational Messages
@@ -1461,8 +1519,6 @@ They ensure:
 - Clear communication after Stripe redirects  
 
 Informational messages help prevent anxiety around financial transactions.
-
-<!-- Add informational message screenshots here -->
 
 ---
 
