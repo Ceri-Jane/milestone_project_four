@@ -30,3 +30,4 @@ urlpatterns = [
     # API
     path("api/supportive-phrase/", views.supportive_phrase, name="supportive_phrase"),
 ]
+

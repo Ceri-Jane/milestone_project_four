@@ -1670,6 +1670,8 @@ Standard authenticated users cannot access the admin interface.
 
 Permissions follow the principle of **least privilege**, meaning administrative users only see the models required for operational management.
 
+![Feature 47](readme-media/gifs/47admin.gif)
+
 ---
 
 ### Django Administration Interface
