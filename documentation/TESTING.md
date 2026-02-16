@@ -356,6 +356,43 @@ Return to [README.md](../README.md)
 Return to [README.md](../README.md)
 
 ---
+### UX Improvements Identified During Testing
+---
+
+During manual walkthrough testing of the entry creation flow, it was identified that the **New Entry** page did not provide a clear navigation path back to the user’s entry list without using the browser back button.
+
+This was considered poor UX because:
+- Users could feel “trapped” on the form
+- There was no explicit cancel/return action
+- It did not align with the calm, low-pressure design intent of Regulate
+
+#### Fix Implemented
+
+A clear return link was added beneath the form submission controls:
+
+```html
+<!-- Cancel and return to entries -->
+<div class="entry-actions justify-content-center">
+    <a href="{% url 'my_entries' %}">
+        Cancel and return to your entries
+    </a>
+</div>
+```
+
+#### Result
+
+- Users can now exit the form without submitting data.
+- Navigation flow is clearer and more intuitive.
+- Behaviour tested on both desktop and mobile.
+- No validation or layout issues introduced.
+
+This improves overall usability and aligns with Regulate’s trauma-informed design approach.
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
 ## Automated Testing
 ---
 
