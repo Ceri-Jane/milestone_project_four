@@ -169,10 +169,10 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 |----------------|--------------|----------------|--------------|------|
 | `core/home.html` | 0 | 0 | ARIA cleanup & semantic improvements | Validated against live rendered HTML |
 | `core/dashboard.html` | 0 | 0 | None required | Validated against live rendered HTML |
-| `core/my_entries.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `core/new_entry.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `core/entry_detail.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `core/entry_edit.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/my_entries.html` | 0 | 0 | Prevented `value="None"` in date input using `default_if_none` filter | Validated against live rendered HTML |
+| `core/new_entry.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `core/entry_detail.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `core/entry_edit.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `pages/faq.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `pages/support.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `pages/contact.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -193,7 +193,6 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `partials/footer.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `partials/navbar.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `base.html` | N/A | N/A | Not validated standalone | Layout wrapper |
-
 
 ---
 
@@ -234,19 +233,32 @@ Validated against the fully rendered live HTML output.
 </details>
 
 <details>
-<summary><strong>Dashboard – core/dashboard.html</strong></summary>
+<summary><strong>My Entries Page – core/my_entries.html</strong></summary>
 
-The rendered dashboard page was validated using the W3C HTML Validator.
+Initial validation identified:
 
-No structural, semantic, or ARIA-related errors were identified.
+- **Error:** `Bad value None for attribute value on element input`
+- Cause: The `type="date"` input was rendering `value="None"` when no date filter was applied.
+- This violates the required `YYYY-MM-DD` format for HTML date inputs.
 
-Final result:
+Resolution:
+
+- Updated the template to use:
+  ```
+  {{ search_date|default_if_none:'' }}
+  ```
+- This ensures an empty string is rendered instead of `"None"` when no date is selected.
+- Prevents invalid HTML output while maintaining filter functionality.
+
+Final result after redeploy and revalidation:
+
 - 0 Errors  
 - 0 Warnings  
 
-Validated against the fully rendered live HTML output on Heroku.
+Validated against the fully rendered live HTML output via the W3C HTML Validator.
 
 </details>
+
 
 
 [Back to contents](#contents)
