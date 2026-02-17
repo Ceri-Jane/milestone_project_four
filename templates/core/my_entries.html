@@ -48,7 +48,7 @@
                 <input
                     type="date"
                     name="date"
-                    value="{{ search_date }}"
+                    value="{{ search_date|default_if_none:'' }}"
                     class="search-input"
                     aria-label="Filter entries by date"
                 >
@@ -59,7 +59,7 @@
                 <input
                     type="text"
                     name="q"
-                    value="{{ search_query }}"
+                    value="{{ search_query|default_if_none:'' }}"
                     class="search-input"
                     placeholder="Search notes or emotions…"
                     aria-label="Search entries by keyword"
