@@ -188,8 +188,8 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `account/password_reset_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `account/password_reset_from_key.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `account/password_reset_from_key_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `404.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `500.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `404.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `500.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `partials/footer.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `partials/navbar.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `base.html` | N/A | N/A | Not validated standalone | Layout wrapper |
