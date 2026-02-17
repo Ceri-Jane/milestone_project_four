@@ -174,10 +174,10 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `core/entry_detail.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `core/entry_edit.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `pages/faq.html` | 0 | 0 | Added `role="region"` to accordion collapse panels to allow `aria-labelledby` | Validated against live rendered HTML |
-| `pages/support.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `pages/contact.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `billing/regulate_plus.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `billing/checkout_cancelled.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `pages/support.html` | 0 | 0 | Corrected heading hierarchy (replaced `h3` with `h2`) | Resolved skipped heading level error |
+| `pages/contact.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `billing/regulate_plus.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `billing/checkout_cancelled.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `account/signup.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `account/login.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `account/profile.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -199,7 +199,7 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 #### HTML Full Details (collapsible example)
 
 <details>
-<summary><strong>Home Page – core/home.html</strong></summary>
+<summary><strong>Home Page</strong></summary>
 
 Initial validation identified:
 
@@ -222,7 +222,7 @@ Validated against the fully rendered live HTML output.
 </details>
 
 <details>
-<summary><strong>My Entries Page – core/my_entries.html</strong></summary>
+<summary><strong>My Entries Page</strong></summary>
 
 Initial validation identified:
 
@@ -249,7 +249,7 @@ Validated against the fully rendered live HTML output via the W3C HTML Validator
 </details>
 
 <details>
-<summary><strong>FAQ Page – pages/faq.html</strong></summary>
+<summary><strong>FAQ Page</strong></summary>
 
 Initial validation identified multiple errors of the form:
 
@@ -271,6 +271,28 @@ Validated against the fully rendered live HTML output.
 
 </details>
 
+<details>
+<summary><strong>Crisis & Support Page</strong></summary>
+
+Initial validation identified a heading structure error:
+
+- An `<h3>` element followed directly after an `<h1>`, skipping `<h2>`.
+
+This violates semantic heading hierarchy rules and accessibility best practices.
+
+Fix applied:
+
+- Replaced all `<h3>` elements with `<h2>` to maintain a logical, sequential heading structure.
+
+After refactoring and redeploying, the page was revalidated.
+
+Final result:
+- 0 Errors  
+- 0 Warnings  
+
+Validated against the fully rendered live HTML output.
+
+</details>
 
 ---
 
