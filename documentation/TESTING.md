@@ -121,22 +121,30 @@ Return to [README.md](../README.md)
 
 ### JavaScript Validation
 
-All custom JavaScript files were validated using a linting tool (e.g. **JSHint**, **JSLint**, or **ESLint**).
+All custom JavaScript files were validated using **JSHint**.
+
+JSHint was configured to support modern syntax by adding the following directive at the top of each file:
+
+`/* jshint esversion: 8 */`
+
+The “New JavaScript features (ES6)” option was disabled in the JSHint configuration panel to avoid conflicts with the `esversion` setting.
 
 | File Tested | Result | Notes / Fixes Applied |
 |------------|--------|------------------------|
-| `static/js/main.js` | ☐ Pending | |
-| `static/js/auth.js` | ☐ Pending | Password visibility toggle |
-| `static/js/entry.js` | ☐ Pending | Emotion filter + hue label behaviour |
+| `static/js/main.js` | ✅ No warnings | Async/await validated; DOM guards in place |
+| `static/js/auth.js` | ✅ No warnings | Password visibility toggle validated |
+| `static/js/entry.js` | ✅ No warnings | Emotion filter and hue label logic validated |
 
-Checks performed:
-- ☐ No syntax errors
-- ☐ No console errors on pages that don’t include certain DOM elements
-- ☐ Event listeners guarded where needed
-- ☐ No unused / unreachable code (where flagged)
+#### Checks Performed
 
-Evidence:
-- ☐ Screenshot(s): `documentation/testing-media/images/js-validation-*.png`
+- ✅ No syntax errors  
+- ✅ No undefined variables  
+- ✅ No console errors on pages without certain DOM elements  
+- ✅ Event listeners conditionally guarded where required  
+- ✅ Async/await correctly linted under ES8  
+- ✅ No unused or unreachable code flagged  
+
+JSHint metrics indicated appropriate function size and complexity for interactive UI behaviour. The highest reported cyclomatic complexity reflects structured conditional logic within dashboard features and does not indicate a validation issue.
 
 [Back to contents](#contents)
 
