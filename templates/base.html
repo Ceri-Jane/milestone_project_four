@@ -41,13 +41,13 @@
         {% include 'partials/navbar.html' %}
 
         {% if user.is_authenticated and plan_status %}
-        <div class="plan-wrap" aria-label="Account plan">
+        <section class="plan-wrap" aria-label="Account plan">
             <div class="plan-inner">
-            <div class="plan-banner plan-{{ plan_status.badge }}">
-                {{ plan_status.label }}
+                <div class="plan-banner plan-{{ plan_status.badge }}">
+                    {{ plan_status.label }}
+                </div>
             </div>
-            </div>
-        </div>
+        </section>
         {% endif %}
 
 
