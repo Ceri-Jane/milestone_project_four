@@ -1,3 +1,5 @@
+/* jshint esversion: 8 */
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // ============================================================

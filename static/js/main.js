@@ -1,3 +1,5 @@
+/* jshint esversion: 8 */
+
 // static/js/main.js
 
 // Stop the hero video from looping.
