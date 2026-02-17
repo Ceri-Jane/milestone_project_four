@@ -154,19 +154,21 @@ Return to [README.md](../README.md)
 
 ### HTML Validation
 
-All user-facing pages were validated using the **W3C HTML Validator** by testing the rendered HTML output.
+All user-facing pages were validated using the **W3C HTML Validator** against the fully rendered HTML output of the live Heroku deployment.
 
-Partials not validated standalone:
-- `templates/base.html`
-- `templates/partials/navbar.html`
-- `templates/partials/footer.html`
+Validation was performed using:
+https://validator.w3.org/
+
+Partials were not validated standalone, as they are rendered within `base.html`.
+
+---
 
 #### HTML Summary
 
 | Page / Template | Errors Found | Warnings Found | Fixes Applied | Notes |
 |----------------|--------------|----------------|--------------|------|
-| `core/home.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `core/dashboard.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `core/home.html` | 0 | 0 | ARIA cleanup & semantic improvements | Validated against live rendered HTML |
+| `core/dashboard.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `core/my_entries.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `core/new_entry.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `core/entry_detail.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -188,28 +190,64 @@ Partials not validated standalone:
 | `account/password_reset_from_key_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `404.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `500.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `partials/footer.html` | *N/A* | *N/A* | Not applicable | Not applicable |
-| `partials/navbar.html` | *N/A* | *N/A* | Not applicable | Not applicable |
-| `base.html` | *N/A* | *N/A* | Not applicable | Not applicable |
+| `partials/footer.html` | N/A | N/A | Not validated standalone | Rendered via base template |
+| `partials/navbar.html` | N/A | N/A | Not validated standalone | Rendered via base template |
+| `base.html` | N/A | N/A | Not validated standalone | Layout wrapper |
 
-Common checks:
-- ☐ No invalid `aria-describedby`
-- ☐ Labels correctly linked to inputs
-- ☐ No invalid nested interactive elements
-- ☐ No invalid HTML comments
-- ☐ SVG attributes valid
 
-Evidence:
-- ☐ Screenshot(s): `documentation/testing-media/images/html-validation-*.png`
+---
+
+#### Common Checks Confirmed on `home.html`
+
+- No invalid ARIA attributes  
+- No unnecessary landmark roles  
+- No invalid `aria-describedby` usage  
+- No nested interactive elements  
+- Labels correctly associated with inputs  
+- Valid semantic landmark structure  
+
+---
 
 #### HTML Full Details (collapsible example)
 
 <details>
-<summary><strong>Example – Page Name</strong></summary>
+<summary><strong>Home Page – core/home.html</strong></summary>
 
-Describe warnings, errors, and whether fixes were required.
+Initial validation identified:
+
+- Unnecessary `role="navigation"` on the `<nav>` element  
+- Invalid `aria-label` usage on a `<div>` element  
+
+These were resolved by:
+
+- Removing redundant landmark roles (HTML5 `<nav>` already provides semantic meaning)  
+- Removing inappropriate ARIA attributes from non-landmark elements  
+
+After refactoring and redeploying to Heroku, the rendered HTML was revalidated.
+
+Final result:
+- 0 Errors  
+- 0 Warnings  
+
+Validated against the fully rendered live HTML output.
 
 </details>
+
+<details>
+<summary><strong>Dashboard – core/dashboard.html</strong></summary>
+
+The rendered dashboard page was validated using the W3C HTML Validator.
+
+No structural, semantic, or ARIA-related errors were identified.
+
+Final result:
+- 0 Errors  
+- 0 Warnings  
+
+Validated against the fully rendered live HTML output on Heroku.
+
+</details>
+
 
 [Back to contents](#contents)
 
