@@ -98,9 +98,9 @@
 
             {# Ensure aria-describedby points to a real element #}
             {% if form.password1.help_text %}
-                <small id="id_password1_helptext" class="form-text text-muted">
+                <div id="id_password1_helptext" class="form-text text-muted">
                     {{ form.password1.help_text|safe }}
-                </small>
+                </div>
             {% endif %}
 
             {% if form.password1.errors %}
@@ -129,9 +129,9 @@
             </div>
 
             {% if form.password2.help_text %}
-                <small id="id_password2_helptext" class="form-text text-muted">
+                <div id="id_password2_helptext" class="form-text text-muted">
                     {{ form.password2.help_text|safe }}
-                </small>
+                </div>
             {% endif %}
 
             {% if form.password2.errors %}
