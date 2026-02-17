@@ -196,17 +196,6 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 
 ---
 
-#### Common Checks Confirmed on `home.html`
-
-- No invalid ARIA attributes  
-- No unnecessary landmark roles  
-- No invalid `aria-describedby` usage  
-- No nested interactive elements  
-- Labels correctly associated with inputs  
-- Valid semantic landmark structure  
-
----
-
 #### HTML Full Details (collapsible example)
 
 <details>
@@ -258,7 +247,6 @@ Final result after redeploy and revalidation:
 Validated against the fully rendered live HTML output via the W3C HTML Validator.
 
 </details>
-
 
 
 [Back to contents](#contents)
