@@ -1,7 +1,6 @@
 {% load static %}
 
 <nav class="navbar navbar-expand regulate-navbar"
-     role="navigation"
      aria-label="Main navigation">
 
     <div class="container d-flex align-items-center">
@@ -26,72 +25,55 @@
 
             {% if user.is_authenticated %}
 
-            <!-- My Account Dropdown -->
             <div class="dropdown">
                 <button class="btn dropdown-toggle regulate-btn"
                         type="button"
                         id="profileDropdown"
                         data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        aria-label="Open profile options menu">
+                        aria-expanded="false">
                     My Account
                 </button>
 
                 <ul class="dropdown-menu dropdown-menu-end regulate-dropdown"
-                    aria-labelledby="profileDropdown"
-                    role="menu">
+                    aria-labelledby="profileDropdown">
 
-                    <!-- New Entry (TOP) -->
-                    <li role="none">
+                    <li>
                         <a class="dropdown-item"
-                           href="{% url 'new_entry' %}"
-                           role="menuitem"
-                           aria-label="Create a new mood entry">
+                           href="{% url 'new_entry' %}">
                             New Entry
                         </a>
                     </li>
 
                     <li><hr class="dropdown-divider"></li>
 
-                    <!-- Dashboard -->
-                    <li role="none">
+                    <li>
                         <a class="dropdown-item"
-                           href="{% url 'dashboard' %}"
-                           role="menuitem"
-                           aria-label="Go to your dashboard">
+                           href="{% url 'dashboard' %}">
                             My Dashboard
                         </a>
                     </li>
 
                     <li><hr class="dropdown-divider"></li>
 
-                    <!-- Regulate+ -->
-                    <li role="none">
+                    <li>
                         <a class="dropdown-item"
-                           href="{% url 'regulate_plus' %}"
-                           role="menuitem"
-                           aria-label="View Regulate+ subscription and billing options">
+                           href="{% url 'regulate_plus' %}">
                             Regulate+
                         </a>
                     </li>
 
                     <li><hr class="dropdown-divider"></li>
 
-                    <!-- Profile -->
-                    <li role="none">
+                    <li>
                         <a class="dropdown-item"
-                           href="{% url 'profile' %}"
-                           role="menuitem"
-                           aria-label="View and manage your profile settings">
+                           href="{% url 'profile' %}">
                             My Profile
                         </a>
                     </li>
 
                     <li><hr class="dropdown-divider"></li>
 
-                    <!-- Logout -->
-                    <li role="none">
+                    <li>
                         <form method="post"
                               action="{% url 'account_logout' %}"
                               class="px-3 py-2">
@@ -109,14 +91,12 @@
             {% else %}
 
             <a class="btn regulate-btn me-2"
-               href="{% url 'account_login' %}"
-               aria-label="Sign in to Regulate">
+               href="{% url 'account_login' %}">
                 Sign In
             </a>
 
             <a class="btn regulate-btn"
-               href="{% url 'account_signup' %}"
-               aria-label="Create a Regulate account">
+               href="{% url 'account_signup' %}">
                 Sign Up
             </a>
 
@@ -125,3 +105,4 @@
         </div>
     </div>
 </nav>
+
