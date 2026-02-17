@@ -178,11 +178,11 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `pages/contact.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `billing/regulate_plus.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `billing/checkout_cancelled.html` | 0 | 0 | None required | Validated against live rendered HTML |
-| `account/signup.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/login.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/profile.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/change_username.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/change_email.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/signup.html` | 0 | 0 | Added valid helptext IDs and replaced `<small>` with `<div>` to prevent invalid `<ul>` nesting | Resolved `aria-describedby` and content model errors |
+| `account/login.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `account/profile.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `account/change_username.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `account/change_email.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `account/password_change.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `account/password_reset.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `account/password_reset_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -193,6 +193,7 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `partials/footer.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `partials/navbar.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `base.html` | N/A | N/A | Not validated standalone | Layout wrapper |
+
 
 ---
 
@@ -289,6 +290,29 @@ After refactoring and redeploying, the page was revalidated.
 Final result:
 - 0 Errors  
 - 0 Warnings  
+
+Validated against the fully rendered live HTML output.
+
+</details>
+
+<details>
+<summary><strong>Signup Page – account/signup.html</strong></summary>
+
+Initial validation identified two issues:
+
+1. `aria-describedby` referenced `id_password1_helptext`, but no element with that ID existed in the rendered HTML.
+2. The password help text contained a `<ul>` element nested inside a `<small>` element, which violates the HTML content model (since `<small>` only allows phrasing content).
+
+These were resolved by:
+
+- Explicitly rendering help text with matching IDs (`id_password1_helptext`, `id_password2_helptext`) so `aria-describedby` references valid elements.
+- Replacing `<small>` wrappers with `<div>` elements to allow flow content such as `<ul>`.
+
+After refactoring and redeploying to Heroku, the rendered HTML was revalidated.
+
+Final result:
+- 0 Errors
+- 0 Warnings
 
 Validated against the fully rendered live HTML output.
 
