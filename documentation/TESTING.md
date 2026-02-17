@@ -86,20 +86,32 @@ All CSS files were tested using the **W3C CSS Validator**.
 
 | File Tested | Result | Notes / Fixes Applied |
 |------------|--------|------------------------|
-| `static/css/main.css` | ☐ Pending | |
-| `static/css/auth.css` | ☐ Pending | |
-| `static/css/entry.css` | ☐ Pending | |
+| `static/css/main.css` | ✔ No errors | Informational warnings only (see explanation below) |
+| `static/css/auth.css` | ✔ No errors | Informational warnings only |
+| `static/css/entry.css` | ✔ No errors | Informational warnings only |
 
-Evidence:
-- ☐ Screenshot(s): `documentation/testing-media/images/css-validation-*.png`
+#### Validator Warnings Explained
 
-#### Additional UI Fixes (if required)
+The validator returned several **non-critical warnings**, all of which are expected due to modern CSS usage:
 
-Before fix:
-- ☐ Screenshot: `documentation/testing-media/images/css-before-*.png`
+- **CSS Variables (`var(--variable-name)`)**  
+  The validator states that CSS variables cannot be statically checked.  
+  This is expected behaviour and does not indicate an error.
 
-After fix:
-- ☐ Screenshot: `documentation/testing-media/images/css-after-*.png`
+- **Vendor-prefixed properties**  
+  Properties such as `-webkit-appearance`, `::-webkit-slider-thumb`, and `::-moz-range-thumb` are intentionally used to ensure consistent cross-browser styling (particularly for the custom hue range slider).  
+  Vendor extensions are normal and valid in production code.
+
+- **External `@import` (Google Fonts)**  
+  The validator does not check externally imported stylesheets in direct input mode.  
+  This does not affect site functionality.
+
+- **Matching `background-color` and `border-color` on hover**  
+  A minor stylistic warning was raised where hover states intentionally use the same colour for visual consistency.  
+  This is intentional and does not impact accessibility or rendering.
+
+No CSS errors were found, and no functional or accessibility issues were identified during validation.
+
 
 [Back to contents](#contents)
 
@@ -390,7 +402,7 @@ This improves overall usability and aligns with Regulate’s trauma-informed des
 
 [Back to contents](#contents)
 
-Return to [README.md](../README.md)
+Return to [README.md](../README.md) 
 
 ---
 ## Automated Testing

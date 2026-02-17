@@ -95,7 +95,7 @@
   font-family: var(--primary-font);
   font-size: 0.95rem;
   color: var(--primary-color);
-  border-bottom: 1px solid var(--divider-border);;
+  border-bottom: 1px solid var(--divider-border);
 }
 
 .emotion-item:last-child {
