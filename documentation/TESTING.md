@@ -173,7 +173,7 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `core/new_entry.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `core/entry_detail.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `core/entry_edit.html` | 0 | 0 | None required | Validated against live rendered HTML |
-| `pages/faq.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `pages/faq.html` | 0 | 0 | Added `role="region"` to accordion collapse panels to allow `aria-labelledby` | Validated against live rendered HTML |
 | `pages/support.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `pages/contact.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
 | `billing/regulate_plus.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -248,6 +248,31 @@ Validated against the fully rendered live HTML output via the W3C HTML Validator
 
 </details>
 
+<details>
+<summary><strong>FAQ Page – pages/faq.html</strong></summary>
+
+Initial validation identified multiple errors of the form:
+
+- `aria-labelledby` was applied to `<div>` elements that had no semantic role, which is invalid ARIA usage.
+
+This occurred on each Bootstrap accordion collapse panel (e.g. `.accordion-collapse`), where Bootstrap expects the panel to be labelled by its corresponding header.
+
+Fix applied:
+
+- Added `role="region"` to each `.accordion-collapse` panel so `aria-labelledby="faqHeading..."` becomes valid and semantically meaningful (the region is now correctly labelled by the accordion header).
+
+After refactoring and redeploying to Heroku, the rendered FAQ HTML was revalidated.
+
+Final result:
+- 0 Errors
+- 0 Warnings
+
+Validated against the fully rendered live HTML output.
+
+</details>
+
+
+---
 
 [Back to contents](#contents)
 
