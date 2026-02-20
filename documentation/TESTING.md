@@ -11,64 +11,56 @@ Return to [README.md](../README.md)
 
 1. [Test User Accounts](#test-user-accounts)
 2. [Manual Testing](#manual-testing)
+   - [CSS Validation](#css-validation)
+   - [JavaScript Validation](#javascript-validation)
+   - [HTML Validation](#html-validation)
+   - [Lighthouse Testing](#lighthouse-testing)
+   - [Responsiveness Testing](#responsiveness-testing)
+   - [Browser Compatibility Testing](#browser-compatibility-testing)
+   - [User Story Testing](#user-story-testing)
+   - [Feature Interaction Testing](#feature-interaction-testing)
+   - [Admin Area Security Testing](#admin-area-security-testing)
+   - [Error Handling](#error-handling)
+   - [Security Testing](#security-testing)
+   - [UX Improvements Identified During Testing](#ux-improvements-identified-during-testing)
 3. [Automated Testing](#automated-testing)
-    - [Running Tests](#running-tests)
-    - [Test Structure](#test-structure)
-    - [Plan & Subscription Behaviour](#plan--subscription-behaviour)
-    - [Free Plan Limits (Business Logic)](#free-plan-limits-business-logic)
-    - [Permissions & Security](#permissions--security)
-    - [Test-Driven Development Evidence](#test-driven-development-evidence)
-    - [Summary](#summary)
-    - [Technical Note](#technical-note)
-    - [Test Output Log](#test-output-log)
+   - [Running Tests](#running-tests)
+   - [Test Structure](#test-structure)
+   - [Plan & Subscription Behaviour](#plan--subscription-behaviour)
+   - [Free Plan Limits (Business Logic)](#free-plan-limits-business-logic)
+   - [Permissions & Security](#permissions--security)
+   - [Test-Driven Development Evidence](#test-driven-development-evidence)
+   - [Summary](#summary)
+   - [Technical Note](#technical-note)
+   - [Test Output Log](#test-output-log)
 
 Return to [README.md](../README.md)
 
 ---
-
 ## Test User Accounts
 ---
 
-To allow the assessors to fully explore the site, the following **dummy accounts** have been created for testing purposes only.  
-These accounts contain no personal data and can be safely shared.
-
-### Admin Dashboard Access
-
-#### Superuser Account (Full Django Admin Access)
-For security reasons, the superuser login details are not included in the repository.  
-They have been submitted separately through the Peterborough University Dashboard under the submission comment section.
-
-#### Admin Staff Account (Restricted Admin Permissions - view only)
-
-Username: TestAdminviewonly  
-Email: testadminviewonly@testuser.com  
-Password: Password54321  
-
-[Back to contents](#contents)
-
-Return to [README.md](../README.md)
+To allow assessors to fully explore the application, the following **dummy accounts** have been created for testing purposes only.  
+These accounts contain no real personal data and can be safely used during assessment.
 
 ---
 
-### Regulate Main Site Access
+### Admin Access
 
-#### Standard Site User 1
+| Role | Username | Email | Password | Notes |
+|------|----------|-------|----------|-------|
+| **Superuser** | *Submitted separately* | — | — | Full Django admin access. Credentials submitted securely via the Peterborough University Dashboard submission comments. |
+| **Admin (View-Only)** | TestAdminviewonly | testadminviewonly@testuser.com | Password54321 | Restricted staff permissions. Can access admin but cannot view emotional entry content. |
 
-Username: TestSiteUser1  
-Email: testsiteuser1@testuser.com  
-Password: Password98765  
+---
 
-#### Standard Site User 2
+### Main Site Access
 
-Username: TestSiteUser2  
-Email: testsiteuser2@testuser.com  
-Password: Password99999  
-
-#### Standard Site User 3
-
-Username: TestSiteUser3  
-Email: testsiteuser3@testuser.com  
-Password: Password88888  
+| Role | Username | Email | Password | Notes |
+|------|----------|-------|----------|-------|
+| **Standard User 1** | TestSiteUser1 | testsiteuser1@testuser.com | Password98765 | Free plan user. |
+| **Standard User 2** | TestSiteUser2 | testsiteuser2@testuser.com | Password99999 | Used to test ownership and authorisation rules. |
+| **Standard User 3** | TestSiteUser3 | testsiteuser3@testuser.com | Password88888 | Can be used to test subscription / trial flows. |
 
 
 [Back to contents](#contents)
@@ -378,15 +370,13 @@ Validated against live rendered HTML source.
 
 </details>
 
----
-
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
 
 ---
-
 ## Lighthouse Testing
+---
 
 Key pages tested:
 - Home
@@ -423,8 +413,8 @@ Evidence:
 Return to [README.md](../README.md)
 
 ---
-
 ## Responsiveness Testing
+---
 
 The site was tested across a range of common devices and screen sizes using Chrome DevTools (device emulation), manual browser resizing, and live testing in local and deployed environments. Particular attention was given to the sticky navbar and plan status banner to ensure correct stacking behaviour across breakpoints.
 
@@ -466,8 +456,8 @@ Evidence:
 Return to [README.md](../README.md)
 
 ---
-
 ## Browser Compatibility Testing
+---
 
 The site was manually tested across the five major browsers on both desktop and mobile devices.
 
@@ -489,6 +479,7 @@ Return to [README.md](../README.md)
 
 ---
 ## User Story Testing
+---
 
 ### User Story Testing Summary
 
@@ -534,8 +525,8 @@ No critical bugs were identified during user story testing. All implemented func
 Return to [README.md](../README.md)
 
 ---
-
 ## Feature Interaction Testing
+---
 
 ### Feature Interaction Summary
 
@@ -557,13 +548,9 @@ All implemented interactive features behaved consistently and as designed.
 | **Business Logic** | Free-tier locking, trial enforcement, revision logic, subscription state transitions | ✅ Pass |
 | **Stripe (Test Mode)** | Checkout success, cancellation flow, webhook sync, billing portal access | ✅ Pass |
 
----
-
 ### Feature Interaction Full Details (collapsible)
 
 These tests were performed to ensure that all interactive components behave predictably, securely, and in alignment with the project’s trauma-informed UX goals.
-
----
 
 <details>
 <summary><strong>Forms</strong></summary>
@@ -600,8 +587,6 @@ Accessibility checks confirmed:
 All forms redirect appropriately on successful submission and preserve user data on validation failure.
 
 </details>
-
----
 
 <details>
 <summary><strong>Buttons</strong></summary>
@@ -641,8 +626,6 @@ All button behaviours passed testing.
 
 </details>
 
----
-
 <details>
 <summary><strong>Links & Navigation</strong></summary>
 
@@ -673,8 +656,6 @@ Testing confirmed:
 All navigation behaved predictably across desktop and mobile devices.
 
 </details>
-
----
 
 <details>
 <summary><strong>Business Logic & Access Control</strong></summary>
@@ -716,8 +697,6 @@ All business rules functioned as designed.
 
 </details>
 
----
-
 <details>
 <summary><strong>Stripe (Test Mode)</strong></summary>
 
@@ -751,8 +730,6 @@ All subscription transitions and payment flows behaved as expected in the sandbo
 
 </details>
 
----
-
 No interactive feature produced critical errors during testing.  
 All implemented components operate securely, predictably, and in accordance with the project’s architectural and UX goals.
 
@@ -761,8 +738,8 @@ All implemented components operate securely, predictably, and in accordance with
 Return to [README.md](../README.md)
 
 ---
-
 ## Admin Area Security Testing
+---
 
 ### Admin Area Security Summary
 
@@ -785,12 +762,6 @@ The following checks confirm:
 | **CSRF protection** | CSRF tokens present on all POST forms (auth, contact, entry actions, profile changes) | ✅ Pass |
 | **Confirmation prompts** | Deletion actions require confirmation (UI prompt for entry deletion + Django admin confirmations) | ✅ Pass |
 | **Secrets protected** | Stripe keys / SECRET_KEY stored in environment variables; not exposed in templates or repo | ✅ Pass |
-
-[Back to contents](#contents)
-
-Return to [README.md](../README.md)
-
----
 
 ### Admin Area Security Full Details (collapsible)
 
@@ -907,15 +878,13 @@ This ensures payment security and prevents leakage of credentials.
 
 </details>
 
----
-
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
 
 ---
-
 ## Error Handling
+---
 
 ### Error Handling Summary Table
 
@@ -982,14 +951,13 @@ Temporary test route was removed after verification.
 
 </details>
 
----
-
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
 
 ---
 ## Security Testing
+---
 
 ### Security Testing Summary
 
@@ -1006,8 +974,6 @@ All core security mechanisms behaved as expected in both local and deployed envi
 | **Production settings** | DEBUG=False, custom 404/500 pages active | ✅ Pass |
 | **Sensitive data exposure** | No emotional data exposed via admin or API | ✅ Pass |
 | **Stripe security** | No card data stored in Django app | ✅ Pass |
-
----
 
 ### Security Testing Details
 
@@ -1076,8 +1042,6 @@ All core security mechanisms behaved as expected in both local and deployed envi
 
 </details>
 
----
-
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
@@ -1093,7 +1057,7 @@ This was considered poor UX because:
 - There was no explicit cancel/return action
 - It did not align with the calm, low-pressure design intent of Regulate
 
-#### Fix Implemented
+### Fix Implemented
 
 A clear return link was added beneath the form submission controls:
 
@@ -1106,7 +1070,7 @@ A clear return link was added beneath the form submission controls:
 </div>
 ```
 
-#### Result
+### Result
 
 - Users can now exit the form without submitting data.
 - Navigation flow is clearer and more intuitive.
@@ -1228,6 +1192,8 @@ Return to [README.md](../README.md)
 ### Test-Driven Development Evidence
 
 Several features were implemented using a test-first (Red → Green) workflow. This is traceable in the commit history.
+
+![Commit history](testing-media/images/commit-history.png)
 
 [Back to contents](#contents)
 
