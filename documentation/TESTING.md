@@ -469,13 +469,19 @@ Return to [README.md](../README.md)
 
 ## Browser Compatibility Testing
 
-| Browser | Version Tested | Result | Notes |
-|--------|----------------|--------|------|
-| Chrome | Latest | ☐ Pending | |
-| Firefox | Latest | ☐ Pending | |
-| Edge | Latest | ☐ Pending | |
-| Safari | Latest | ☐ Pending | |
-| Samsung Internet | Latest | ☐ Pending | |
+The site was manually tested across the five major browsers on both desktop and mobile devices.
+
+All core functionality — including user authentication (Django Allauth), entry creation and editing, subscription logic and usage limits, Stripe checkout flows, search functionality, dashboard status updates, and responsive layout behaviour — performed consistently with no visual or functional discrepancies.
+
+Because the project uses standard HTML5, CSS3, JavaScript, Django templates, and Bootstrap components (without unsupported experimental APIs), full browser compatibility was achieved without requiring browser-specific overrides or polyfills.
+
+| Browser               | Version Tested | Result | Notes |
+|-----------------------|----------------|--------|-------|
+| **Google Chrome**     | Latest         | ✅ Pass | Fully functional — authentication, entry creation, search, Stripe checkout, and dashboard counters operate correctly. |
+| **Safari (iOS)**      | Latest iOS     | ✅ Pass | Responsive layout behaves as expected. Forms, entry editing, and navigation render correctly. |
+| **Mozilla Firefox**   | Latest         | ✅ Pass | All JavaScript interactions (dynamic counters, supportive phrases, conditional UI elements) function correctly. |
+| **Microsoft Edge**    | Latest         | ✅ Pass | No rendering issues. Subscription flow and authentication behave identically to Chrome. |
+| **Samsung Internet**  | Latest         | ✅ Pass | Mobile navigation, entry submission, and search features perform without layout or interaction bugs. |
 
 [Back to contents](#contents)
 
