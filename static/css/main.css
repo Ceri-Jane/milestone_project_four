@@ -18,6 +18,9 @@
   /* Overlays & media */
   --video-overlay-color: #ffffff63;
 
+  /* Hint text */
+  --hint-text-color: #000000;
+
   /* Feedback & status colours */
   --error-color: #ff0000;
   --success-bg: #d6f5e3;

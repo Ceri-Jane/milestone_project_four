@@ -64,7 +64,7 @@
 
 .form-section-hint {
   font-size: 0.85rem;
-  color: var(--primary-color);
+  color: var(--hint-text-color);
   opacity: 0.8;
   margin: 0.1rem 0 0.5rem;
 }
@@ -115,7 +115,7 @@
 .emotion-helper {
   margin-top: 0.4rem;
   font-size: 0.8rem;
-  color: var(--primary-color);
+  color: var(--hint-text-color);
   opacity: 0.85;
 }
 

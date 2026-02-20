@@ -451,8 +451,8 @@ Return to [README.md](../README.md)
 | Page / Template | Performance | Accessibility | Best Practices | SEO | Notes |
 |----------------|------------|---------------|---------------|-----|------|
 | **Home** (`core/home.html`) | 82 | 100 | 100 | 100 | Performance reflects intentional high-resolution desktop media; all other metrics fully compliant |
-| **Dashboard** (`core/dashboard.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **My Entries** (`core/my_entries.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Dashboard** (`core/dashboard.html`) | 100 | 100 | 100 | 100 | Extremely fast render time; no large media assets; clean template structure |
+| **My Entries** (`core/my_entries.html`) | 100 | 100 | 100 | 100 | Fast server-rendered content; no heavy media assets; stable layout |
 | **New Entry** (`core/new_entry.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Entry Detail** (`core/entry_detail.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Edit Entry** (`core/entry_edit.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -519,6 +519,123 @@ The score is primarily affected by hero media size rather than blocking scripts 
 
 </details>
 
+<details>
+<summary><strong>Dashboard (core/dashboard.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - dashboard - desktop](testing-media/images/lighthouse-dashboard-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.001  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The dashboard page performs exceptionally well on desktop due to:
+
+- No large media assets
+- Lightweight template structure
+- Efficient Django rendering
+- Minimal client-side JavaScript
+- Optimised layout with low DOM complexity
+
+The LCP of 0.6 seconds indicates extremely fast primary content rendering.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation suggestions including:
+
+- Render-blocking Bootstrap CSS (230ms estimated savings)
+- Unused vendor JavaScript (155 KiB estimated)
+- Minor unused CSS (25 KiB estimated)
+- Image elements missing explicit width and height attributes
+
+These are framework-level optimisations related to Bootstrap and shared base templates. They do not impact real-world performance meaningfully and are common in production Django applications using vendor libraries.
+
+---
+
+### Conclusion
+
+The dashboard page achieves a perfect Lighthouse score across all categories.  
+Rendering performance is extremely fast, stable, and fully accessible.
+
+This page demonstrates strong front-end optimisation and clean template architecture.
+
+</details>
+
+<details>
+<summary><strong>My Entries (core/my_entries.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - entries - desktop](testing-media/images/lighthouse-entries-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.6s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.002  
+- Speed Index: 0.6s  
+
+---
+
+### Performance Overview
+
+The My Entries page renders extremely quickly due to:
+
+- Server-side rendering via Django with minimal client-side processing  
+- No large media assets  
+- Efficient database querying scoped to the authenticated user  
+- Lightweight template structure with controlled DOM complexity  
+
+The Largest Contentful Paint of 0.6 seconds indicates near-instant primary content rendering on desktop.
+
+Layout stability is excellent, with a CLS of 0.002 (well below Google's 0.1 threshold).
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse reported minor optimisation opportunities including:
+
+- Render-blocking Bootstrap CSS (estimated 230ms savings)
+- Unused vendor JavaScript (155 KiB estimated)
+- Minor unused CSS (25 KiB estimated)
+- Image elements without explicit width and height attributes
+
+These are common framework-level considerations and do not negatively impact user experience or real-world performance.
+
+---
+
+### Conclusion
+
+The My Entries page achieves a perfect Lighthouse score across all categories on desktop.  
+Rendering is fast, stable, and accessible, demonstrating efficient template design and minimal client-side overhead.
+
+</details>
+
+
+
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
@@ -530,8 +647,8 @@ Return to [README.md](../README.md)
 | Page / Template | Performance | Accessibility | Best Practices | SEO | Notes |
 |----------------|------------|---------------|---------------|-----|------|
 | **Home** (`core/home.html`) | 84 | 100 | 100 | 100 | Performance improved significantly after responsive video optimisation |
-| **Dashboard** (`core/dashboard.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **My Entries** (`core/my_entries.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Dashboard** (`core/dashboard.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; lightweight template with minimal blocking assets |
+| **My Entries** (`core/my_entries.html`) | 96 | 100 | 100 | 100 | Strong mobile performance; efficient server rendering and minimal layout shift |
 | **New Entry** (`core/new_entry.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Entry Detail** (`core/entry_detail.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Edit Entry** (`core/entry_edit.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -552,6 +669,10 @@ Return to [README.md](../README.md)
 | **Password Reset From Key Done** (`account/password_reset_from_key_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **404** (`404.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **500** (`500.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
 
 #### Further Details (Mobile)
 
@@ -622,10 +743,120 @@ All user-facing performance metrics now fall within acceptable modern web standa
 
 </details>
 
+<details>
+<summary><strong>Dashboard (core/dashboard.html) – Mobile Performance Analysis</strong></summary>
 
-### Evidence
+![Lighthouse - dashboard - mobile](testing-media/images/lighthouse-dashboard-mobile.png)
 
-Pending
+### Results
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.1s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.019  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The dashboard performs extremely well on mobile devices due to:
+
+- No heavy media assets
+- Lightweight template structure
+- Efficient server-side rendering via Django
+- Minimal JavaScript execution time (0.2s)
+- Low layout shift (0.019, well under the 0.1 threshold)
+
+The Largest Contentful Paint of 2.1 seconds places the page within Google's "Good" performance range for mobile.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities including:
+
+- Render-blocking Bootstrap CSS (estimated 730ms savings)
+- Unused vendor JavaScript (155 KiB estimated)
+- Minor unused CSS (25 KiB estimated)
+- Missing explicit width and height attributes on some images
+
+These are framework-level or shared-template optimisations and are typical in production Django applications using vendor CSS/JS libraries. They do not negatively impact usability or real-world responsiveness.
+
+---
+
+### Conclusion
+
+The dashboard achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
+
+This page demonstrates strong front-end efficiency and stable layout behaviour under mobile network simulation.
+
+</details>
+
+<details>
+<summary><strong>My Entries (core/my_entries.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - entries - mobile](testing-media/images/lighthouse-entries-mobile.png)
+
+- **Performance:** 96  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 2.1s  
+- Largest Contentful Paint: 2.3s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.004  
+- Speed Index: 2.1s  
+
+---
+
+### Performance Overview
+
+The My Entries page performs strongly on mobile devices due to:
+
+- Efficient Django server-side rendering
+- Controlled DOM complexity
+- No heavy media or background assets
+- Minimal JavaScript execution time (0.2s)
+- Extremely low layout shift (0.004, well below the 0.1 threshold)
+
+The Largest Contentful Paint of 2.3 seconds falls within Google’s “Good” performance range for mobile.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities including:
+
+- Render-blocking Bootstrap CSS (estimated 740ms savings)
+- Unused vendor JavaScript (155 KiB estimated)
+- Minor unused CSS (25 KiB estimated)
+- Missing explicit width and height attributes on some images
+
+These suggestions relate primarily to shared vendor libraries and global templates rather than page-specific inefficiencies. They do not negatively affect usability or real-world responsiveness.
+
+---
+
+### Conclusion
+
+The My Entries page achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
+
+Rendering is stable, fast, and efficient, demonstrating strong template architecture and appropriate asset management for mobile devices.
+
+</details>
+
 
 [Back to contents](#contents)
 
