@@ -488,26 +488,53 @@ Because the project uses standard HTML5, CSS3, JavaScript, Django templates, and
 Return to [README.md](../README.md)
 
 ---
-
 ## User Story Testing
 
-| Feature | What Was Checked | Pass/Fail |
-|---------|------------------|----------|
-| Authentication | Signup, login, logout | ☐ Pending |
-| Create entry | Hue, emotions, notes save | ☐ Pending |
-| View entries | Date grouping, detail page | ☐ Pending |
-| Edit entry | Updates persist, revision logic | ☐ Pending |
-| Delete entry | Removes correctly | ☐ Pending |
-| Keyword search | Notes + emotions matched | ☐ Pending |
-| Free plan limit | Lock at limit, unlock on delete | ☐ Pending |
-| Subscription gating | Trial/active/grace logic | ☐ Pending |
-| Support ticket | Logged-in vs logged-out validation | ☐ Pending |
+### User Story Testing Summary
+
+All implemented user stories were tested against their acceptance criteria in both local development and the deployed production environment. All must-have functionality — including authentication, entry creation, emotion word selection, timeline display, revision history, subscription gating, and free-tier limits — behaved as expected.
+
+The application correctly enforces ownership rules (users can only access their own entries), preserves revision history during edits, and restricts feature access when free-tier limits are reached. Stripe subscription logic, trial enforcement, and webhook updates were tested to confirm correct status transitions (trial, active, grace, expired).
+
+Should-have stories, including keyword search and announcement dismissal logic, were also tested and function correctly without introducing performance or UX issues.
+
+Could-have stories were intentionally not implemented at this stage to maintain scope control and ensure stability of the core emotional tracking functionality. The system architecture allows these features to be added in future iterations without significant refactoring.
+
+Overall, every implemented story passed testing successfully and meets its documented acceptance criteria.
+
+---
+
+| User Story | What Was Done / How It Was Achieved | Pass/Fail |
+|------------|-------------------------------------|-----------|
+| **1. User Registration** | Configured Django Allauth with custom templates. Form validation tested. Password hashing confirmed. Invalid inputs show accessible errors. Successful registration creates secure user record. | ✅ Pass |
+| **2. User Login & Logout** | Login redirects to dashboard. Invalid credentials display errors. Logout clears session and restricts access to protected routes. Navbar updates dynamically based on authentication state. | ✅ Pass |
+| **3. Create Mood Entry** | Hue slider required. Optional notes and hue meaning save correctly. Multiple entries per day supported. Timestamp auto-generated. Success feedback displayed after submission. | ✅ Pass |
+| **4. Emotion Word Selection** | EmotionWord model implemented. Multiple selections saved via ManyToMany relationship. Selected words display correctly on detail page. Filtering UI functions as expected. | ✅ Pass |
+| **5. Timeline View (No Calendar)** | Entries grouped by date and ordered chronologically. Only dates containing entries are displayed. No calendar or streak indicators present. | ✅ Pass |
+| **6. Edit Entry With Revision History** | EntryRevision model stores previous state before update. Only entry owner can edit. Revision history displays correctly on detail view. | ✅ Pass |
+| **7. Delete Entry Safely** | Delete view restricted to entry owner. Confirmation required. Entry permanently removed. Redirect functions correctly. | ✅ Pass |
+| **8. Filter Entries by Date** | Date query parameter validated. Only matching entries returned. No empty date groups shown. | ✅ Pass |
+| **9. Dashboard Overview** | Dashboard displays subscription status, entry count, and limit usage. Context updates dynamically based on user plan. | ✅ Pass |
+| **10. Supportive Phrases** | Phrase endpoint tested. JavaScript fetch updates phrase. Local fallback triggers correctly if external request fails. | ✅ Pass |
+| **11. Access Support Resources** | Support page created with UK-based resources. External links verified. Language reviewed for clarity and safeguarding tone. | ✅ Pass |
+| **12. Contact Form / Support Tickets** | SupportTicket model stores submissions. Logged-in users auto-linked. Logged-out users required to provide email. Validation tested. | ✅ Pass |
+| **A. Free Tier With Limits** | Free users limited to 10 entries. Creation, edit, and delete lock correctly when limit reached. Viewing existing entries remains accessible. | ✅ Pass |
+| **B. Trial Abuse Prevention** | Trial usage stored persistently. Users cannot restart expired trial. Webhook logic updates subscription status correctly. | ✅ Pass |
+| **C. Privacy-Focused Admin** | Entry and revision models removed from admin browsing. Support tickets and subscription models manageable. Admin branding customised. | ✅ Pass |
+| **13. Keyword Search (Should-have)** | Search filters notes and emotion words. Only matching entries returned. No false positives observed. | ✅ Pass |
+| **14. Announcement Awareness (Should-have)** | Announcements display only when active. Dismissal persists via local storage/session logic. | ✅ Pass |
+| **15–16 / D–E (Could-have)** | Export, visualisation, referral discounts, and international expansion intentionally not implemented to maintain scope and stability. | ➖ Not Included |
+
+---
+
+No critical bugs were identified during user story testing. All implemented functionality works as designed in both development and deployed environments.
 
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
 
 ---
+
 
 ## Feature Interaction Testing
 
