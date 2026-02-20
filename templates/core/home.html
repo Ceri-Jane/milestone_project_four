@@ -21,9 +21,22 @@
 <div class="hero-wrapper">
     <div class="video-container">
 
-        <!-- Video -->
-        <video autoplay muted playsinline>
-            <source src="{% static 'videos/phone-in-bed.mp4' %}" type="video/mp4">
+        <!-- Responsive Video -->
+        <video autoplay muted playsinline preload="metadata">
+
+            <!-- Mobile version (served first for smaller screens) -->
+            <source 
+                src="{% static 'videos/phone-in-bed-mobile.mp4' %}" 
+                type="video/mp4"
+                media="(max-width: 768px)"
+            >
+
+            <!-- Desktop version -->
+            <source 
+                src="{% static 'videos/phone-in-bed.mp4' %}" 
+                type="video/mp4"
+            >
+
             Your browser does not support the video tag.
         </video>
 
@@ -49,8 +62,8 @@
         <p class="intro-text">
         Regulate is your personal space to check in with how you’re feeling, 
         without the pressure of daily streaks or perfect records.
-
         </p>
+
         <p class="intro-text">
         Whether you want to make a quick note, choose a mood colour, or add
         more detail, everything is optional — you decide how much or how
@@ -65,7 +78,6 @@
         </p>
 
         <p class="intro-text">
-
         Your feelings are valid here. Regulate is here to help you notice
         patterns, release pressure, and take care of your mental health —
         at your own pace.
