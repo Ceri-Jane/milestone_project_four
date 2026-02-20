@@ -535,16 +535,226 @@ Return to [README.md](../README.md)
 
 ---
 
-
 ## Feature Interaction Testing
 
+### Feature Interaction Summary
+
+All interactive elements of Regulate were manually tested in both local development and the deployed production environment. Particular attention was given to:
+
+- Emotional data integrity  
+- Subscription gating logic  
+- Stripe checkout state transitions  
+- Defensive UX behaviour  
+- Accessibility and mobile responsiveness  
+
+All implemented interactive features behaved consistently and as designed.
+
 | Area Tested | What Was Checked | Result |
-|------------|------------------|--------|
-| Forms | Validation, accessibility labels | ☐ Pending |
-| Buttons | Create/edit/delete behaviour | ☐ Pending |
-| Links | Navigation and redirects | ☐ Pending |
-| Business Logic | Locking logic + plan messaging | ☐ Pending |
-| Stripe (Test Mode) | Checkout success/cancel flows | ☐ Pending |
+|-------------|------------------|--------|
+| **Forms** | Validation, inline errors, required fields, plan-based restrictions, CSRF protection, accessibility labels | ✅ Pass |
+| **Buttons** | Entry creation/edit/delete behaviour, subscription gating, confirmation prompts, hover/active states | ✅ Pass |
+| **Links & Navigation** | Authentication redirects, plan-based visibility, password reset flow, external support links | ✅ Pass |
+| **Business Logic** | Free-tier locking, trial enforcement, revision logic, subscription state transitions | ✅ Pass |
+| **Stripe (Test Mode)** | Checkout success, cancellation flow, webhook sync, billing portal access | ✅ Pass |
+
+---
+
+### Feature Interaction Full Details (collapsible)
+
+These tests were performed to ensure that all interactive components behave predictably, securely, and in alignment with the project’s trauma-informed UX goals.
+
+---
+
+<details>
+<summary><strong>Forms</strong></summary>
+
+All user-facing forms were manually tested using both valid and invalid inputs.
+
+Tested forms include:
+
+- Sign up  
+- Sign in  
+- Password reset request  
+- Change username/email/password  
+- Create entry  
+- Edit entry  
+- Support ticket form  
+
+Validation checks confirmed:
+
+- Required fields block submission when empty  
+- Password mismatch and strength validation works correctly  
+- Duplicate email/username errors display inline  
+- Free-plan lock prevents submission when limit reached  
+- CSRF protection present on all POST forms  
+- Error messages are human-readable and non-technical  
+- Success messages display correctly via Django messages framework  
+
+Accessibility checks confirmed:
+
+- All inputs have associated labels  
+- ARIA attributes applied appropriately  
+- Focus states visible  
+- Mobile keyboard behaviour correct for email/password inputs  
+
+All forms redirect appropriately on successful submission and preserve user data on validation failure.
+
+</details>
+
+---
+
+<details>
+<summary><strong>Buttons</strong></summary>
+
+All buttons were tested for correct backend interaction and frontend feedback.
+
+Tested interactions include:
+
+- “Create Entry”  
+- “Edit”  
+- “Delete”  
+- “Start Free Trial”  
+- “Upgrade to Regulate+”  
+- “Manage Billing”  
+- “Refresh Supportive Phrase”  
+- Announcement dismissal  
+- Logout  
+
+Manual testing confirmed:
+
+- Buttons trigger correct backend view logic  
+- Free-tier lock disables edit/delete buttons when appropriate  
+- Delete includes JavaScript confirmation prompt  
+- No duplicate form submissions occur  
+- Hover and active states display correctly  
+- Buttons are touch-friendly on mobile  
+- No visual misalignment or layout shift  
+
+Special check:
+
+When free-plan limit is reached:
+- Create/edit/delete buttons become inactive  
+- Clear informational message appears  
+- Navigation to Regulate+ page functions correctly  
+
+All button behaviours passed testing.
+
+</details>
+
+---
+
+<details>
+<summary><strong>Links & Navigation</strong></summary>
+
+Navigation was tested across authenticated and non-authenticated states.
+
+Tested links include:
+
+- Navbar (signed-in and signed-out variations)  
+- Dashboard links  
+- Entries page links  
+- Profile management links  
+- Regulate+ link  
+- Footer links (FAQ, Crisis & Support, Contact)  
+- Password reset full flow  
+- Stripe redirect return URLs  
+
+Testing confirmed:
+
+- Auth-protected pages redirect unauthenticated users to login  
+- Post-login redirects function correctly  
+- Plan-based navigation updates dynamically  
+- External support links open safely  
+- No broken, circular, or orphaned routes  
+- Persistent plan status banner displays consistently  
+
+404 and 500 custom pages were also tested to confirm safe fallback behaviour without exposing debug information.
+
+All navigation behaved predictably across desktop and mobile devices.
+
+</details>
+
+---
+
+<details>
+<summary><strong>Business Logic & Access Control</strong></summary>
+
+Core system rules were manually tested to confirm correct enforcement.
+
+Free-tier logic:
+
+- Free users limited to 10 entries  
+- Entry creation blocked after limit  
+- View access always preserved  
+- Deleting an entry restores create/edit access  
+- Informational messaging clearly explains lock  
+
+Trial enforcement:
+
+- Free trial can only be used once per user  
+- Attempted reuse displays informative message  
+- Subscription state updates after Stripe webhook confirmation  
+
+Revision logic:
+
+- Editing an entry creates revision snapshot only when changes occur  
+- Submitting unchanged data does not create redundant revision  
+- Revision history displays accurately  
+
+Data ownership:
+
+- Users cannot access or modify other users’ entries  
+- URL tampering returns 404 or permission denial  
+
+Edge-case handling:
+
+- Stripe webhook delay messaging displays when applicable  
+- Billing portal fallback safely handled if Stripe customer ID missing  
+- Supportive phrase API fallback triggers silently without user-facing error  
+
+All business rules functioned as designed.
+
+</details>
+
+---
+
+<details>
+<summary><strong>Stripe (Test Mode)</strong></summary>
+
+Stripe was tested exclusively in Test Mode using official Stripe test cards.
+
+Tested flows:
+
+- Successful trial activation  
+- Successful subscription activation  
+- Checkout cancellation  
+- Return URL redirects  
+- Webhook status synchronisation  
+- Billing portal access  
+
+Confirmed behaviours:
+
+- Successful checkout updates subscription state  
+- Cancelled checkout results in no subscription changes  
+- Informational banner displays after cancellation  
+- Webhook events update local subscription model  
+- Manage Billing button redirects to Stripe Customer Portal  
+- No card details stored in Django application  
+
+Security validation:
+
+- SECRET_KEY and Stripe keys stored in environment variables  
+- No payment data logged in application  
+- Subscription metadata stored locally without financial data  
+
+All subscription transitions and payment flows behaved as expected in the sandbox environment.
+
+</details>
+
+---
+
+No interactive feature produced critical errors during testing.  
+All implemented components operate securely, predictably, and in accordance with the project’s architectural and UX goals.
 
 [Back to contents](#contents)
 
