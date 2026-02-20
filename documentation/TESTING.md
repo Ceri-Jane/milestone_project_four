@@ -70,7 +70,6 @@ Username: TestSiteUser3
 Email: testsiteuser3@testuser.com  
 Password: Password88888  
 
-Return to [README.md](../README.md)
 
 [Back to contents](#contents)
 
@@ -520,10 +519,72 @@ Return to [README.md](../README.md)
 
 ## Error Handling
 
+### Error Handling Summary Table
+
 | Error Type | Behaviour | Result |
 |------------|-----------|--------|
-| 404 | Custom 404 template renders | ☐ Pending |
-| 500 | Custom 500 template renders | ☐ Pending |
+| 404 | Custom 404 template renders | Pass |
+| 500 | Custom 500 template renders | Pass |
+
+
+### Error Handling Full Details (collapsible example)
+
+<details>
+<summary><strong>404 Error Handling Test</strong></summary>
+
+**Test Procedure:**
+
+1. Set `DEBUG = False` locally.
+2. Visited a non-existent URL (e.g. `/this-page-does-not-exist/`).
+3. Confirmed that Django did not display the default debug page.
+4. Verified that the custom `404.html` template rendered instead.
+
+**Expected Result:**
+
+- Custom styled 404 page displays.
+- Page includes site branding and navigation.
+- No Django debug traceback visible.
+
+**Actual Result:**
+
+- Custom `404.html` rendered successfully.
+- No console errors.
+- Template validated against live rendered HTML.
+
+**Status:** Pass
+
+</details>
+
+<details>
+<summary><strong>500 Error Handling Test</strong></summary>
+
+**Test Procedure:**
+
+1. Set `DEBUG = False` locally.
+2. Created a temporary test view that intentionally raised an exception:
+   `raise Exception("Test 500 error")`
+3. Navigated to the test route (e.g. `/test-500/`).
+4. Confirmed that Django rendered the custom `500.html` template.
+
+**Expected Result:**
+
+- Custom styled 500 page displays.
+- No Django debug traceback shown.
+- Page remains branded and user-friendly.
+
+**Actual Result:**
+
+- Custom `500.html` rendered correctly.
+- No debug information exposed.
+- Layout and navigation loaded as expected.
+
+Temporary test route was removed after verification.
+
+**Status:** Pass
+
+</details>
+
+---
 
 [Back to contents](#contents)
 
