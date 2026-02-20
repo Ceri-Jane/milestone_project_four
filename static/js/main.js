@@ -6,6 +6,27 @@
 // Runs when the page has loaded.
 document.addEventListener("DOMContentLoaded", function () {
 
+    // ----------------------------------------
+    // Sync navbar height to CSS var for sticky plan banner
+    // ----------------------------------------
+    function setNavbarHeightVar() {
+        const navbar = document.querySelector(".regulate-navbar");
+        if (!navbar) return;
+
+        // Use the exact rendered height (no buffer)
+        const height = navbar.getBoundingClientRect().height;
+        document.documentElement.style.setProperty("--navbar-height", `${height}px`);
+    }
+
+    // Set once on load and update on resize
+    setNavbarHeightVar();
+    window.addEventListener("resize", setNavbarHeightVar);
+
+    // If fonts load after first paint, navbar height may change slightly
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(setNavbarHeightVar);
+    }
+
     // Select the hero video
     const video = document.querySelector(".video-container video");
     if (video) {
