@@ -22,9 +22,6 @@
         <!-- Page heading -->
         <h1 class="form-title">Welcome Back</h1>
 
-        {# -------------------------------- #}
-        {# SIGN IN ERROR SUMMARY (ALERT)      #}
-        {# -------------------------------- #}
         {% if form.errors %}
             <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3"
                  role="alert"
@@ -79,14 +76,20 @@
                     class="toggle-password-btn"
                     data-target="id_password"
                     aria-label="Show password">
+
+                    <!-- VALID W3C-COMPLIANT SVG -->
                     <svg xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 24 24"
-                         aria-hidden="true">
-                        <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                        <circle cx="12" cy="12" r="2.5"/>
+                         width="24"
+                         height="24"
+                         viewBox="0 0 16 16"
+                         aria-hidden="true"
+                         focusable="false">
+                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"></path>
+                        <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path>
                     </svg>
                 </button>
             </div>
+
             {% if form.password.errors %}
                 <div class="text-danger small mt-1">
                     {{ form.password.errors|striptags }}
@@ -96,7 +99,10 @@
             <!-- Remember me option -->
             <label class="text-center">
                 Keep me signed in on this device
-                <input type="checkbox" name="remember" id="remember" {% if form.data.remember or not form.data %}checked{% endif %}>
+                <input type="checkbox"
+                       name="remember"
+                       id="remember"
+                       {% if form.data.remember or not form.data %}checked{% endif %}>
             </label>
 
             <!-- Submit sign in -->
@@ -108,7 +114,7 @@
 
         <!-- Auth helper links -->
         <div class="auth-extra">
-            <p><a href="{% url 'account_reset_password' %}" class="custom link">Forgot your password?</a></p>
+            <p><a href="{% url 'account_reset_password' %}" class="custom-link">Forgot your password?</a></p>
             <p>Don’t have an account? <a href="{% url 'account_signup' %}">Create one</a></p>
         </div>
 

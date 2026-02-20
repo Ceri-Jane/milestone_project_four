@@ -178,22 +178,21 @@ Partials were not validated standalone, as they are rendered within `base.html`.
 | `pages/contact.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `billing/regulate_plus.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `billing/checkout_cancelled.html` | 0 | 0 | None required | Validated against live rendered HTML |
-| `account/signup.html` | 0 | 0 | Added valid helptext IDs and replaced `<small>` with `<div>` to prevent invalid `<ul>` nesting | Resolved `aria-describedby` and content model errors |
-| `account/login.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `account/signup.html` | 0 | 0 | Replaced invalid SVG path and ensured valid helptext IDs using `<div>` containers | Resolved SVG path and content model errors |
+| `account/login.html` | 0 | 0 | Replaced invalid SVG path for password toggle icon | Resolved SVG path validation error |
 | `account/profile.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `account/change_username.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `account/change_email.html` | 0 | 0 | None required | Validated against live rendered HTML |
-| `account/password_change.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/password_reset.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/password_reset_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/password_reset_from_key.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
-| `account/password_reset_from_key_done.html` | ☐ Pending | ☐ Pending | ☐ Pending | |
+| `account/password_change.html` | 0 | 0 | Removed empty `action` attribute, replaced invalid SVG path, and added dynamic helptext IDs | Resolved empty action, SVG, and `aria-describedby` errors |
+| `account/password_reset.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `account/password_reset_done.html` | 0 | 0 | None required | Validated against live rendered HTML |
+| `account/password_reset_from_key.html` | 0 | 0 | Replaced invalid SVG path and ensured `aria-describedby` always references a valid helptext ID | Resolved SVG path and ARIA reference errors |
+| `account/password_reset_from_key_done.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `404.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `500.html` | 0 | 0 | None required | Validated against live rendered HTML |
 | `partials/footer.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `partials/navbar.html` | N/A | N/A | Not validated standalone | Rendered via base template |
 | `base.html` | N/A | N/A | Not validated standalone | Layout wrapper |
-
 
 ---
 
@@ -315,6 +314,68 @@ Final result:
 - 0 Warnings
 
 Validated against the fully rendered live HTML output.
+
+</details>
+
+<details>
+<summary><strong>Password Change Page – account/password_change.html</strong></summary>
+
+Initial validation identified two issues:
+
+1. The `<form>` element used `action=""`, which is invalid in HTML.  
+   The validator requires a non-empty value or omission of the attribute.
+2. Password fields referenced `aria-describedby="id_password1_helptext"` (and similar IDs), but no corresponding help text elements existed in the rendered document.
+
+These were resolved by:
+
+- Removing the empty `action` attribute so the form posts to the current URL.
+- Rendering field help text dynamically using:
+  `id="{{ field.id_for_label }}_helptext"`
+- Wrapping help text in `<div>` elements instead of `<small>` to allow valid flow content (e.g. `<ul>` from Django password validators).
+
+After refactoring and redeploying, the rendered HTML was revalidated.
+
+Final result:
+- 0 Errors
+- 0 Warnings
+
+Validated against the fully rendered live HTML output.
+
+</details>
+
+<details>
+<summary><strong>account/password_reset_from_key.html – W3C Validation Fixes</strong></summary>
+
+**Errors Identified:**
+
+1. Invalid SVG `path` data in password visibility toggle icon  
+   - Validator error: “Bad value for attribute `d` on element `path`”
+   - Caused by malformed coordinate sequence in custom eye icon
+
+2. `aria-describedby` referencing non-existent ID (`id_password1_helptext`)
+   - Occurred when Django did not render helptext for the password field
+
+---
+
+**Fixes Applied:**
+
+- Replaced malformed SVG path data with a valid, simplified eye icon SVG
+- Ensured helptext container is always rendered:
+  - If helptext exists → rendered visibly
+  - If no helptext → rendered hidden `<div>` with matching ID
+- Updated helptext ID to dynamically use:
+  `{{ form.password1.id_for_label }}_helptext`
+
+---
+
+**Result:**
+
+- 0 errors
+- 0 warnings
+- Fully passes W3C HTML validation
+- Maintains accessibility compliance (valid ARIA references)
+
+Validated against live rendered HTML source.
 
 </details>
 
