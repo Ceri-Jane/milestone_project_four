@@ -764,12 +764,150 @@ Return to [README.md](../README.md)
 
 ## Admin Area Security Testing
 
+### Admin Area Security Summary
+
+Regulate handles highly sensitive wellbeing data, so admin security was tested not only for access control, but also for **privacy-by-design**. The Django admin interface is restricted to staff/superusers, and the system is intentionally configured so that **emotional entry content is not browsable via admin at all**.
+
+The following checks confirm:
+
+- Non-staff users cannot access `/admin/`  
+- Privileged access follows least-privilege principles  
+- State-changing actions are CSRF-protected  
+- Destructive actions require explicit confirmation  
+- Sensitive emotional content (entries/revisions/notes) is structurally excluded from admin  
+
 | Security Check | Description | Status |
 |----------------|-------------|--------|
-| Admin restricted | `/admin/` blocked for non-staff | ☐ Pending |
-| Ownership enforced | Cannot edit others’ entries | ☐ Pending |
-| CSRF protection | Tokens present | ☐ Pending |
-| Confirmation prompts | Dangerous actions gated | ☐ Pending |
+| **Admin restricted** | `/admin/` is blocked for non-staff users (redirect/403) | ✅ Pass |
+| **Staff-only visibility** | Only operational models are visible (Users, Groups, Subscriptions, Emotion Words, Announcements, Support Tickets) | ✅ Pass |
+| **Sensitive models excluded** | Entry / EntryRevision (and any emotional content) are not registered in admin and cannot be browsed | ✅ Pass |
+| **Ownership enforced (app-level)** | Users cannot view/edit/delete other users’ entries via URL manipulation or requests | ✅ Pass |
+| **CSRF protection** | CSRF tokens present on all POST forms (auth, contact, entry actions, profile changes) | ✅ Pass |
+| **Confirmation prompts** | Deletion actions require confirmation (UI prompt for entry deletion + Django admin confirmations) | ✅ Pass |
+| **Secrets protected** | Stripe keys / SECRET_KEY stored in environment variables; not exposed in templates or repo | ✅ Pass |
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+
+### Admin Area Security Full Details (collapsible)
+
+<details>
+<summary><strong>Admin access restriction (/admin/)</strong></summary>
+
+The `/admin/` route was tested while:
+
+- logged out
+- logged in as a standard authenticated user (non-staff)
+- logged in as a staff user / superuser
+
+Results:
+
+- Logged-out users cannot access `/admin/` without authentication
+- Non-staff authenticated users are blocked from admin access (redirect or permission denied)
+- Only staff/superusers can access Django admin pages
+
+This prevents unauthorised access to operational models and protects administrative controls.
+
+</details>
+
+<details>
+<summary><strong>Least-privilege model visibility</strong></summary>
+
+Admin was reviewed to confirm that only models required for operational maintenance are exposed.
+
+Visible/admin-manageable models include:
+
+- Users
+- Groups
+- Subscriptions (metadata only)
+- Emotion Words
+- Site Announcements
+- Support Tickets
+
+This aligns the admin interface with the project’s privacy requirements and reduces the risk of accidental exposure of emotional content.
+
+</details>
+
+<details>
+<summary><strong>Privacy-by-design: emotional content excluded from admin</strong></summary>
+
+To protect user privacy, emotionally sensitive models are intentionally excluded from the admin interface.
+
+Confirmed:
+
+- Mood entries are not registered in admin
+- Entry revision history is not registered in admin
+- Emotional notes, hue meanings, and entry-linked emotion selections are not browsable in admin
+
+This is an architectural safeguard — not just a policy — ensuring that even staff users cannot casually browse personal emotional reflections through the admin UI.
+
+</details>
+
+<details>
+<summary><strong>Ownership enforcement (user data protection)</strong></summary>
+
+Protected routes were tested by attempting to access or modify another user’s data via:
+
+- direct URL guessing / tampering
+- changing primary keys in routes
+- submitting requests for objects not owned by the session user
+
+Results:
+
+- The application prevents reading, editing, or deleting entries not owned by the logged-in user
+- Where applicable, requests return a safe response (404/permission denied)
+- No user can access another user’s emotional content through the UI or by manipulation
+
+</details>
+
+<details>
+<summary><strong>CSRF protection and safe POST handling</strong></summary>
+
+All state-changing actions were confirmed to use POST requests protected by CSRF tokens, including:
+
+- authentication flows
+- profile updates
+- support ticket submissions
+- entry creation/edit/delete actions
+- subscription-related actions where applicable
+
+This prevents cross-site request forgery and ensures requests are intentionally user-initiated.
+
+</details>
+
+<details>
+<summary><strong>Confirmation gates for destructive actions</strong></summary>
+
+Deletion and destructive actions were tested to ensure they cannot occur accidentally.
+
+Confirmed:
+
+- Entry deletion requires explicit confirmation (client-side confirmation + server-side POST handling)
+- Django admin destructive actions use built-in confirmation screens (bulk delete, etc.)
+- Locked plan states prevent restricted actions (free-tier lock disables edit/delete where required)
+
+This supports both security and trauma-informed UX by preventing accidental loss of sensitive personal data.
+
+</details>
+
+<details>
+<summary><strong>Billing security and secret management</strong></summary>
+
+Stripe integration was reviewed to confirm that:
+
+- no payment details are stored or processed by Regulate
+- only subscription metadata is stored locally
+- Stripe keys and Django SECRET_KEY are stored as environment variables
+- secrets are not exposed in templates, commits, or error pages
+
+This ensures payment security and prevents leakage of credentials.
+
+</details>
+
+---
 
 [Back to contents](#contents)
 
