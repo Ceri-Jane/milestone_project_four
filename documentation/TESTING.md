@@ -453,7 +453,7 @@ Return to [README.md](../README.md)
 | **Home** (`core/home.html`) | 82 | 100 | 100 | 100 | Performance reflects intentional high-resolution desktop media; all other metrics fully compliant |
 | **Dashboard** (`core/dashboard.html`) | 100 | 100 | 100 | 100 | Extremely fast render time; no large media assets; clean template structure |
 | **My Entries** (`core/my_entries.html`) | 100 | 100 | 100 | 100 | Fast server-rendered content; no heavy media assets; stable layout |
-| **New Entry** (`core/new_entry.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **New Entry** (`core/new_entry.html`) | 100 | 100 | 100 | 100 | Contrast issue resolved; WCAG AA compliance achieved while maintaining design aesthetic |
 | **Entry Detail** (`core/entry_detail.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Edit Entry** (`core/entry_edit.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Regulate+** (`billing/regulate_plus.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -634,6 +634,73 @@ Rendering is fast, stable, and accessible, demonstrating efficient template desi
 
 </details>
 
+<details>
+<summary><strong>New Entry (core/new_entry.html) – Desktop Accessibility Fix & Performance Analysis</strong></summary>
+
+### Final Results
+
+![Lighthouse - new entry - desktop-after](testing-media/images/lighthouse-new-entry-desktop-after.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.6s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.005  
+- Speed Index: 0.6s  
+
+---
+
+### Original Accessibility Issue
+
+The initial Lighthouse audit reported a **colour contrast failure** on helper text elements within the form:
+
+![Lighthouse - new entry - desktop-before](testing-media/images/lighthouse-new-entry-desktop-before.png)
+
+Failing elements included:
+
+- `p.form-section-hint`
+- `p#hue-hint`
+- `p#notes-hint`
+- `p#emotion-search-hint`
+- `.form-card` container background
+
+The muted green hint text colour did not meet the WCAG AA minimum contrast ratio of **4.5:1** against the pale green background of the form card.
+
+Although visually subtle and stylistically consistent with the calming design theme, the contrast was insufficient for users with visual impairments or low vision.
+
+---
+
+### Fix Implemented
+
+The `.form-section-hint` text colour was darkened slightly to increase contrast while maintaining the overall calm aesthetic of the interface.
+
+This adjustment:
+
+- Preserved the design language and colour palette
+- Achieved WCAG AA compliance
+- Eliminated all contrast-related accessibility errors
+
+No structural or layout changes were required.
+
+---
+
+### Result
+
+After the colour adjustment:
+
+- Accessibility score increased from **95 → 100**
+- All Lighthouse categories now score **100**
+- Layout stability and performance remained unaffected
+
+The New Entry page now fully complies with WCAG contrast requirements while maintaining Regulate’s soft, non-overwhelming design principles.
+
+</details>
 
 
 [Back to contents](#contents)
@@ -649,7 +716,7 @@ Return to [README.md](../README.md)
 | **Home** (`core/home.html`) | 84 | 100 | 100 | 100 | Performance improved significantly after responsive video optimisation |
 | **Dashboard** (`core/dashboard.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; lightweight template with minimal blocking assets |
 | **My Entries** (`core/my_entries.html`) | 96 | 100 | 100 | 100 | Strong mobile performance; efficient server rendering and minimal layout shift |
-| **New Entry** (`core/new_entry.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **New Entry** (`core/new_entry.html`) | 95 | 100 | 100 | 100 | Strong mobile performance; interactive form and slider remain responsive with zero blocking time |
 | **Entry Detail** (`core/entry_detail.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Edit Entry** (`core/entry_edit.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Regulate+** (`billing/regulate_plus.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -854,6 +921,67 @@ These suggestions relate primarily to shared vendor libraries and global templat
 The My Entries page achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
 
 Rendering is stable, fast, and efficient, demonstrating strong template architecture and appropriate asset management for mobile devices.
+
+</details>
+
+<details>
+<summary><strong>New Entry (core/new_entry.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+- **Performance:** 95  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 2.2s  
+- Largest Contentful Paint: 2.5s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.016  
+- Speed Index: 2.2s  
+
+---
+
+### Performance Overview
+
+The New Entry page performs strongly on mobile devices despite containing:
+
+- Interactive form inputs  
+- A dynamic hue slider  
+- Emotion filtering functionality  
+- Conditional rendering elements  
+
+The Largest Contentful Paint of 2.5 seconds sits directly at the threshold of Google's “Good” performance range for mobile (≤ 2.5s).
+
+Layout stability remains excellent, with a CLS of 0.016 (well below the 0.1 threshold).
+
+JavaScript execution time is minimal (0.2s), and Total Blocking Time remains 0ms, indicating that interactive elements do not degrade responsiveness.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities including:
+
+- Render-blocking Bootstrap CSS (estimated 680ms savings)
+- Unused vendor JavaScript (155 KiB estimated)
+- Minor unused CSS
+- Missing explicit width and height attributes on images
+- Generic main-thread task warnings
+
+These are framework-level optimisations associated with shared vendor libraries and global templates rather than page-specific inefficiencies.
+
+No performance issues were identified related to the hue slider or emotion filtering functionality.
+
+---
+
+### Conclusion
+
+The New Entry page achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
+
+Performance remains stable even with dynamic form functionality, demonstrating efficient front-end implementation and controlled asset loading.
 
 </details>
 
