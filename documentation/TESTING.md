@@ -450,7 +450,7 @@ Return to [README.md](../README.md)
 
 | Page / Template | Performance | Accessibility | Best Practices | SEO | Notes |
 |----------------|------------|---------------|---------------|-----|------|
-| **Home** (`core/home.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Home** (`core/home.html`) | 82 | 100 | 100 | 100 | Performance reflects intentional high-resolution desktop media; all other metrics fully compliant |
 | **Dashboard** (`core/dashboard.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **My Entries** (`core/my_entries.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **New Entry** (`core/new_entry.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -529,7 +529,7 @@ Return to [README.md](../README.md)
 
 | Page / Template | Performance | Accessibility | Best Practices | SEO | Notes |
 |----------------|------------|---------------|---------------|-----|------|
-| **Home** (`core/home.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Home** (`core/home.html`) | 84 | 100 | 100 | 100 | Performance improved significantly after responsive video optimisation |
 | **Dashboard** (`core/dashboard.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **My Entries** (`core/my_entries.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **New Entry** (`core/new_entry.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -554,6 +554,74 @@ Return to [README.md](../README.md)
 | **500** (`500.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 
 #### Further Details (Mobile)
+
+<details>
+<summary><strong>Home (core/home.html) – Mobile Performance Analysis & Optimisation</strong></summary>
+
+### Initial Issue
+
+![Lighthouse - home - mobile-before](testing-media/images/lighthouse-home-mobile-before.png)
+
+The original mobile Lighthouse score was negatively impacted by:
+
+- A 20MB 4K background hero video loading on all devices
+- Largest Contentful Paint (LCP) of 18.3 seconds
+- Total network payload exceeding 24MB
+
+This significantly delayed mobile rendering and pushed the performance score into the low 70s.
+
+---
+
+### Root Cause
+
+The hero video was being served at full desktop resolution to mobile devices.  
+Because video content contributes directly to LCP when used in a hero section, the large file size caused extreme loading delays on simulated mobile 4G throttling.
+
+---
+
+### Optimisation Implemented
+
+Responsive media delivery was introduced using multiple `<source>` tags:
+
+- A compressed 524KB mobile-optimised MP4 served only to screens ≤ 768px
+- The original high-resolution video retained for desktop displays
+- `preload="metadata"` added to reduce initial blocking behaviour
+
+This reduced total mobile payload from ~24MB to ~3.6MB.
+
+---
+
+### Results After Optimisation
+
+![Lighthouse - home - mobile-after](testing-media/images/lighthouse-home-mobile-after.png)
+
+- **Performance:** 84  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- Largest Contentful Paint reduced from **18.3s → 3.4s**
+- Total Blocking Time: 0ms
+- Cumulative Layout Shift: 0.041 (well within safe threshold)
+
+---
+
+### Remaining Lighthouse Warnings
+
+Remaining mobile performance deductions relate to:
+
+- Render-blocking Bootstrap CSS
+- Shared hosting latency (Heroku)
+- Generic “reduce unused JS” suggestions from bundled vendor files
+
+These are infrastructure-level or framework-level trade-offs and do not reflect functional issues within the application code.
+
+All user-facing performance metrics now fall within acceptable modern web standards.
+
+</details>
+
 
 ### Evidence
 
