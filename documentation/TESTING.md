@@ -426,23 +426,40 @@ Return to [README.md](../README.md)
 
 ## Responsiveness Testing
 
+The site was tested across a range of common devices and screen sizes using Chrome DevTools (device emulation), manual browser resizing, and live testing in local and deployed environments. Particular attention was given to the sticky navbar and plan status banner to ensure correct stacking behaviour across breakpoints.
+
+Following refinement of the sticky plan banner logic (dynamic `--navbar-height` sync via JavaScript), the banner now aligns precisely beneath the navbar at all tested viewport widths, including smaller mobile screens (e.g. 375px), with no visible gaps or overlap.
+
 | Device / Screen Size | Result | Notes |
-|----------------------|--------|------|
-| Mobile – 360px | ☐ Pending | |
-| Mobile – 390px | ☐ Pending | |
-| Mobile – 375px | ☐ Pending | |
-| Tablet – 768px | ☐ Pending | |
-| Laptop – 1366px | ☐ Pending | |
-| Desktop – 1920px | ☐ Pending | |
+|----------------------|--------|-------|
+| **Mobile – 360px (Galaxy)** | Pass | Entry form fully usable. Plan banner sits flush under navbar. No horizontal scrolling. |
+| **Mobile – 375px (iPhone SE / Mini)** | Pass | Previously observed micro-gap resolved after syncing navbar height dynamically. Sticky elements stack correctly. |
+| **Mobile – 390px–430px (iPhone 12/13/14)** | Pass | CTA buttons scale correctly. Slider and text areas remain accessible and readable. |
+| **Tablet – 768px (iPad Mini)** | Pass | Layout expands cleanly. Cards widen appropriately. Navbar remains stable. |
+| **Laptop – 1366px** | Pass | Content centred with correct max-width constraints. No stretching. |
+| **Desktop – 1920px** | Pass | Hero, intro, and dashboard layouts remain balanced. No visual misalignment. |
+
+All pages were verified to maintain:
+
+- Fully readable typography across breakpoints  
+- Proper tap-target sizing on mobile  
+- Correct stacking of form labels and inputs  
+- Functional mood hue slider on small screens  
+- Responsive Regulate+ CTA and dashboard controls  
+- Navbar collapse behaviour working correctly  
+- Sticky navbar and plan banner alignment with no overlap or visible seam  
 
 Critical checks:
-- ☐ Entry form usable on mobile
-- ☐ Emotion list scroll behaves correctly
-- ☐ Regulate+ CTA responsive
-- ☐ Navbar collapses correctly
+
+- ☑ Entry form usable on mobile  
+- ☑ Emotion list scroll behaves correctly  
+- ☑ Regulate+ CTA responsive  
+- ☑ Navbar collapses correctly  
+- ☑ Plan status banner remains flush beneath navbar at all tested widths  
 
 Evidence:
-- ☐ `documentation/testing-media/gifs/responsive-*.gif`
+
+![Testing responsive video](testing-media/gifs/testing-adaptive.gif)
 
 [Back to contents](#contents)
 
