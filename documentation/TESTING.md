@@ -989,23 +989,101 @@ Temporary test route was removed after verification.
 Return to [README.md](../README.md)
 
 ---
-
 ## Security Testing
+
+### Security Testing Summary
+
+Because Regulate handles private emotional wellbeing data and subscription billing metadata, security was tested across authentication, authorisation, request handling, environment configuration, and production safeguards.
+
+All core security mechanisms behaved as expected in both local and deployed environments.
 
 | Security Area | What Was Tested | Result |
 |---------------|----------------|--------|
-| Authentication protection | Login required for protected pages | ☐ Pending |
-| Authorisation checks | Ownership enforced | ☐ Pending |
-| CSRF | Forms protected | ☐ Pending |
-| Environment variables | Keys not exposed | ☐ Pending |
-| Production settings | DEBUG off | ☐ Pending |
+| **Authentication protection** | Login required for dashboard, entries, profile, Regulate+ | ✅ Pass |
+| **Authorisation checks** | Users cannot access or modify other users’ data | ✅ Pass |
+| **CSRF protection** | All POST forms include CSRF tokens | ✅ Pass |
+| **Environment variables** | SECRET_KEY and Stripe keys stored outside repo | ✅ Pass |
+| **Production settings** | DEBUG=False, custom 404/500 pages active | ✅ Pass |
+| **Sensitive data exposure** | No emotional data exposed via admin or API | ✅ Pass |
+| **Stripe security** | No card data stored in Django app | ✅ Pass |
+
+---
+
+### Security Testing Details
+
+<details>
+<summary><strong>Authentication protection</strong></summary>
+
+- Unauthenticated users attempting to access protected routes are redirected to login.  
+- Session cookies behave correctly.  
+- Logout invalidates session.  
+
+</details>
+
+<details>
+<summary><strong>Authorisation checks</strong></summary>
+
+- URL tampering does not allow access to another user’s entries.  
+- Ownership enforced at query level.  
+- Invalid object access returns safe response.  
+
+</details>
+
+<details>
+<summary><strong>CSRF protection</strong></summary>
+
+- All state-changing forms verified to include `{% csrf_token %}`.  
+- POST requests without valid token are rejected.  
+
+</details>
+
+<details>
+<summary><strong>Environment variables</strong></summary>
+
+- SECRET_KEY not hardcoded.  
+- Stripe API keys stored in environment variables.  
+- `.env` excluded from version control.  
+
+</details>
+
+<details>
+<summary><strong>Production configuration</strong></summary>
+
+- `DEBUG = False` in deployment.  
+- Django debug traceback not exposed.  
+- Custom 404 and 500 pages render instead of stack traces.  
+
+</details>
+
+<details>
+<summary><strong>Sensitive data exposure</strong></summary>
+
+- Mood entries and revision history are not registered in the Django admin interface.  
+- Admin users cannot browse emotional notes or personal reflections.  
+- Entry queries are always filtered by the authenticated user.  
+- Direct URL manipulation does not expose other users’ data.  
+- No emotional data is returned via public endpoints or unauthenticated views.  
+- Debug mode is disabled in production, preventing accidental data leakage via stack traces.  
+
+</details>
+
+<details>
+<summary><strong>Stripe handling</strong></summary>
+
+- Payment data handled exclusively by Stripe.  
+- Only subscription metadata stored locally.  
+- Webhooks validate subscription state without exposing financial data.  
+
+</details>
+
+---
 
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
 
 ---
-### UX Improvements Identified During Testing
+## UX Improvements Identified During Testing
 ---
 
 During manual walkthrough testing of the entry creation flow, it was identified that the **New Entry** page did not provide a clear navigation path back to the user’s entry list without using the browser back button.
