@@ -19,6 +19,7 @@ Return to [README.md](../README.md)
       - [Desktop Results](#desktop-results)
       - [Mobile Results](#mobile-results)           
    - [Responsiveness Testing](#responsiveness-testing)
+   - [Wave Testing](#wave-testing)
    - [Browser Compatibility Testing](#browser-compatibility-testing)
    - [User Story Testing](#user-story-testing)
    - [Feature Interaction Testing](#feature-interaction-testing)
@@ -409,7 +410,9 @@ Return to [README.md](../README.md)
 
 ### Pages Tested
 
-Core user journeys:
+The following templates were reviewed and tested across both desktop and mobile viewports using Chrome DevTools and Lighthouse where applicable.
+
+#### Core user journeys
 - Home (`core/home.html`)
 - Dashboard (`core/dashboard.html`)
 - My Entries (`core/my_entries.html`)
@@ -419,12 +422,12 @@ Core user journeys:
 - Regulate+ (`billing/regulate_plus.html`)
 - Checkout Cancelled (`billing/checkout_cancelled.html`)
 
-User support / static pages:
+#### User support / static pages
 - FAQ (`pages/faq.html`)
 - Crisis & Support (`pages/support.html`)
 - Contact (`pages/contact.html`)
 
-Authentication / account management:
+#### Authentication / account management
 - Sign Up (`account/signup.html`)
 - Login (`account/login.html`)
 - Profile (`account/profile.html`)
@@ -436,9 +439,11 @@ Authentication / account management:
 - Password Reset From Key (`account/password_reset_from_key.html`)
 - Password Reset From Key Done (`account/password_reset_from_key_done.html`)
 
-Error pages:
+#### Error pages
 - 404 (`404.html`)
 - 500 (`500.html`)
+
+The **500 error page** was manually triggered and verified in a controlled local environment (with `DEBUG=False`) to ensure that the custom template renders correctly, displays appropriate messaging, and maintains consistent styling with the rest of the application. As 500 errors are server-side exceptions rather than navigable routes, Lighthouse testing was not included in the standard page audit tables. Visual inspection and functional confirmation confirmed correct behaviour.
 
 [Back to contents](#contents)
 
@@ -466,13 +471,12 @@ Return to [README.md](../README.md)
 | **Profile** (`account/profile.html`) | 100 | 100 | 100 | 100 | Instant render (LCP 0.6s) with zero layout shift and full compliance. |
 | **Change Username** (`account/change_username.html`) | 100 | 100 | 100 | 100 | Instant render (LCP 0.6s) with zero layout shift and full compliance. |
 | **Change Email** (`account/change_email.html`) | 100 | 100 | 100 | 100 | Fast-rendering account form page; no layout shift and no blocking time on desktop |
-| **Change Password** (`account/password_change.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset** (`account/password_reset.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset Done** (`account/password_reset_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset From Key** (`account/password_reset_from_key.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset From Key Done** (`account/password_reset_from_key_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **404** (`404.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **500** (`500.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Change Password** (`account/password_change.html`) | 100 | 100 | 100 | 100 | Fast-loading account form page with stable layout (CLS 0) and zero blocking time |
+| **Password Reset** (`account/password_reset.html`) | 100 | 100 | 100 | 100 | Fast-load auth page; any remaining suggestions relate to shared global assets (minification / unused JS / render-blocking CSS) |
+| **Password Reset Done** (`account/password_reset_done.html`) | 100 | 100 | 100 | 100 | Instant confirmation page with zero layout shift and no blocking time; remaining suggestions relate to shared global assets |
+| **Password Reset From Key** (`account/password_reset_from_key.html`) | 100 | 100 | 100 | 100 | Tested locally (reset link generated in terminal); route requires token/email flow not accessible for Lighthouse on deployed site |
+| **Password Reset From Key Done** (`account/password_reset_from_key_done.html`) | 100 | 100 | 100 | 100 | Tested locally (reset flow outputs link via terminal in dev setup, so cannot be run end-to-end on Heroku) |
+| **404** (`404.html`) | 100 | 100 | 96 | 91 | SEO score reduced due to correct 404 HTTP status (expected behaviour); minor console warning from shared static asset |
 
 [Back to contents](#contents)
 
@@ -482,7 +486,7 @@ Return to [README.md](../README.md)
 #### Further Details (Desktop)
 
 <details>
-<summary><strong>Home – core/home.html</strong></summary>
+<summary><strong>Home (core/home.html)</strong></summary>
 
 ![Lighthouse - home - desktop](testing-media/images/lighthouse-home-desktop.png)
 
@@ -520,7 +524,7 @@ The score is primarily affected by hero media size rather than blocking scripts 
 </details>
 
 <details>
-<summary><strong>Dashboard (core/dashboard.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Dashboard (core/dashboard.html)</strong></summary>
 
 ### Results
 
@@ -578,7 +582,7 @@ This page demonstrates strong front-end optimisation and clean template architec
 </details>
 
 <details>
-<summary><strong>My Entries (core/my_entries.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>My Entries (core/my_entries.html)</strong></summary>
 
 ### Results
 
@@ -635,7 +639,7 @@ Rendering is fast, stable, and accessible, demonstrating efficient template desi
 </details>
 
 <details>
-<summary><strong>New Entry (core/new_entry.html) – Desktop Accessibility Fix & Performance Analysis</strong></summary>
+<summary><strong>New Entry (core/new_entry.html)</strong></summary>
 
 ### Final Results
 
@@ -703,7 +707,7 @@ The New Entry page now fully complies with WCAG contrast requirements while main
 </details>
 
 <details>
-<summary><strong>Entry Detail (Desktop) – core/entry_detail.html</strong></summary>
+<summary><strong>Entry Detail (core/entry_detail.html)</strong></summary>
 
 Desktop Lighthouse scores for the Entry Detail page were excellent:
 
@@ -735,7 +739,7 @@ No functional, accessibility, SEO, or best-practice issues were identified on th
 </details>
 
 <details>
-<summary><strong>Edit Entry (core/entry_edit.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Edit Entry (core/entry_edit.html)</strong></summary>
 
 ### Results
 
@@ -795,7 +799,7 @@ All core performance metrics fall within acceptable thresholds, and the page rem
 </details>
 
 <details>
-<summary><strong>Regulate+ (billing/regulate_plus.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Regulate+ (billing/regulate_plus.html)</strong></summary>
 
 ### Results
 
@@ -856,7 +860,7 @@ This is particularly important for a subscription/payment page, where performanc
 </details>
 
 <details>
-<summary><strong>Checkout Cancelled (billing/checkout_cancelled.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Checkout Cancelled (billing/checkout_cancelled.html)</strong></summary>
 
 ### Results
 
@@ -907,7 +911,7 @@ The Checkout Cancelled page performs optimally on desktop with perfect Lighthous
 </details>
 
 <details>
-<summary><strong>FAQ (pages/faq.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>FAQ (pages/faq.html)</strong></summary>
 
 ### Results
 
@@ -957,7 +961,7 @@ The FAQ page performs exceptionally well on desktop, achieving **100/100** acros
 </details>
 
 <details>
-<summary><strong>Crisis &amp; Support (pages/support.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Crisis &amp; Support (pages/support.html)</strong></summary>
 
 ### Results
 
@@ -1008,7 +1012,7 @@ The Crisis &amp; Support page provides fast, stable, and accessible delivery on 
 </details>
 
 <details>
-<summary><strong>Contact (pages/contact.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Contact (pages/contact.html)</strong></summary>
 
 ### Results
 
@@ -1058,7 +1062,7 @@ The Contact page performs exceptionally well on desktop, reaching **100/100 acro
 </details>
 
 <details>
-<summary><strong>Sign Up (account/signup.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Sign Up (account/signup.html)</strong></summary>
 
 ### Results
 
@@ -1121,7 +1125,7 @@ The Sign Up page demonstrates excellent performance, accessibility, and best-pra
 </details>
 
 <details>
-<summary><strong>Login (account/login.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Login (account/login.html)</strong></summary>
 
 ### Results
 
@@ -1173,7 +1177,7 @@ The login page performs exceptionally well on desktop, with perfect Lighthouse s
 </details>
 
 <details>
-<summary><strong>Profile (account/profile.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Profile (account/profile.html)</strong></summary>
 
 ### Results
 
@@ -1223,7 +1227,7 @@ The Profile page demonstrates excellent desktop performance, full accessibility 
 </details>
 
 <details>
-<summary><strong>Change Username (account/change_username.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Change Username (account/change_username.html)</strong></summary>
 
 ### Results
 
@@ -1274,7 +1278,7 @@ The Change Username page delivers excellent desktop performance, full accessibil
 </details>
 
 <details>
-<summary><strong>Change Email (account/change_email.html) – Desktop Performance Analysis</strong></summary>
+<summary><strong>Change Email (account/change_email.html)</strong></summary>
 
 ### Results
 
@@ -1323,6 +1327,315 @@ The Change Email page demonstrates excellent desktop performance, full accessibi
 
 </details>
 
+<details>
+<summary><strong>Change Password (account/password_change.html)</strong></summary>
+
+### Results
+
+![Lighthouse - change password - desktop](testing-media/images/lighthouse-change-password-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Change Password page loads extremely quickly on desktop, with primary content rendering almost immediately (FCP 0.5s, LCP 0.6s).  
+
+Interactivity remains instant (0ms Total Blocking Time), and the page is fully stable during load (CLS 0), which is particularly important on form pages to prevent input fields shifting under the user.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged minor optimisation opportunities related to shared/global assets rather than page-specific issues:
+
+- Render-blocking Bootstrap/CSS delivery (estimated 220ms savings)
+- Modern HTTP suggestions (estimated 40ms savings)
+- Minor JS/CSS minification opportunities
+- Small unused JavaScript reduction suggestions
+- One generic long main-thread task warning
+
+These do not prevent the page from achieving perfect scores and can be addressed as part of broader site-wide optimisation if needed.
+
+---
+
+### Conclusion
+
+The Change Password page achieves perfect Lighthouse scores across all categories on desktop, confirming fast load time, stable layout, and strong accessibility/best-practice compliance for a security-critical account flow.
+
+</details>
+
+<details>
+<summary><strong>Password Reset (account/password_reset.html)</strong></summary>
+
+### Results
+
+![Lighthouse - password reset - desktop](testing-media/images/lighthouse-password-reset-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Password Reset page delivers excellent desktop performance, with primary content rendering almost immediately.
+
+LCP completes in 0.6 seconds and Total Blocking Time remains 0ms, showing that the page stays fully responsive and lightweight during interaction.
+
+A CLS score of 0 confirms a stable layout with no unexpected movement during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+The remaining Lighthouse recommendations are small and relate to shared project-wide assets rather than page-specific issues:
+
+- Render-blocking CSS from global styles/vendor resources (estimated 230ms savings)
+- Minor minification opportunities for CSS/JavaScript
+- Reduce unused JavaScript from shared bundles
+
+---
+
+### Conclusion
+
+The Password Reset page achieves a perfect Lighthouse score across all categories on desktop, confirming fast load, stable rendering, and strong overall best-practice compliance for an authentication-critical flow.
+
+</details>
+
+<details>
+<summary><strong>Password Reset Done (account/password_reset_done.html)</strong></summary>
+
+### Results
+
+![Lighthouse - password reset done - desktop](testing-media/images/lighthouse-password-reset-done-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Password Reset Done confirmation page achieves perfect Lighthouse scores across all categories on desktop.
+
+Primary content renders almost instantly, with both FCP and LCP completing within 0.6 seconds. Total Blocking Time is 0ms, confirming that the page remains fully responsive and lightweight.
+
+Cumulative Layout Shift is 0, indicating complete visual stability during load — particularly important for confirmation screens where clarity and reassurance are key.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identifies small optimisation opportunities related to shared global assets:
+
+- Render-blocking CSS (estimated ~210ms savings)
+- Modern HTTP delivery suggestions
+- Minor CSS/JavaScript minification opportunities
+- Reduce unused JavaScript from shared bundles
+- One generic long main-thread task warning
+
+These are site-wide optimisation considerations and do not affect the functionality or usability of this page.
+
+---
+
+### Conclusion
+
+The Password Reset Done page demonstrates excellent desktop performance, stable layout behaviour, and full compliance with accessibility, best practices, and SEO standards.
+
+</details>
+
+<details>
+<summary><strong>Password Reset From Key (account/password_reset_from_key.html)</strong></summary>
+
+### Testing Environment Note
+
+This page was tested **locally** rather than on the live Heroku deployment.
+
+The password reset confirmation route is token-based and requires a valid reset link generated via email. In the production environment, reset emails are not publicly accessible (and cannot be safely intercepted for Lighthouse testing).  
+
+When running locally, Django outputs reset emails to the terminal, allowing the secure reset link to be accessed for testing purposes.  
+
+The template, static assets, and styling are identical between local and production environments, so performance results are representative of the deployed version.
+
+---
+
+### Results (Local Environment)
+
+![Lighthouse - password reset from key - desktop](testing-media/images/lighthouse-password-reset-form-key-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.5s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Password Reset From Key page renders instantly on desktop, with both FCP and LCP completing in 0.5 seconds.
+
+Total Blocking Time remains at 0ms, confirming that password validation and UI logic introduce no responsiveness delays.
+
+Layout stability is perfect (CLS 0), meaning the form remains visually stable during load — particularly important for security-sensitive input pages.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse highlights minor optimisation opportunities related to shared global assets:
+
+- Render-blocking CSS (estimated ~250ms savings)
+- Improve cache lifetimes for static assets
+- Reduce unused CSS/JavaScript from shared bundles
+- Minor CSS/JS minification suggestions
+
+These are site-wide considerations and do not indicate issues specific to this template.
+
+---
+
+### Conclusion
+
+The Password Reset From Key page achieves perfect Lighthouse scores in the local environment. Testing locally is appropriate due to the token-based access requirement of this route, and results are representative of the deployed template and asset configuration.
+
+</details>
+
+<details>
+<summary><strong>Password Reset From Key Done (account/password_reset_from_key_done.html)</strong></summary>
+
+### Results
+
+![Lighthouse - password reset from key done - desktop](testing-media/images/lighthouse-password-reset-form-key-done-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.5s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.003  
+- Speed Index: 0.5s  
+
+---
+
+### Local Testing Note
+
+This template was tested **locally** rather than on the deployed Heroku site because the password reset “from key” flow requires a valid reset link generated via the email output (sent to the development terminal in this setup). The UI, template, and static assets are the same as the deployed project, so Lighthouse results remain representative.
+
+---
+
+### Performance Overview
+
+The password reset completion page performs at an excellent level on desktop, with instant primary content rendering and no main-thread blocking.
+
+Layout stability is also strong (CLS 0.003), indicating the page loads without visible shifting as fonts and shared assets initialise.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged small optimisation opportunities related to shared/global assets rather than this template specifically:
+
+- Render-blocking CSS (estimated 230ms savings)
+- Cache lifetime improvements for some static assets (estimated 41KiB savings)
+- Minor CSS/JS minification opportunities
+- Reduce unused CSS/JavaScript from shared bundles
+- Single long main-thread task warning (shared scripts)
+
+---
+
+### Conclusion
+
+The Password Reset From Key Done page achieves perfect Lighthouse scores across all categories on desktop. Performance is fast, stable, and consistent with the project’s broader UX goals, while still maintaining full accessibility, best-practice compliance, and SEO integrity.
+
+</details>
+
+<details>
+<summary><strong>404 Error Page (404.html)</strong></summary>
+
+### Results
+
+![Lighthouse - 404 error page - desktop](testing-media/images/lighthouse-404-error-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 96  
+- **SEO:** 91  
+
+---
+
+### SEO Score Explanation
+
+The SEO score is reduced because this page correctly returns an HTTP **404 status code**.
+
+Lighthouse flags non-200 responses as “unsuccessful HTTP status codes,” which affects indexing checks. However, this is expected behaviour for a 404 page and is technically correct implementation.
+
+A 404 page should:
+- Return HTTP 404 status
+- Not be indexed
+- Not appear in search results
+
+Therefore, no change is required.
+
+---
+
+### Best Practices Note
+
+A minor console error was detected relating to a failed resource load. This is unrelated to the 404 template itself and likely tied to a shared static asset or favicon request.
+
+All other security and performance audits passed.
+
+---
+
+### Conclusion
+
+The 404 page behaves correctly, returns the appropriate HTTP status, and performs well in all other Lighthouse categories. The reduced SEO score is expected and does not indicate a problem.
+
+</details>
 
 
 
@@ -1343,7 +1656,7 @@ Return to [README.md](../README.md)
 | **Entry Detail** (`core/entry_detail.html`) | 98 | 100 | 100 | 100 | Excellent mobile performance; fast LCP with stable layout and zero blocking time |
 | **Edit Entry** (`core/entry_edit.html`) | 85 | 100 | 100 | 100 | Slightly higher LCP due to pre-populated form complexity; no blocking scripts or layout instability |
 | **Regulate+** (`billing/regulate_plus.html`) | 98 | 100 | 100 | 100 | Fast subscription page; stable layout and excellent mobile render speed |
-| **Checkout Cancelled** (`billing/checkout_cancelled.html`) | 100 | 100 | 100 | 100 | Mobile performance improved from 73 → 97 after removing duplicated CSS in `main.css` and converting the navbar logo from large PNG to optimised WebP (global base template asset). |
+| **Checkout Cancelled** (`billing/checkout_cancelled.html`) | 97 | 100 | 100 | 100 | Mobile performance improved from 73 → 97 after removing duplicated CSS in `main.css` and converting the navbar logo from large PNG to optimised WebP (global base template asset). |
 | **FAQ** (`pages/faq.html`) | 96 | 100 | 100 | 100 | Strong mobile performance; minor Lighthouse suggestions relate to shared global assets (Bootstrap/render-blocking resources) |
 | **Crisis & Support** (`pages/support.html`) | 94 | 100 | 100 | 100 | Strong mobile performance; slight CLS (0.118) noted, remaining suggestions relate to global shared assets |
 | **Contact** (`pages/contact.html`) | 94 | 100 | 100 | 100 | Strong mobile performance; slight CLS (0.105) noted, remaining suggestions relate to shared global assets |
@@ -1352,13 +1665,12 @@ Return to [README.md](../README.md)
 | **Profile** (`account/profile.html`) | 97 | 100 | 100 | 100 | Strong mobile performance with fast LCP (2.2s) and excellent layout stability (CLS 0.002). |
 | **Change Username** (`account/change_username.html`) | 97 | 100 | 100 | 100 | Strong mobile performance (LCP 2.2s) with stable layout and full accessibility compliance. |
 | **Change Email** (`account/change_email.html`) | 97 | 100 | 100 | 100 | Strong mobile performance (LCP 2.2s) with stable layout and full compliance. |
-| **Change Password** (`account/password_change.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset** (`account/password_reset.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset Done** (`account/password_reset_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset From Key** (`account/password_reset_from_key.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Password Reset From Key Done** (`account/password_reset_from_key_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **404** (`404.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **500** (`500.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Change Password** (`account/password_change.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; LCP 2.2s (within “Good” threshold), minimal TBT (10ms), excellent layout stability (CLS 0.01). Minor suggestions relate to shared global assets (render-blocking CSS / unused JS). |
+| **Password Reset** (`account/password_reset.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; LCP 2.2s within “Good” range and stable layout (CLS 0.049). Remaining suggestions relate to shared global assets. |
+| **Password Reset Done** (`account/password_reset_done.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; remaining Lighthouse suggestions relate to shared global assets (e.g., render-blocking CSS/JS) rather than this template |
+| **Password Reset From Key** (`account/password_reset_from_key.html`) | 98 | 100 | 100 | 100 | Tested locally (reset link generated via terminal email output); template/assets match deployed site |
+| **Password Reset From Key Done** (`account/password_reset_from_key_done.html`) | 98 | 100 | 100 | 100 | Tested locally (reset flow link generated via terminal during development) |
+| **404** (`404.html`) | 97 | 100 | 96 | 91 | Mobile: SEO reduced due to correct 404 status; minor console/static asset warning (expected for error page) |
 
 [Back to contents](#contents)
 
@@ -1367,7 +1679,7 @@ Return to [README.md](../README.md)
 #### Further Details (Mobile)
 
 <details>
-<summary><strong>Home (core/home.html) – Mobile Performance Analysis & Optimisation</strong></summary>
+<summary><strong>Home (core/home.html)</strong></summary>
 
 ### Initial Issue
 
@@ -1434,7 +1746,7 @@ All user-facing performance metrics now fall within acceptable modern web standa
 </details>
 
 <details>
-<summary><strong>Dashboard (core/dashboard.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Dashboard (core/dashboard.html)</strong></summary>
 
 ![Lighthouse - dashboard - mobile](testing-media/images/lighthouse-dashboard-mobile.png)
 
@@ -1491,7 +1803,7 @@ This page demonstrates strong front-end efficiency and stable layout behaviour u
 </details>
 
 <details>
-<summary><strong>My Entries (core/my_entries.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>My Entries (core/my_entries.html)</strong></summary>
 
 ### Results
 
@@ -1548,7 +1860,7 @@ Rendering is stable, fast, and efficient, demonstrating strong template architec
 </details>
 
 <details>
-<summary><strong>New Entry (core/new_entry.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>New Entry (core/new_entry.html)</strong></summary>
 
 ### Results
 
@@ -1611,7 +1923,7 @@ Performance remains stable even with dynamic form functionality, demonstrating e
 </details>
 
 <details>
-<summary><strong>Entry Detail (core/entry_detail.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Entry Detail (core/entry_detail.html)</strong></summary>
 
 ### Results
 
@@ -1678,7 +1990,7 @@ Performance remains stable and efficient despite dynamic content rendering, demo
 </details>
 
 <details>
-<summary><strong>Edit Entry (core/entry_edit.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Edit Entry (core/entry_edit.html)</strong></summary>
 
 ### Results
 
@@ -1736,7 +2048,7 @@ The reduced score reflects the additional structural complexity of an editable, 
 </details>
 
 <details>
-<summary><strong>Regulate+ (billing/regulate_plus.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Regulate+ (billing/regulate_plus.html)</strong></summary>
 
 ### Results
 
@@ -1792,7 +2104,7 @@ Performance remains stable and fast, which is particularly important for subscri
 </details>
 
 <details>
-  <summary><strong>Checkout Cancelled – Mobile Lighthouse</strong> (<code>billing/checkout_cancelled.html</code>)</summary>
+  <summary><strong>Checkout Cancelled (billing/checkout_cancelled.html)</strong> </summary>
 
   <h4>Initial Result (Before Optimisation)</h4>
 
@@ -1840,7 +2152,7 @@ Performance remains stable and fast, which is particularly important for subscri
 </details>
 
 <details>
-<summary><strong>FAQ (core/faq.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>FAQ (core/faq.html)</strong></summary>
 
 ### Results
 
@@ -1895,7 +2207,7 @@ Remaining Lighthouse suggestions are minor and relate to globally shared assets 
 </details>
 
 <details>
-<summary><strong>Crisis & Support (pages/support.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Crisis & Support (pages/support.html)</strong></summary>
 
 ### Results
 
@@ -1950,7 +2262,7 @@ Given the importance of support content, the page maintains high performance sta
 </details>
 
 <details>
-<summary><strong>Contact (pages/contact.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Contact (pages/contact.html)</strong></summary>
 
 ### Results
 
@@ -2003,7 +2315,7 @@ The Contact page demonstrates strong mobile performance with fast rendering, sta
 </details>
 
 <details>
-<summary><strong>Sign Up (account/signup.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Sign Up (account/signup.html)</strong></summary>
 
 ### Results
 
@@ -2053,7 +2365,7 @@ The Sign Up page achieves excellent mobile results with full accessibility, best
 </details>
 
 <details>
-<summary><strong>Login (account/login.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Login (account/login.html)</strong></summary>
 
 ### Results
 
@@ -2105,7 +2417,7 @@ The login page demonstrates strong mobile performance, full accessibility compli
 </details>
 
 <details>
-<summary><strong>Profile (account/profile.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Profile (account/profile.html)</strong></summary>
 
 ### Results
 
@@ -2156,7 +2468,7 @@ The Profile page maintains excellent mobile performance, full accessibility comp
 </details>
 
 <details>
-<summary><strong>Change Username (account/change_username.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Change Username (account/change_username.html)</strong></summary>
 
 ### Results
 
@@ -2209,7 +2521,7 @@ The Change Username page achieves near-perfect mobile performance while maintain
 </details>
 
 <details>
-<summary><strong>Change Email (account/change_email.html) – Mobile Performance Analysis</strong></summary>
+<summary><strong>Change Email (account/change_email.html)</strong></summary>
 
 ### Results
 
@@ -2261,6 +2573,373 @@ These do not prevent the page from achieving a high performance score and do not
 The Change Email page achieves excellent mobile Lighthouse results, maintaining strong performance alongside full accessibility, best-practice compliance, and SEO integrity.
 
 </details>
+
+<details>
+<summary><strong>Change Password (account/password_change.html)</strong></summary>
+
+### Results
+
+![Lighthouse - change password - mobile](testing-media/images/lighthouse-change-password-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 10ms  
+- Cumulative Layout Shift: 0.01  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Change Password page performs strongly on mobile devices, achieving a high performance score while maintaining perfect accessibility, best practice, and SEO results.
+
+The Largest Contentful Paint of 2.2 seconds remains within Google’s “Good” threshold (≤ 2.5s), ensuring that the primary content becomes visible quickly even under simulated mobile network conditions.
+
+Total Blocking Time is minimal at 10ms, confirming that shared scripts and password visibility toggle functionality do not meaningfully impact responsiveness.
+
+Layout stability is excellent, with a CLS of 0.01 — well below the 0.1 threshold — meaning there are no disruptive visual shifts during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified optimisation opportunities primarily related to shared global assets:
+
+- Render-blocking CSS (estimated ~800ms savings)
+- Modern HTTP delivery suggestions
+- Minor CSS and JavaScript minification opportunities
+- Reduce unused JavaScript from shared bundles
+- Generic “long main-thread task” warnings under mobile simulation
+
+These are global optimisation considerations rather than page-specific issues.
+
+---
+
+### Conclusion
+
+The Change Password page delivers strong mobile performance with excellent layout stability and full accessibility compliance. Remaining Lighthouse suggestions relate to shared assets and can be treated as optional refinements.
+
+</details>
+
+<details>
+<summary><strong>Password Reset (account/password_reset.html)</strong></summary>
+
+### Results
+
+![Lighthouse - password reset - mobile](testing-media/images/lighthouse-password-reset-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.049  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Password Reset page performs strongly on mobile devices, achieving a high performance score while maintaining perfect accessibility, best practice, and SEO compliance.
+
+The Largest Contentful Paint of 2.2 seconds remains within Google’s “Good” threshold (≤ 2.5s), ensuring the main content becomes visible quickly even under simulated mobile conditions.
+
+Total Blocking Time is 0ms, confirming that the page remains fully responsive during load.
+
+Cumulative Layout Shift is 0.049, well below the 0.1 threshold, indicating good visual stability with no disruptive layout movement.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse highlights optimisation opportunities primarily related to shared global assets:
+
+- Render-blocking CSS (estimated ~760ms savings)
+- Modern HTTP delivery improvements
+- Minor CSS and JavaScript minification opportunities
+- Reduce unused JavaScript from shared bundles
+- Generic “long main-thread task” warnings under mobile simulation
+
+These are global optimisation considerations rather than page-specific issues.
+
+---
+
+### Conclusion
+
+The Password Reset page demonstrates strong mobile performance, stable layout behaviour, and full compliance with accessibility and best-practice standards. Remaining Lighthouse suggestions relate to shared assets and can be treated as optional refinements.
+
+</details>
+
+<details>
+<summary><strong>Password Reset Done (account/password_reset_done.html)</strong></summary>
+
+### Results
+
+![Lighthouse - password reset done - mobile](testing-media/images/lighthouse-password-reset-done-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.015  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Password Reset Done confirmation page performs strongly on mobile, with fast visual rendering and excellent responsiveness.
+
+Largest Contentful Paint is 2.2 seconds, which remains within Google’s “Good” threshold (≤ 2.5s), meaning the main confirmation content is displayed quickly even under simulated mobile network conditions.
+
+Total Blocking Time is 0ms, confirming there are no JavaScript-related responsiveness delays on this page.
+
+Layout stability is also solid, with a CLS score of 0.015 (well below the 0.1 threshold), indicating minimal movement during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flags a small number of generic optimisation opportunities that relate to shared global assets rather than this template specifically:
+
+- Render-blocking requests (global CSS/vendor loading)
+- Minor JavaScript minification / unused JavaScript suggestions
+- Long main-thread task warnings under mobile simulation
+
+---
+
+### Conclusion
+
+The Password Reset Done page delivers an excellent mobile experience with high performance, full accessibility compliance, and perfect best-practice and SEO scores. Any remaining Lighthouse suggestions are tied to shared site-wide assets rather than page-level issues.
+
+</details>
+
+<details>
+<summary><strong>Password Reset From Key (account/password_reset_from_key.html)</strong></summary>
+
+### Testing Environment Note
+
+This page was tested **locally** rather than on the live deployed site.
+
+The password reset confirmation route requires a valid, time-sensitive token generated via email. In the production environment, reset emails are not accessible for direct Lighthouse testing. When running locally, Django outputs reset emails to the terminal, allowing the secure reset link to be accessed for performance evaluation.
+
+The template, styling, and static assets are identical between local and deployed environments, so the results are representative of production behaviour.
+
+---
+
+### Results (Local Environment)
+
+![Lighthouse - password reset from key - mobile](testing-media/images/lighthouse-password-reset-form-key-mobile.png)
+
+- **Performance:** 98  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.8s  
+- Largest Contentful Paint: 2.0s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.012  
+- Speed Index: 1.8s  
+
+---
+
+### Performance Overview
+
+The Password Reset From Key page performs strongly on mobile, achieving a high performance score with excellent responsiveness.
+
+Largest Contentful Paint (2.0s) is well within Google’s “Good” threshold (≤ 2.5s), meaning the main content is displayed quickly under simulated mobile network conditions.
+
+Total Blocking Time remains 0ms, confirming that password validation logic and shared scripts do not delay interactivity.
+
+Layout stability is strong, with a CLS of 0.012 — comfortably below the 0.1 threshold.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flags minor optimisation opportunities that relate to shared global assets:
+
+- Render-blocking CSS (estimated ~870ms savings)
+- Improve cache lifetimes for static assets
+- Minor CSS and JavaScript minification suggestions
+- Reduce unused CSS/JavaScript from shared bundles
+- Generic long main-thread task warnings under mobile simulation
+
+These are global optimisation considerations rather than page-specific issues.
+
+---
+
+### Conclusion
+
+The Password Reset From Key page achieves excellent mobile Lighthouse results when tested locally. Local testing is appropriate due to the token-based access requirement of this route, and results reflect the deployed template and asset configuration.
+
+</details>
+
+<details>
+<summary><strong>Password Reset From Key Done (account/password_reset_from_key_done.html)</strong></summary>
+
+### Results (Local Testing)
+
+![Lighthouse - password reset from key done - mobile](testing-media/images/lighthouse-password-reset-form-key-done-mobile.png)
+
+- **Performance:** 98  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.8s  
+- Largest Contentful Paint: 2.0s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.003  
+- Speed Index: 1.8s  
+
+---
+
+### Performance Overview
+
+This confirmation page performs strongly on mobile, with fast content rendering and stable layout behaviour.
+
+The Largest Contentful Paint of 2.0s falls within Google’s “Good” threshold (≤ 2.5s), indicating that the primary page content becomes visible quickly even under simulated mobile conditions.
+
+Total Blocking Time remains at 0ms, showing that the page does not introduce interactivity delays, and CLS is extremely low (0.003), meaning there is no noticeable layout movement during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged a small number of optimisation opportunities that relate to shared global assets rather than this specific template:
+
+- Render-blocking CSS (estimated 770ms savings)
+- Cache lifetime improvements (estimated 41 KiB)
+- Minor CSS/JS minification suggestions
+- Reduce unused CSS/JavaScript from shared bundles
+- Generic long main-thread task warnings under mobile simulation
+
+---
+
+### Notes on Testing Environment
+
+This page was tested **locally** rather than on the deployed Heroku site, because the password reset flow in the development environment outputs the reset link via the terminal, meaning the full reset-from-key journey cannot be reproduced end-to-end on the live deployment in the same way.
+
+---
+
+### Conclusion
+
+The password reset confirmation page achieves near-perfect Lighthouse results on mobile, maintaining excellent performance, complete accessibility compliance, best practices alignment, and SEO readiness, while remaining stable and responsive across the reset journey.
+
+</details>
+
+<details>
+<summary><strong>404 Error Page (404.html)</strong></summary>
+
+### Results
+
+![Lighthouse - 404 error page - mobile](testing-media/images/lighthouse-404-error-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 96  
+- **SEO:** 91  
+
+---
+
+### SEO Score Explanation
+
+The reduced SEO score is expected for a 404 error page.
+
+Lighthouse flags pages that return a non-200 HTTP status under the “Crawling and Indexing” audit. However, this page correctly returns an HTTP **404 status**, which is the proper and standards-compliant behaviour for a missing resource.
+
+A 404 page should:
+- Return HTTP 404  
+- Not be indexed by search engines  
+- Not appear in search results  
+
+Therefore, the SEO score reduction is intentional and does not indicate an implementation issue.
+
+---
+
+### Best Practices Notes
+
+Lighthouse reports:
+
+- Browser errors logged to the console  
+- Recommendations to implement CSP (Content Security Policy) and Trusted Types  
+
+The console warning relates to a shared static asset or missing resource and is not caused by the 404 template itself.
+
+CSP and Trusted Types suggestions are general security hardening recommendations and are not specific faults within this page.
+
+---
+
+### Performance Overview
+
+Mobile performance remains strong, with stable layout behaviour and no accessibility issues. The page loads quickly and maintains full usability despite being an error state.
+
+---
+
+### Conclusion
+
+The 404 page behaves correctly on mobile, returns the appropriate HTTP status code, and maintains strong accessibility and performance standards.
+
+The reduced SEO score is expected behaviour for an error page and does not require corrective action.
+
+</details>
+
+
+[Back to contents](#contents)
+
+Return to [README.md](../README.md)
+
+---
+## Wave Testing
+---
+
+After completing Lighthouse accessibility audits for all pages, a secondary manual accessibility review was conducted using the **WAVE Web Accessibility Evaluation Tool** (by WebAIM).
+
+Each template was individually reviewed on both desktop and mobile viewports to ensure:
+
+- No colour contrast errors
+- No missing form labels
+- No missing or incorrect ARIA attributes
+- No structural or semantic alerts requiring attention
+- Proper heading hierarchy
+- Accessible button and link naming
+- Sufficient touch target spacing
+- No empty links or redundant alternative text
+
+Particular attention was given to:
+- Authentication pages (password toggles, labels, aria attributes)
+- Form validation messaging
+- Interactive elements such as buttons, links, and navigation
+- Error pages (404 and 500)
+- Dynamic content areas such as dashboard messaging
+
+Any minor alerts identified during testing were reviewed and resolved where necessary to ensure consistent accessibility standards across the application.
+
+Following Lighthouse and WAVE validation, no outstanding contrast errors, accessibility alerts, or missing ARIA labels remain.
 
 
 [Back to contents](#contents)
