@@ -454,10 +454,10 @@ Return to [README.md](../README.md)
 | **Dashboard** (`core/dashboard.html`) | 100 | 100 | 100 | 100 | Extremely fast render time; no large media assets; clean template structure |
 | **My Entries** (`core/my_entries.html`) | 100 | 100 | 100 | 100 | Fast server-rendered content; no heavy media assets; stable layout |
 | **New Entry** (`core/new_entry.html`) | 100 | 100 | 100 | 100 | Contrast issue resolved; WCAG AA compliance achieved while maintaining design aesthetic |
-| **Entry Detail** (`core/entry_detail.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Edit Entry** (`core/entry_edit.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Regulate+** (`billing/regulate_plus.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Checkout Cancelled** (`billing/checkout_cancelled.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Entry Detail** (`core/entry_detail.html`) | 98 | 100 | 100 | 100 | Fast server-rendered content; minor flags relate to shared vendor assets |
+| **Edit Entry** (`core/entry_edit.html`) | 90 | 100 | 100 | 100 | Strong performance; minor Lighthouse deductions relate to shared static assets |
+| **Regulate+** (`billing/regulate_plus.html`) | 100 | 100 | 100 | 100 | Lightweight subscription page; fast render with stable layout |
+| **Checkout Cancelled** (`billing/checkout_cancelled.html`) | 100 | 100 | 100 | 100 | Lightweight confirmation page; fast render with no layout instability |
 | **FAQ** (`pages/faq.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Crisis & Support** (`pages/support.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Contact** (`pages/contact.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -702,6 +702,210 @@ The New Entry page now fully complies with WCAG contrast requirements while main
 
 </details>
 
+<details>
+<summary><strong>Entry Detail (Desktop) – core/entry_detail.html</strong></summary>
+
+Desktop Lighthouse scores for the Entry Detail page were excellent:
+
+![Lighthouse - entry detail - desktop](testing-media/images/lighthouse-entry-detail-desktop.png)
+
+- Performance: 98
+- Accessibility: 100
+- Best Practices: 100
+- SEO: 100
+
+Key metrics observed:
+- First Contentful Paint (FCP): 0.9s
+- Largest Contentful Paint (LCP): 0.9s
+- Total Blocking Time (TBT): 0ms
+- Cumulative Layout Shift (CLS): 0.003
+- Speed Index: 0.9s
+
+Minor recommendations shown in Lighthouse were primarily global/shared optimisation flags rather than page-specific defects:
+
+- Render-blocking requests (estimated savings shown)
+- “Modern HTTP” suggestion (estimated savings shown)
+- “Improve image delivery” (likely relating to shared static assets used across templates)
+- Missing explicit width/height attributes on some image elements
+- Minify CSS/JS and reduce unused JavaScript (shared bundle recommendations)
+- 1 long main-thread task flagged, despite TBT remaining 0ms
+
+No functional, accessibility, SEO, or best-practice issues were identified on this page during Lighthouse testing.
+
+</details>
+
+<details>
+<summary><strong>Edit Entry (core/entry_edit.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - edit entry - desktop](testing-media/images/lighthouse-edit-entry-desktop.png)
+
+- **Performance:** 90  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.6s  
+- Largest Contentful Paint: 2.1s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.004  
+- Speed Index: 0.6s  
+
+---
+
+### Performance Overview
+
+The Edit Entry page performs strongly on desktop despite containing:
+
+- Pre-populated form fields  
+- Dynamic input components  
+- Conditional rendering elements  
+- Emotion selection controls  
+
+The Largest Contentful Paint of 2.1 seconds remains within Google's “Good” performance range (≤ 2.5s).  
+Total Blocking Time remains 0ms, confirming that interactive functionality does not impact responsiveness.
+
+Layout stability is excellent, with a CLS of 0.004.
+
+---
+
+### Lighthouse Deductions Explained
+
+The reduction from a perfect score is due to shared optimisation flags, including:
+
+- Render-blocking Bootstrap CSS
+- Vendor JavaScript bundle suggestions
+- Image delivery optimisation (shared static assets)
+- Generic minification recommendations
+
+These relate to global project configuration rather than page-specific inefficiencies.
+
+No functional, accessibility, or SEO issues were identified.
+
+---
+
+### Conclusion
+
+While the performance score is 90, real-world rendering remains fast and stable.  
+All core performance metrics fall within acceptable thresholds, and the page remains fully accessible and standards-compliant.
+
+</details>
+
+<details>
+<summary><strong>Regulate+ (billing/regulate_plus.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - regulate+ - desktop](testing-media/images/lighthouse-regulate-plus-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.004  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Regulate+ subscription page renders extremely quickly on desktop due to:
+
+- Lightweight template structure
+- Minimal dynamic content
+- No heavy media assets
+- Efficient Django server-side rendering
+
+The Largest Contentful Paint of 0.6 seconds indicates near-instant primary content display.
+
+Total Blocking Time remains 0ms, confirming that any billing-related logic does not introduce client-side performance delays.
+
+Layout stability is excellent, with a CLS of 0.004 (well within the 0.1 threshold).
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged minor framework-level suggestions including:
+
+- Render-blocking Bootstrap CSS
+- Reduce unused JavaScript from shared vendor bundles
+- Minor unused CSS
+- Missing explicit width and height attributes on image elements
+
+These relate to shared global assets rather than page-specific inefficiencies.
+
+---
+
+### Conclusion
+
+The Regulate+ page achieves a perfect Lighthouse score across all categories on desktop.  
+Rendering is fast, stable, and fully standards-compliant.
+
+This is particularly important for a subscription/payment page, where performance and accessibility directly influence user trust and conversion confidence.
+
+</details>
+
+<details>
+<summary><strong>Checkout Cancelled (billing/checkout_cancelled.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - checkout cancelled - desktop](testing-media/images/lighthouse-checkout-cancelled-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.004  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Checkout Cancelled page is a lightweight confirmation page with minimal dynamic content. As expected, it loads extremely quickly and remains fully stable.
+
+- No blocking JavaScript detected  
+- No layout instability  
+- Minimal DOM complexity  
+- No heavy media above the fold  
+
+---
+
+### Lighthouse Observations
+
+Lighthouse flagged minor framework-level suggestions including:
+
+- Render-blocking Bootstrap CSS  
+- Generic image optimisation reminders  
+- Minor CSS/JS minification suggestions  
+
+These are global project-level considerations rather than page-specific performance concerns.
+
+---
+
+### Conclusion
+
+The Checkout Cancelled page performs optimally on desktop with perfect Lighthouse scores across all categories. Its simple structure ensures fast rendering, strong accessibility compliance, and stable layout behaviour.
+
+</details>
+
 
 [Back to contents](#contents)
 
@@ -717,9 +921,9 @@ Return to [README.md](../README.md)
 | **Dashboard** (`core/dashboard.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; lightweight template with minimal blocking assets |
 | **My Entries** (`core/my_entries.html`) | 96 | 100 | 100 | 100 | Strong mobile performance; efficient server rendering and minimal layout shift |
 | **New Entry** (`core/new_entry.html`) | 95 | 100 | 100 | 100 | Strong mobile performance; interactive form and slider remain responsive with zero blocking time |
-| **Entry Detail** (`core/entry_detail.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Edit Entry** (`core/entry_edit.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Regulate+** (`billing/regulate_plus.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Entry Detail** (`core/entry_detail.html`) | 98 | 100 | 100 | 100 | Excellent mobile performance; fast LCP with stable layout and zero blocking time |
+| **Edit Entry** (`core/entry_edit.html`) | 85 | 100 | 100 | 100 | Slightly higher LCP due to pre-populated form complexity; no blocking scripts or layout instability |
+| **Regulate+** (`billing/regulate_plus.html`) | 98 | 100 | 100 | 100 | Fast subscription page; stable layout and excellent mobile render speed |
 | **Checkout Cancelled** (`billing/checkout_cancelled.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **FAQ** (`pages/faq.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Crisis & Support** (`pages/support.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -929,6 +1133,8 @@ Rendering is stable, fast, and efficient, demonstrating strong template architec
 
 ### Results
 
+![Lighthouse - new entry - mobile](testing-media/images/lighthouse-new-entry-mobile.png)
+
 - **Performance:** 95  
 - **Accessibility:** 100  
 - **Best Practices:** 100  
@@ -984,6 +1190,188 @@ The New Entry page achieves near-perfect mobile performance while maintaining fu
 Performance remains stable even with dynamic form functionality, demonstrating efficient front-end implementation and controlled asset loading.
 
 </details>
+
+<details>
+<summary><strong>Entry Detail (core/entry_detail.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - entry detail - mobile](testing-media/images/lighthouse-entry-detail-mobile.png)
+
+- **Performance:** 98  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.0s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.033  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Entry Detail page performs exceptionally well on mobile devices.
+
+The Largest Contentful Paint of 2.0 seconds falls well within Google’s “Good” performance threshold (≤ 2.5s), indicating fast primary content rendering even under simulated mobile network conditions.
+
+Total Blocking Time remains at 0ms, demonstrating that interactive elements and page logic do not hinder responsiveness. Layout stability is strong, with a CLS of 0.033 (well below the 0.1 threshold).
+
+Despite containing structured emotional data and conditional rendering (e.g., revision history display), the page maintains excellent mobile performance.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified several minor optimisation suggestions, primarily related to shared static assets rather than page-specific implementation:
+
+- Render-blocking Bootstrap CSS (estimated 710ms savings)
+- Reduce unused JavaScript from shared vendor bundles
+- Minor unused CSS
+- Missing explicit width and height attributes on image elements
+- Generic main-thread task warnings
+
+These are framework-level considerations associated with global templates and vendor libraries rather than inefficiencies within this specific page.
+
+---
+
+### Accessibility Notes
+
+Accessibility scored 100. Lighthouse additionally highlighted manual checks (keyboard navigation, ARIA roles, focus management, etc.), which were reviewed during development to ensure:
+
+- Logical DOM order
+- Keyboard-accessible interactive elements
+- Proper use of semantic HTML and ARIA where required
+- No focus traps or hidden offscreen content issues
+
+---
+
+### Conclusion
+
+The Entry Detail page achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
+
+Performance remains stable and efficient despite dynamic content rendering, demonstrating controlled asset management and clean template architecture.
+
+</details>
+
+<details>
+<summary><strong>Edit Entry (core/entry_edit.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - edit entry - mobile](testing-media/images/lighthouse-edit-entry-mobile.png)
+
+- **Performance:** 85  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 2.3s  
+- Largest Contentful Paint: 3.9s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.005  
+- Speed Index: 2.3s  
+
+---
+
+### Performance Overview
+
+The Edit Entry page contains pre-populated form fields and dynamic components, which increases initial HTML payload compared to the New Entry page.
+
+While performance remains stable (0ms Total Blocking Time and minimal layout shift), the Largest Contentful Paint of 3.9 seconds places this page within Google’s “Needs Improvement” range for mobile (2.5–4.0s).
+
+However:
+
+- JavaScript execution time remains low (0.2s)
+- Layout stability is excellent (CLS 0.005)
+- No blocking scripts were detected
+- Total network payload remains within reasonable limits (~1.7MB)
+
+---
+
+### Lighthouse Deductions Explained
+
+The performance score reduction is primarily influenced by:
+
+- Render-blocking Bootstrap CSS
+- Shared vendor JavaScript bundle size
+- Image delivery optimisation flags
+- Generic DOM size optimisation suggestions
+
+These are framework-level considerations rather than page-specific inefficiencies.
+
+---
+
+### Conclusion
+
+Although the performance score is slightly lower than other pages, the Edit Entry page remains fully responsive, accessible, and stable under mobile conditions.
+
+The reduced score reflects the additional structural complexity of an editable, pre-populated form rather than functional performance issues.
+
+</details>
+
+<details>
+<summary><strong>Regulate+ (billing/regulate_plus.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - regulate+ - mobile](testing-media/images/lighthouse-regulate-plus-mobile.png)
+
+- **Performance:** 98  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.0s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.025  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Regulate+ page performs exceptionally well on mobile devices.
+
+The Largest Contentful Paint of 2.0 seconds falls comfortably within Google’s “Good” performance threshold (≤ 2.5s), indicating fast primary content rendering even under simulated mobile network conditions.
+
+Total Blocking Time remains 0ms, demonstrating that subscription-related logic and page interactivity do not introduce responsiveness delays.
+
+Layout stability is strong, with a CLS of 0.025, well below the 0.1 threshold.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities, primarily related to shared project assets:
+
+- Render-blocking Bootstrap CSS (estimated 740ms savings)
+- Reduce unused JavaScript from shared vendor bundles
+- Minor CSS minification suggestions
+- Missing explicit width and height attributes on image elements
+- Generic long main-thread task warnings
+
+These relate to global static assets rather than page-specific inefficiencies.
+
+---
+
+### Conclusion
+
+The Regulate+ subscription page achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
+
+Performance remains stable and fast, which is particularly important for subscription and payment-related pages where user trust and smooth interaction are critical.
+
+</details>
+
 
 
 [Back to contents](#contents)
