@@ -458,9 +458,9 @@ Return to [README.md](../README.md)
 | **Edit Entry** (`core/entry_edit.html`) | 90 | 100 | 100 | 100 | Strong performance; minor Lighthouse deductions relate to shared static assets |
 | **Regulate+** (`billing/regulate_plus.html`) | 100 | 100 | 100 | 100 | Lightweight subscription page; fast render with stable layout |
 | **Checkout Cancelled** (`billing/checkout_cancelled.html`) | 100 | 100 | 100 | 100 | Lightweight confirmation page; fast render with no layout instability |
-| **FAQ** (`pages/faq.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Crisis & Support** (`pages/support.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Contact** (`pages/contact.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **FAQ** (`pages/faq.html`) | 100 | 100 | 100 | 100 | Desktop Lighthouse results were perfect; only minor global asset suggestions (Bootstrap/render-blocking, unused CSS/JS) |
+| **Crisis & Support** (`pages/support.html`) | 100 | 100 | 100 | 100 | Desktop Lighthouse achieved perfect scores; only minor global asset suggestions (render-blocking Bootstrap and shared JS/CSS bundles) |
+| **Contact** (`pages/contact.html`) | 100 | 100 | 100 | 100 | Desktop Lighthouse achieved perfect scores; minor suggestions relate to shared global assets (Bootstrap render-blocking and unused CSS/JS) |
 | **Sign Up** (`account/signup.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Login** (`account/login.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Profile** (`account/profile.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -906,6 +906,158 @@ The Checkout Cancelled page performs optimally on desktop with perfect Lighthous
 
 </details>
 
+<details>
+<summary><strong>FAQ (pages/faq.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - FAQ - desktop](testing-media/images/lighthouse-faq-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.6s  
+- Largest Contentful Paint: 0.7s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.002  
+- Speed Index: 0.6s  
+
+---
+
+### Performance Overview
+
+The FAQ page achieves a perfect Lighthouse score across all categories on desktop.
+
+The Largest Contentful Paint of 0.7 seconds indicates that the main content renders almost immediately, and Total Blocking Time remains 0ms, confirming there are no JavaScript tasks delaying interactivity.
+
+Layout stability is excellent, with a CLS of 0.002 (well below the 0.1 threshold), meaning content does not shift unexpectedly during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse still reports small optimisation opportunities, but these are typical of shared global assets rather than page-specific issues:
+
+- Render-blocking resources (estimated 240ms savings) — primarily Bootstrap CSS delivery
+- Reduce unused CSS / JavaScript from shared bundles across the project
+- Minor CSS/JS minification suggestions
+
+These do not affect real-world usability, and the page already performs at the maximum Lighthouse rating on desktop.
+
+---
+
+### Conclusion
+
+The FAQ page performs exceptionally well on desktop, achieving **100/100** across Performance, Accessibility, Best Practices, and SEO. Any remaining Lighthouse notes relate to global/shared assets and do not indicate functional or UX concerns for this page.
+
+</details>
+
+<details>
+<summary><strong>Crisis &amp; Support (pages/support.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - crisis &amp; support - desktop](testing-media/images/lighthouse-crisis-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.002  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Crisis &amp; Support page achieves perfect Lighthouse scores across all categories on desktop.
+
+Primary content renders extremely quickly (LCP 0.6s), with no blocking time (TBT 0ms), indicating that the page remains fully responsive and interactive during load.
+
+Layout stability is excellent (CLS 0.002), meaning the page loads without noticeable shifting that could disrupt reading or navigation.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged only minor, global optimisation opportunities:
+
+- Render-blocking resources (estimated 180ms savings)  
+- Modern HTTP delivery suggestion  
+- Minor JS/CSS minification suggestions  
+- Generic “avoid long main-thread tasks” note (1 task)  
+
+These relate to shared site assets (e.g., Bootstrap/vendor bundles) rather than any page-specific performance issue.
+
+---
+
+### Conclusion
+
+The Crisis &amp; Support page provides fast, stable, and accessible delivery on desktop, which is particularly important for high-stakes support content where clarity and reliability are essential.
+
+</details>
+
+<details>
+<summary><strong>Contact (pages/contact.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - contact - desktop](testing-media/images/lighthouse-contact-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.001  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Contact page achieves perfect Lighthouse scores on desktop across all categories.
+
+Primary content renders almost instantly (FCP 0.5s, LCP 0.6s), indicating fast initial paint and rapid loading of the largest visible element. Interactivity is immediate, with **0ms Total Blocking Time**, and the layout is highly stable (**CLS 0.001**, well below the 0.1 threshold).
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged a small number of optimisation opportunities that relate to shared global assets rather than issues specific to the Contact template:
+
+- Render-blocking Bootstrap CSS (estimated 230ms savings)
+- Minor “Modern HTTP” suggestion (estimated 40ms savings)
+- Reduce unused CSS from global stylesheet loading
+- Standard minification suggestions for shared CSS/JS bundles
+- Reduce unused JavaScript warnings from shared scripts
+
+These are common trade-offs when using Bootstrap and site-wide JS/CSS on a multi-page Django project.
+
+---
+
+### Conclusion
+
+The Contact page performs exceptionally well on desktop, reaching **100/100 across Performance, Accessibility, Best Practices, and SEO** with excellent paint, stability, and responsiveness metrics.
+
+</details>
+
+
 
 [Back to contents](#contents)
 
@@ -924,10 +1076,10 @@ Return to [README.md](../README.md)
 | **Entry Detail** (`core/entry_detail.html`) | 98 | 100 | 100 | 100 | Excellent mobile performance; fast LCP with stable layout and zero blocking time |
 | **Edit Entry** (`core/entry_edit.html`) | 85 | 100 | 100 | 100 | Slightly higher LCP due to pre-populated form complexity; no blocking scripts or layout instability |
 | **Regulate+** (`billing/regulate_plus.html`) | 98 | 100 | 100 | 100 | Fast subscription page; stable layout and excellent mobile render speed |
-| **Checkout Cancelled** (`billing/checkout_cancelled.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **FAQ** (`pages/faq.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Crisis & Support** (`pages/support.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Contact** (`pages/contact.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Checkout Cancelled** (`billing/checkout_cancelled.html`) | 100 | 100 | 100 | 100 | Mobile performance improved from 73 → 97 after removing duplicated CSS in `main.css` and converting the navbar logo from large PNG to optimised WebP (global base template asset). |
+| **FAQ** (`pages/faq.html`) | 96 | 100 | 100 | 100 | Strong mobile performance; minor Lighthouse suggestions relate to shared global assets (Bootstrap/render-blocking resources) |
+| **Crisis & Support** (`pages/support.html`) | 94 | 100 | 100 | 100 | Strong mobile performance; slight CLS (0.118) noted, remaining suggestions relate to global shared assets |
+| **Contact** (`pages/contact.html`) | 94 | 100 | 100 | 100 | Strong mobile performance; slight CLS (0.105) noted, remaining suggestions relate to shared global assets |
 | **Sign Up** (`account/signup.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Login** (`account/login.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Profile** (`account/profile.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -1369,6 +1521,217 @@ These relate to global static assets rather than page-specific inefficiencies.
 The Regulate+ subscription page achieves near-perfect mobile performance while maintaining full accessibility, best practice compliance, and SEO integrity.
 
 Performance remains stable and fast, which is particularly important for subscription and payment-related pages where user trust and smooth interaction are critical.
+
+</details>
+
+<details>
+  <summary><strong>Checkout Cancelled – Mobile Lighthouse</strong> (<code>billing/checkout_cancelled.html</code>)</summary>
+
+  <h4>Initial Result (Before Optimisation)</h4>
+
+![Lighthouse - cancelled checkout - mobile before](testing-media/images/lighthouse-checkout-cancelled-mobile-before.png)
+
+  <ul>
+    <li><strong>Performance:</strong> 73</li>
+    <li><strong>Largest Contentful Paint (LCP):</strong> 9.5s</li>
+    <li><strong>Cumulative Layout Shift (CLS):</strong> 0.048</li>
+    <li><strong>Main Issue Flagged:</strong> Improve image delivery (~1.47MB)</li>
+  </ul>
+
+  <p>
+    The low performance score was caused by two global issues inherited from <code>base.html</code>:
+  </p>
+  <ul>
+    <li>An oversized PNG navbar logo (~1.5MB) loading on every page.</li>
+    <li>Accidental duplicated CSS within <code>main.css</code>, increasing render-blocking and unused CSS.</li>
+  </ul>
+
+  <h4>Optimisations Applied</h4>
+  <ul>
+    <li>Converted navbar logo from large PNG to compressed WebP using Squoosh.</li>
+    <li>Resized the logo appropriately for display (80px height) and added explicit <code>width</code> and <code>height</code> attributes to prevent layout shift.</li>
+    <li>Removed duplicated CSS from <code>static/css/main.css</code> to reduce render-blocking overhead.</li>
+  </ul>
+
+  <h4>Result After Optimisation</h4>
+
+![Lighthouse - cancelled checkout - mobile after](testing-media/images/lighthouse-checkout-cancelled-mobile-after.png)
+
+  <ul>
+    <li><strong>Performance:</strong> 97</li>
+    <li><strong>First Contentful Paint (FCP):</strong> 1.9s</li>
+    <li><strong>Largest Contentful Paint (LCP):</strong> 2.2s</li>
+    <li><strong>Total Blocking Time (TBT):</strong> 0ms</li>
+    <li><strong>Cumulative Layout Shift (CLS):</strong> 0.048</li>
+  </ul>
+
+  <p>
+    The optimisation reduced the page’s Largest Contentful Paint from 9.5s to 2.2s and improved the overall Performance score from 73 to 97. 
+    Remaining Lighthouse suggestions relate primarily to global JavaScript and CSS efficiency rather than page-specific structural issues.
+  </p>
+
+</details>
+
+<details>
+<summary><strong>FAQ (core/faq.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - faq - mobile](testing-media/images/lighthouse-faq-mobile.png)
+
+- **Performance:** 96  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 2.0s  
+- Largest Contentful Paint: 2.4s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.017  
+- Speed Index: 2.0s  
+
+---
+
+### Performance Overview
+
+The FAQ page performs strongly on mobile devices, achieving a high performance score of 96 while maintaining perfect Accessibility, Best Practices, and SEO scores.
+
+The Largest Contentful Paint of 2.4 seconds remains within Google’s “Good” threshold (≤ 2.5s), indicating that primary content loads quickly even under simulated mobile conditions.
+
+Total Blocking Time remains at 0ms, demonstrating that the accordion-based FAQ interaction does not introduce responsiveness delays.
+
+Layout stability is excellent, with a CLS of 0.017, well below the 0.1 threshold.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities primarily related to shared project assets inherited from the base template:
+
+- Render-blocking Bootstrap CSS (estimated 720ms savings)
+- Reduce unused JavaScript from shared vendor bundles
+- Minor CSS and JavaScript minification suggestions
+- Generic long main-thread task warnings
+
+These relate to global static assets rather than page-specific inefficiencies.
+
+---
+
+### Conclusion
+
+The FAQ page demonstrates strong mobile performance with stable layout rendering and no blocking JavaScript issues.
+
+Remaining Lighthouse suggestions are minor and relate to globally shared assets rather than structural or page-specific concerns. Overall, the page performs reliably and efficiently on mobile devices.
+
+</details>
+
+<details>
+<summary><strong>Crisis & Support (pages/support.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - crisis & support - mobile](testing-media/images/lighthouse-crisis-mobile.png)
+
+- **Performance:** 94  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.118  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Crisis & Support page performs strongly on mobile devices, maintaining perfect Accessibility, Best Practices, and SEO scores.
+
+The Largest Contentful Paint of 2.2 seconds falls within Google’s “Good” threshold (≤ 2.5s), indicating that primary content loads quickly even under mobile network simulation.
+
+Total Blocking Time remains at 0ms, demonstrating that page interactivity is not delayed by JavaScript execution.
+
+The Performance score of 94 is slightly impacted by layout stability, with a CLS of 0.118. While slightly above the ideal 0.1 threshold, no disruptive visual shifts were observed during practical testing, and the page remains fully usable.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities primarily related to shared global assets:
+
+- Render-blocking Bootstrap CSS (estimated 750ms savings)
+- Reduce unused JavaScript from shared vendor bundles
+- Minor CSS and JavaScript minification suggestions
+- Generic long main-thread task warnings
+
+These relate to globally inherited resources from the base template rather than page-specific inefficiencies.
+
+---
+
+### Conclusion
+
+The Crisis & Support page delivers fast, accessible, and stable mobile performance. While Lighthouse reports a slightly elevated CLS metric, real-world behaviour remains smooth and reliable.
+
+Given the importance of support content, the page maintains high performance standards and full compliance across accessibility and SEO categories.
+
+</details>
+
+<details>
+<summary><strong>Contact (pages/contact.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - contact - mobile](testing-media/images/lighthouse-contact-mobile.png)
+
+- **Performance:** 94  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.105  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Contact page performs strongly on mobile devices, maintaining perfect Accessibility, Best Practices, and SEO scores.
+
+The Largest Contentful Paint of 2.2 seconds remains within Google’s “Good” performance threshold (≤ 2.5s), indicating fast primary content rendering under mobile simulation.
+
+Total Blocking Time remains 0ms, confirming that form interactivity and page responsiveness are not delayed by JavaScript execution.
+
+The Performance score of 94 is primarily influenced by layout stability, with a CLS of 0.105. While slightly above the recommended 0.1 threshold, no disruptive layout behaviour was observed during manual testing, and the page remains fully usable.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified minor optimisation opportunities primarily related to shared global assets inherited from the base template:
+
+- Render-blocking Bootstrap CSS (estimated 810ms savings)
+- Reduce unused JavaScript from shared vendor bundles
+- Minor CSS and JavaScript minification suggestions
+- Generic long main-thread task warnings
+
+These relate to global static resources rather than page-specific structural issues.
+
+---
+
+### Conclusion
+
+The Contact page demonstrates strong mobile performance with fast rendering, stable layout behaviour, and full compliance across accessibility and SEO categories. Remaining Lighthouse suggestions relate to globally shared assets and do not indicate functional concerns.
 
 </details>
 
