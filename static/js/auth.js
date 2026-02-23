@@ -13,14 +13,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!input) return;
 
+    // Ensure initial state
+    btn.setAttribute("aria-pressed", "false");
+
     btn.addEventListener("click", () => {
       const isPassword = input.type === "password";
+
       input.type = isPassword ? "text" : "password";
 
       btn.classList.toggle("is-visible", isPassword);
+
       btn.setAttribute(
         "aria-label",
         isPassword ? "Hide password" : "Show password"
+      );
+
+      btn.setAttribute(
+        "aria-pressed",
+        isPassword ? "true" : "false"
       );
     });
   });

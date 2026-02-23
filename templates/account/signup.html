@@ -87,18 +87,23 @@
                     class="toggle-password-btn"
                     data-target="{{ form.password1.id_for_label }}"
                     aria-label="Show password">
+
+                    <!-- Matches login.html eye icon -->
                     <svg xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 24 24"
-                         aria-hidden="true">
-                        <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                        <circle cx="12" cy="12" r="2.5"/>
+                         width="24"
+                         height="24"
+                         viewBox="0 0 16 16"
+                         aria-hidden="true"
+                         focusable="false">
+                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"></path>
+                        <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path>
                     </svg>
                 </button>
             </div>
 
             {# Ensure aria-describedby points to a real element #}
             {% if form.password1.help_text %}
-                <div id="id_password1_helptext" class="form-text text-muted">
+                <div id="id_password1_helptext" class="emotion-helper">
                     {{ form.password1.help_text|safe }}
                 </div>
             {% endif %}
@@ -109,7 +114,6 @@
                 </div>
             {% endif %}
 
-
             <!-- Password confirmation -->
             <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
             <div class="password-field">
@@ -119,11 +123,16 @@
                     class="toggle-password-btn"
                     data-target="{{ form.password2.id_for_label }}"
                     aria-label="Show password">
+
+                    <!-- Matches login.html eye icon -->
                     <svg xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 24 24"
-                         aria-hidden="true">
-                        <path d="M12 5C7 5 3.1 8.1 1.5 12c1.6 3.9 5.5 7 10.5 7s8.9-3.1 10.5-7C20.9 8.1 17 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-                        <circle cx="12" cy="12" r="2.5"/>
+                         width="24"
+                         height="24"
+                         viewBox="0 0 16 16"
+                         aria-hidden="true"
+                         focusable="false">
+                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"></path>
+                        <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path>
                     </svg>
                 </button>
             </div>
@@ -139,7 +148,6 @@
                     {{ form.password2.errors|striptags }}
                 </div>
             {% endif %}
-
 
             <button type="submit" class="select-btn">Sign Up</button>
         </form>

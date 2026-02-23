@@ -7,6 +7,7 @@
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
+  color: var(--hint-text-color);
 }
 
 /* Password field with eye toggle */
@@ -14,16 +15,23 @@
   position: relative;
 }
 
+/* Make toggle a proper touch target */
 .toggle-password-btn {
   position: absolute;
-  right: 0.75rem;
+  right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  padding: 0;
+
+  /* Touch target sizing (Lighthouse) */
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -32,11 +40,16 @@
   height: 20px;
 }
 
+/* Prevent password text sitting under the button */
+.password-field input {
+  padding-right: 3rem;
+}
+
 /* Keyboard focus for accessibility */
 .toggle-password-btn:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
 /* Change look when password is visible */
