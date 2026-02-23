@@ -461,11 +461,11 @@ Return to [README.md](../README.md)
 | **FAQ** (`pages/faq.html`) | 100 | 100 | 100 | 100 | Desktop Lighthouse results were perfect; only minor global asset suggestions (Bootstrap/render-blocking, unused CSS/JS) |
 | **Crisis & Support** (`pages/support.html`) | 100 | 100 | 100 | 100 | Desktop Lighthouse achieved perfect scores; only minor global asset suggestions (render-blocking Bootstrap and shared JS/CSS bundles) |
 | **Contact** (`pages/contact.html`) | 100 | 100 | 100 | 100 | Desktop Lighthouse achieved perfect scores; minor suggestions relate to shared global assets (Bootstrap render-blocking and unused CSS/JS) |
-| **Sign Up** (`account/signup.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Login** (`account/login.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Profile** (`account/profile.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Change Username** (`account/change_username.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Change Email** (`account/change_email.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Sign Up** (`account/signup.html`) | 100 | 100 | 100 | 100 | Excellent desktop performance with full accessibility compliance and stable layout. |
+| **Login** (`account/login.html`) | 100 | 100 | 100 | 100 | Excellent desktop performance with instant rendering (LCP 0.6s) and zero layout shift. |
+| **Profile** (`account/profile.html`) | 100 | 100 | 100 | 100 | Instant render (LCP 0.6s) with zero layout shift and full compliance. |
+| **Change Username** (`account/change_username.html`) | 100 | 100 | 100 | 100 | Instant render (LCP 0.6s) with zero layout shift and full compliance. |
+| **Change Email** (`account/change_email.html`) | 100 | 100 | 100 | 100 | Fast-rendering account form page; no layout shift and no blocking time on desktop |
 | **Change Password** (`account/password_change.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Password Reset** (`account/password_reset.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Password Reset Done** (`account/password_reset_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -1057,6 +1057,273 @@ The Contact page performs exceptionally well on desktop, reaching **100/100 acro
 
 </details>
 
+<details>
+<summary><strong>Sign Up (account/signup.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - signup - desktop](testing-media/images/lighthouse-signup-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.6s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.6s  
+
+---
+
+### Performance Overview
+
+The Sign Up page achieves perfect Lighthouse scores across all categories on desktop.
+
+Primary content renders extremely quickly, with both First Contentful Paint and Largest Contentful Paint occurring at 0.6 seconds. Total Blocking Time remains 0ms, confirming that form rendering and password toggle functionality do not introduce main-thread delays.
+
+Cumulative Layout Shift is 0, indicating complete layout stability during page load — an important factor for form usability and accessibility.
+
+---
+
+### Accessibility Enhancements
+
+During review of authentication-related templates, improvements were made to ensure consistent accessibility across login and signup pages:
+
+- Standardised password visibility toggle icon for consistency
+- Increased touch target size for toggle buttons to meet accessibility best practices
+- Added `aria-pressed` state handling for screen reader clarity
+- Ensured SVG icons are marked as decorative (`aria-hidden="true"`)
+
+These updates ensure authentication interactions are both visually consistent and accessible to keyboard and assistive technology users.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse highlights minor optimisation opportunities that relate to shared static assets rather than this page specifically:
+
+- Small CSS and JavaScript minification savings
+- Minor unused CSS/JS suggestions from global bundles
+- Back/forward cache restoration note (related to broader application behaviour)
+
+These do not negatively impact user experience on the signup page.
+
+---
+
+### Conclusion
+
+The Sign Up page demonstrates excellent performance, accessibility, and best-practice compliance. Authentication flows are fast, stable, and inclusive, supporting both usability and trust during account creation.
+
+</details>
+
+<details>
+<summary><strong>Login (account/login.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - login - desktop](testing-media/images/lighthouse-login-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The login page achieves perfect desktop Lighthouse scores, indicating fast rendering, stable layout, and highly responsive interactivity.
+
+The Largest Contentful Paint of 0.6 seconds shows that the primary content (form card and core UI) appears almost immediately, supporting a smooth sign-in experience.
+
+Total Blocking Time remains 0ms, confirming that authentication page scripts (including the password visibility toggle) do not introduce any measurable interaction delay.
+
+Layout stability is excellent, with CLS recorded as 0, meaning there are no unexpected shifts as the page loads.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flags a small number of general optimisation opportunities, largely related to shared, site-wide assets rather than page-specific issues:
+
+- Render-blocking requests (Bootstrap/CSS delivery)  
+- Minor JavaScript minification and unused JavaScript warnings from shared bundles  
+- “Page prevented back/forward cache restoration” (typically related to global script behaviour and not unique to the login template)  
+
+These do not negatively affect usability and did not prevent the page from achieving full scores.
+
+---
+
+### Conclusion
+
+The login page performs exceptionally well on desktop, with perfect Lighthouse scoring across all categories. It loads quickly, remains visually stable, and keeps interaction latency effectively at zero — which is ideal for a critical authentication flow.
+
+</details>
+
+<details>
+<summary><strong>Profile (account/profile.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - profile - desktop](testing-media/images/lighthouse-profile-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Profile page achieves perfect Lighthouse scores across all categories on desktop.
+
+Content renders almost instantly, with both First Contentful Paint and Largest Contentful Paint occurring within 0.6 seconds. Total Blocking Time is 0ms, confirming that profile-related UI logic and account data rendering do not introduce main-thread delays.
+
+Cumulative Layout Shift is recorded at 0, indicating complete visual stability during load — particularly important for account and settings interfaces where clarity and predictability are essential.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse highlights minor optimisation opportunities that relate to shared static assets rather than the profile template itself:
+
+- Render-blocking CSS (estimated 230ms savings)
+- Small CSS and JavaScript minification suggestions
+- Reduce unused JavaScript from shared bundles
+
+These are global asset considerations and do not negatively affect the performance or usability of the profile page.
+
+---
+
+### Conclusion
+
+The Profile page demonstrates excellent desktop performance, full accessibility compliance, and stable layout behaviour. It loads quickly, remains responsive, and provides a smooth user experience for account management tasks.
+
+</details>
+
+<details>
+<summary><strong>Change Username (account/change_username.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - change username - desktop](testing-media/images/lighthouse-change-username-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Change Username page achieves perfect Lighthouse scores across all categories on desktop.
+
+Primary content renders almost instantly, with both First Contentful Paint and Largest Contentful Paint occurring within 0.6 seconds. Total Blocking Time remains 0ms, confirming that account update logic and validation scripts do not introduce measurable interaction delays.
+
+Cumulative Layout Shift is 0, demonstrating complete layout stability — particularly important for account management interfaces where clarity and predictability are essential.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identifies small optimisation opportunities primarily related to shared global assets:
+
+- Render-blocking CSS (estimated 210ms potential savings)
+- Minor CSS and JavaScript minification suggestions
+- Reduce unused JavaScript from shared bundles
+- Single long main-thread task warning (originating from vendor scripts rather than this template)
+
+These are global optimisation considerations and do not negatively impact usability.
+
+---
+
+### Conclusion
+
+The Change Username page delivers excellent desktop performance, full accessibility compliance, and stable layout behaviour. It provides a fast and responsive experience for account updates while maintaining best practice standards.
+
+</details>
+
+<details>
+<summary><strong>Change Email (account/change_email.html) – Desktop Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - change email - desktop](testing-media/images/lighthouse-change-email-desktop.png)
+
+- **Performance:** 100  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 0.5s  
+- Largest Contentful Paint: 0.6s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0  
+- Speed Index: 0.5s  
+
+---
+
+### Performance Overview
+
+The Change Email page achieves perfect Lighthouse scores across all categories on desktop.
+
+Primary content renders almost immediately, with both First Contentful Paint and Largest Contentful Paint occurring within 0.6 seconds. Total Blocking Time remains at 0ms, confirming that form validation and account update logic do not introduce main-thread delays.
+
+Cumulative Layout Shift is recorded as 0, demonstrating complete visual stability during load — particularly important for account management interfaces where clarity and predictability are essential.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identifies minor optimisation opportunities that relate to shared global assets rather than this specific template:
+
+- Render-blocking CSS (estimated ~220ms savings)
+- Minor CSS and JavaScript minification suggestions
+- Reduce unused CSS and JavaScript from shared bundles
+
+These are global performance considerations and do not negatively impact the usability or responsiveness of the Change Email page.
+
+---
+
+### Conclusion
+
+The Change Email page demonstrates excellent desktop performance, full accessibility compliance, and stable layout behaviour. It loads quickly, remains responsive, and maintains best-practice standards for account management workflows.
+
+</details>
+
+
 
 
 [Back to contents](#contents)
@@ -1080,11 +1347,11 @@ Return to [README.md](../README.md)
 | **FAQ** (`pages/faq.html`) | 96 | 100 | 100 | 100 | Strong mobile performance; minor Lighthouse suggestions relate to shared global assets (Bootstrap/render-blocking resources) |
 | **Crisis & Support** (`pages/support.html`) | 94 | 100 | 100 | 100 | Strong mobile performance; slight CLS (0.118) noted, remaining suggestions relate to global shared assets |
 | **Contact** (`pages/contact.html`) | 94 | 100 | 100 | 100 | Strong mobile performance; slight CLS (0.105) noted, remaining suggestions relate to shared global assets |
-| **Sign Up** (`account/signup.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Login** (`account/login.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Profile** (`account/profile.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Change Username** (`account/change_username.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
-| **Change Email** (`account/change_email.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
+| **Sign Up** (`account/signup.html`) | 97 | 100 | 100 | 100 | Strong mobile performance with fast LCP (2.2s) and stable layout (CLS 0.013). |
+| **Login** (`account/login.html`) | 97 | 100 | 100 | 100 | Strong mobile performance; minor Lighthouse flags relate to shared global
+| **Profile** (`account/profile.html`) | 97 | 100 | 100 | 100 | Strong mobile performance with fast LCP (2.2s) and excellent layout stability (CLS 0.002). |
+| **Change Username** (`account/change_username.html`) | 97 | 100 | 100 | 100 | Strong mobile performance (LCP 2.2s) with stable layout and full accessibility compliance. |
+| **Change Email** (`account/change_email.html`) | 97 | 100 | 100 | 100 | Strong mobile performance (LCP 2.2s) with stable layout and full compliance. |
 | **Change Password** (`account/password_change.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Password Reset** (`account/password_reset.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
 | **Password Reset Done** (`account/password_reset_done.html`) | ☐ Pending | ☐ Pending | ☐ Pending | ☐ Pending | |
@@ -1735,6 +2002,265 @@ The Contact page demonstrates strong mobile performance with fast rendering, sta
 
 </details>
 
+<details>
+<summary><strong>Sign Up (account/signup.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - sign up - mobile](testing-media/images/lighthouse-signup-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.013  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Sign Up page performs strongly on mobile, maintaining a fast first paint (1.9s) and a “Good” Largest Contentful Paint (2.2s, within the ≤ 2.5s threshold).  
+
+Total Blocking Time remains 0ms, indicating the page stays responsive during load, and the low CLS score (0.013) confirms stable layout with no disruptive visual shifting.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged small optimisation opportunities that are mostly related to shared/global assets rather than issues specific to the Sign Up template:
+
+- Render-blocking CSS (estimated 670ms savings)
+- Reduce unused JavaScript from shared bundles
+- Minor CSS/JS minification opportunities
+- “Avoid long main-thread tasks” warnings (often caused by shared vendor scripts)
+- Back/forward cache restoration prevented (typically linked to global scripts/event listeners)
+
+These do not indicate functional issues and can be addressed later as part of broader project optimisation.
+
+---
+
+### Conclusion
+
+The Sign Up page achieves excellent mobile results with full accessibility, best practice compliance, and SEO. Performance is comfortably within expected thresholds for an authentication flow, and layout stability remains strong.
+
+</details>
+
+<details>
+<summary><strong>Login (account/login.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - login - mobile](testing-media/images/lighthouse-login-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 10ms  
+- Cumulative Layout Shift: 0.004  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The login page performs strongly on mobile devices, achieving near-perfect Lighthouse results.
+
+The Largest Contentful Paint of 2.2 seconds remains within Google's “Good” threshold (≤ 2.5s), meaning primary content renders quickly even under simulated mobile network conditions.
+
+Total Blocking Time is minimal at 10ms, indicating excellent responsiveness. Layout stability is also strong, with a CLS of 0.004 — effectively eliminating disruptive visual shifts during page load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identified optimisation opportunities largely associated with shared project assets rather than the login template specifically:
+
+- Render-blocking CSS (estimated 830ms potential savings)
+- Minor CSS and JavaScript minification suggestions
+- Reduce unused CSS/JavaScript from shared bundles
+- Back/forward cache restoration limitation (likely due to global script behaviour)
+- Occasional long main-thread tasks originating from vendor scripts
+
+These are global performance considerations and do not negatively affect usability or accessibility of the login flow.
+
+---
+
+### Conclusion
+
+The login page demonstrates strong mobile performance, full accessibility compliance, and excellent layout stability. Authentication interactions remain fast, responsive, and accessible across devices.
+
+</details>
+
+<details>
+<summary><strong>Profile (account/profile.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - profile - mobile](testing-media/images/lighthouse-profile-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.002  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Profile page performs strongly on mobile devices, achieving near-perfect Lighthouse scores.
+
+The Largest Contentful Paint of 2.2 seconds remains within Google’s “Good” threshold (≤ 2.5s), ensuring that primary account content renders quickly even under simulated mobile conditions.
+
+Total Blocking Time remains at 0ms, demonstrating that profile-related scripts and account data rendering do not introduce responsiveness delays. Layout stability is excellent, with a CLS of 0.002, meaning there are no noticeable visual shifts during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse identifies optimisation opportunities largely associated with shared project assets:
+
+- Render-blocking CSS (estimated 810ms savings)
+- Reduce unused CSS and JavaScript from shared bundles
+- Minor CSS/JS minification suggestions
+- Occasional long main-thread task warnings from vendor scripts
+
+These are global optimisation considerations and do not indicate issues specific to the profile template.
+
+---
+
+### Conclusion
+
+The Profile page maintains excellent mobile performance, full accessibility compliance, and stable layout behaviour. Account management functionality remains fast, responsive, and reliable across devices.
+
+</details>
+
+<details>
+<summary><strong>Change Username (account/change_username.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - change username - mobile](testing-media/images/lighthouse-change-username-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 10ms  
+- Cumulative Layout Shift: 0.004  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Change Username page performs strongly on mobile, scoring **97 for performance** while achieving perfect results for accessibility, best practices, and SEO.
+
+The **Largest Contentful Paint of 2.2s** is within Google’s “Good” threshold (≤ 2.5s), showing that primary content renders quickly even under Lighthouse’s simulated mobile network conditions.
+
+Interactivity remains responsive, with **Total Blocking Time at just 10ms**, indicating that shared site scripts do not introduce noticeable delays on this page.
+
+Layout stability is excellent, with a **CLS of 0.004**, meaning the interface remains visually stable during load.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse highlighted minor opportunities that are typical in projects using shared global assets:
+
+- Render-blocking CSS (estimated ~780ms savings), largely from shared vendor styles
+- Minification suggestions for shared CSS and JavaScript
+- Unused JavaScript reduction suggestions from shared bundles
+- Generic “long main-thread task” warnings under simulated mobile load
+
+These are not page-specific functional issues and can be treated as optional refinements.
+
+---
+
+### Conclusion
+
+The Change Username page achieves near-perfect mobile performance while maintaining strong accessibility and best-practice compliance. Any remaining Lighthouse suggestions relate to shared assets and are optimisation opportunities rather than defects.
+
+</details>
+
+<details>
+<summary><strong>Change Email (account/change_email.html) – Mobile Performance Analysis</strong></summary>
+
+### Results
+
+![Lighthouse - change email - mobile](testing-media/images/lighthouse-change-email-mobile.png)
+
+- **Performance:** 97  
+- **Accessibility:** 100  
+- **Best Practices:** 100  
+- **SEO:** 100  
+
+Key metrics:
+
+- First Contentful Paint: 1.9s  
+- Largest Contentful Paint: 2.2s  
+- Total Blocking Time: 0ms  
+- Cumulative Layout Shift: 0.003  
+- Speed Index: 1.9s  
+
+---
+
+### Performance Overview
+
+The Change Email page performs strongly on mobile, with near-instant interactivity and stable layout rendering.
+
+Largest Contentful Paint (2.2s) remains within the “Good” threshold (≤ 2.5s), meaning the main content becomes visible quickly even under simulated mobile network conditions.
+
+Total Blocking Time stays at 0ms, confirming the page remains responsive while loading shared scripts and form logic.
+
+Layout stability is excellent (CLS 0.003), indicating no visible shifting as content loads.
+
+---
+
+### Minor Lighthouse Suggestions
+
+Lighthouse flagged small optimisation opportunities that are primarily related to global/shared assets rather than issues unique to this page:
+
+- Render-blocking resources (Bootstrap/CSS) – estimated ~810ms savings  
+- Modern HTTP delivery suggestions  
+- Minor JS/CSS minification opportunities  
+- Reduce unused JavaScript from shared bundles  
+- Generic “long main-thread task” warnings under mobile simulation  
+
+These do not prevent the page from achieving a high performance score and do not indicate functional problems.
+
+---
+
+### Conclusion
+
+The Change Email page achieves excellent mobile Lighthouse results, maintaining strong performance alongside full accessibility, best-practice compliance, and SEO integrity.
+
+</details>
 
 
 [Back to contents](#contents)
