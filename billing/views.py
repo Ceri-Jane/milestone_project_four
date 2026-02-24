@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from .models import Subscription
@@ -65,12 +66,25 @@ def regulate_plus(request):
     """Regulate+ hub page (trial / upgrade / manage billing)."""
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
+    trial_end = getattr(sub, "trial_end", None)
+
+    trial_days_left = None
+    if status == "trialing" and trial_end:
+        today = timezone.now().date()
+        end_date = trial_end.date()
+        trial_days_left = (end_date - today).days
+
+        # Prevent negative display in edge cases (timezone sync delays)
+        if trial_days_left < 0:
+            trial_days_left = 0
 
     context = {
         "subscription": sub,
         "subscription_status": status,
         "is_active_plan": status in ["trialing", "active"],
         "has_had_trial": getattr(sub, "has_had_trial", False),
+        "trial_end": trial_end,
+        "trial_days_left": trial_days_left,
     }
     return render(request, "billing/regulate_plus.html", context)
 

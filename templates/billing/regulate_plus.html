@@ -28,10 +28,29 @@
             <p class="form-info small-text">
                 Current plan: <strong>Free trial active</strong>
             </p>
+
+            {% if trial_end %}
+                <p class="form-info small-text">
+                    Trial ends on <strong>{{ trial_end|date:"j M Y" }}</strong>
+                    {% if trial_days_left is not None %}
+                        — <strong>
+                            {{ trial_days_left }}
+                            {% if trial_days_left == 1 %}day{% else %}days{% endif %}
+                            left
+                        </strong>
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="form-info small-text">
+                    Trial timing will appear here once your plan sync completes.
+                </p>
+            {% endif %}
+
         {% elif subscription_status == "active" %}
             <p class="form-info small-text">
                 Current plan: <strong>Regulate+ active</strong>
             </p>
+
         {% else %}
             <p class="form-info small-text">
                 Current plan: <strong>Free plan</strong>
