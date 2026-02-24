@@ -50,22 +50,16 @@
         {# -------------------------------------------------- #}
         {# PLAN STATUS + FREE ENTRIES LEFT                    #}
         {# -------------------------------------------------- #}
-        {% if subscription_status == "trialing" %}
-            <p class="form-info small-text">
-                Regulate+ free trial active.
-            </p>
-
-        {% elif subscription_status == "active" %}
-            <p class="form-info small-text">
-                Regulate+ subscription active.
-            </p>
-
-        {% else %}
+        {% if plan_status.badge == "free" %}
             <p class="form-info small-text">
                 Free plan.
                 ({{ entries_left }}
                 {% if entries_left == 1 %}entry{% else %}entries{% endif %}
                 left)
+            </p>
+        {% else %}
+            <p class="form-info small-text">
+                {{ plan_status.label }}.
             </p>
         {% endif %}
 

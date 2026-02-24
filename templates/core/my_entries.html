@@ -30,7 +30,7 @@
         </p>
 
         <!-- Free plan remaining counter -->
-        {% if not is_free_locked and entry_count < free_entry_limit %}
+        {% if plan_status.badge == "free" and not is_free_locked and entry_count < free_entry_limit %}
             <p class="form-info small-text">
                 Free plan: {{ free_entries_remaining }}
                 {% if free_entries_remaining == 1 %}entry{% else %}entries{% endif %}
