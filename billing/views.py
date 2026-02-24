@@ -68,41 +68,52 @@ def _add_months(dt_utc, months):
 def _derive_period_end_from_anchor(stripe_sub):
     """
     Fallback when Stripe subscription doesn't include current_period_end:
-    Use billing_cycle_anchor + recurring interval from the subscription item.
+    Use billing_cycle_anchor + recurring interval.
+    Tries items[].price.recurring first, then falls back to subscription.plan.
     """
     anchor_ts = _stripe_get(stripe_sub, "billing_cycle_anchor")
     if not anchor_ts:
         return None
 
-    items = _stripe_get(stripe_sub, "items")
-    data = _stripe_get(items, "data") if items else None
-    if not data:
+    anchor_dt = _to_dt(anchor_ts)
+    if not anchor_dt:
         return None
 
-    first_item = data[0]
-    price = _stripe_get(first_item, "price") or _stripe_get(first_item, "plan")  # older/newer
-    recurring = _stripe_get(price, "recurring") if price else None
+    interval = None
+    interval_count = 1
 
-    interval = _stripe_get(recurring, "interval") if recurring else None
-    interval_count = _stripe_get(recurring, "interval_count") if recurring else 1
+    # 1) Preferred: items[0].price.recurring
+    items = _stripe_get(stripe_sub, "items")
+    data = _stripe_get(items, "data") if items else None
+    if data:
+        first_item = data[0]
+        price = _stripe_get(first_item, "price")
+        recurring = _stripe_get(price, "recurring") if price else None
+        interval = _stripe_get(recurring, "interval") if recurring else None
+        interval_count = _stripe_get(recurring, "interval_count") if recurring else interval_count
+
+    # 2) Fallback: subscription.plan
+    if not interval:
+        plan = _stripe_get(stripe_sub, "plan")
+        interval = _stripe_get(plan, "interval") if plan else None
+        interval_count = _stripe_get(plan, "interval_count") if plan else interval_count
+
     try:
         interval_count = int(interval_count or 1)
     except Exception:
         interval_count = 1
 
-    start_dt = _to_dt(anchor_ts)
-    if not start_dt or not interval:
+    if not interval:
         return None
 
-    # Stripe intervals typically: day/week/month/year
     if interval == "day":
-        return start_dt + timezone.timedelta(days=interval_count)
+        return anchor_dt + timezone.timedelta(days=interval_count)
     if interval == "week":
-        return start_dt + timezone.timedelta(weeks=interval_count)
+        return anchor_dt + timezone.timedelta(weeks=interval_count)
     if interval == "month":
-        return _add_months(start_dt, interval_count)
+        return _add_months(anchor_dt, interval_count)
     if interval == "year":
-        return _add_months(start_dt, 12 * interval_count)
+        return _add_months(anchor_dt, 12 * interval_count)
 
     return None
 
@@ -116,11 +127,13 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     current_period_end = _to_dt(_stripe_get(stripe_sub, "current_period_end"))
     trial_end = _to_dt(_stripe_get(stripe_sub, "trial_end"))
 
-    # Fallback: derive billing period end from billing_cycle_anchor + interval
-    if status == "active" and not current_period_end:
+    # Fallback: derive billing period end from anchor + interval
+    if status == "active":
         derived_end = _derive_period_end_from_anchor(stripe_sub)
         if derived_end:
-            current_period_end = derived_end
+            # Use derived if Stripe gave none, or if stored value is wrong / already expired
+            if (not current_period_end) or (current_period_end.date() != derived_end.date()) or (current_period_end <= timezone.now()):
+                current_period_end = derived_end
 
     obj, _ = Subscription.objects.get_or_create(user=user)
     obj.stripe_subscription_id = sub_id
