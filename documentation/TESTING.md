@@ -3623,17 +3623,20 @@ Return to [README.md](../README.md)
 
 Automated tests were implemented using Django’s built-in `TestCase` framework.
 
-These tests validate:
+Tests are written to validate both business logic and user-facing behaviour.  
+Where appropriate, tests simulate real user interaction by sending HTTP requests to views and inspecting responses, context data, and database changes.
 
-- Subscription plan detection and banner rendering
-- Free plan entry limits and gating logic
-- Authentication requirements
-- User ownership and permission controls
-- Revision logic
-- Deletion behaviour under free plan limits
-- Keyword search functionality
+The test suite validates:
 
-Tests simulate real user behaviour by sending HTTP requests to views where appropriate.
+- Subscription plan detection and banner rendering  
+- Free plan entry limits and gating logic  
+- Authentication requirements  
+- User ownership and permission controls  
+- Revision logic  
+- Deletion behaviour under free plan limits  
+- Keyword search functionality  
+- Account validation rules (duplicate username protection)  
+- Regulate+ subscription context behaviour  
 
 [Back to contents](#contents)
 
@@ -3649,8 +3652,10 @@ From the project root:
 
 Latest successful output:
 
-    Ran 17 tests in 9.556s
+    Ran 19 tests in 11.672s
     OK
+
+(All tests passing)
 
 [Back to contents](#contents)
 
@@ -3670,6 +3675,14 @@ Tests are organised per app following Django best practice:
         test_delete_unlocks.py
         test_keyword_search.py
 
+    accounts/tests.py
+        - Username change validation tests
+
+    billing/tests.py
+        - Regulate+ subscription context tests
+
+This structure keeps tests close to their related application logic and demonstrates systematic coverage across the project.
+
 [Back to contents](#contents)
 
 Return to [README.md](../README.md)
@@ -3685,6 +3698,7 @@ Return to [README.md](../README.md)
 | Future `trial_end` shows trial banner | Date-based trial detection | Passed |
 | Active subscription shows plus banner | Paid plan recognised correctly | Passed |
 | Cancelled but period active shows ending soon | Grace-period messaging works | Passed |
+| Regulate+ context flags set correctly | Subscription state reflected in view context | Passed |
 
 [Back to contents](#contents)
 
@@ -3716,6 +3730,7 @@ Return to [README.md](../README.md)
 | Cannot view another user’s entry | Data privacy enforced | Passed |
 | Cannot edit another user’s entry | Ownership enforced | Passed |
 | Cannot delete another user’s entry | Ownership enforced | Passed |
+| Duplicate username rejected | Account validation prevents conflicts | Passed |
 
 [Back to contents](#contents)
 
@@ -3761,7 +3776,7 @@ Fix:
 fix: treat future trial_end as paid access in free-lock logic (219321a)
 
 Outcome:  
-Users with a future trial_end date are not treated as locked.
+Users with a future `trial_end` date are not treated as locked.
 
 [Back to contents](#contents)
 
@@ -3798,9 +3813,9 @@ Outcome:
 Users can search their entries by keyword.
 
 Search matches:
-- Notes field
-- Comma-separated emotion words
-- Only entries belonging to the logged-in user
+- Notes field  
+- Comma-separated emotion words  
+- Only entries belonging to the logged-in user  
 
 This completes the SHOULD-HAVE user story for keyword search.
 
@@ -3814,8 +3829,8 @@ Return to [README.md](../README.md)
 
 | Metric | Value |
 |---------|-------|
-| Total tests | 17 |
-| Passed | 17 |
+| Total tests | 19 |
+| Passed | 19 |
 | Failed | 0 |
 | Errors | 0 |
 
@@ -3830,7 +3845,7 @@ Return to [README.md](../README.md)
 ### Technical Note
 
 The production environment uses WhiteNoise manifest storage.  
-During testing, Django falls back to standard static storage to avoid manifest lookup errors and allow template rendering without requiring collectstatic.
+During testing, Django falls back to standard static storage to avoid manifest lookup errors and allow template rendering without requiring `collectstatic`.
 
 [Back to contents](#contents)
 
