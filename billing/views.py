@@ -67,6 +67,17 @@ def regulate_plus(request):
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
 
+    # Best-effort sync: if user is active but period dates are missing, fetch once from Stripe
+    if sub and status == "active" and not getattr(sub, "current_period_end", None):
+        stripe_sub_id = getattr(sub, "stripe_subscription_id", None)
+        if stripe_sub_id:
+            try:
+                stripe_sub = stripe.Subscription.retrieve(stripe_sub_id)
+                sub = _upsert_subscription(request.user, stripe_sub)
+                status = getattr(sub, "status", status)
+            except Exception:
+                logger.warning("Stripe sync on Regulate+ page failed", exc_info=True)
+
     trial_end = getattr(sub, "trial_end", None)
     period_end = getattr(sub, "current_period_end", None)
 
