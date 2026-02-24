@@ -33,6 +33,7 @@ View the Project board [here](https://github.com/users/Ceri-Jane/projects/11) on
 ----------
 
 1. [Project Summary](#project-summary)
+   - [Core Technical Capabilities](#core-technical-capabilities)
 
 2. [Audience & Purpose](#audience--purpose)
 
@@ -131,7 +132,6 @@ View the Project board [here](https://github.com/users/Ceri-Jane/projects/11) on
 20. [Project Ownership & Attribution](#project-ownership--attribution)
 
 
-
 [Back to contents](#contents)
 
 ---
@@ -153,6 +153,25 @@ Users can:
 - Choose between a **free tier**, **one-time free trial**, or **low-cost subscription**
 
 Regulate is intentionally designed to reduce overwhelm, remove shame-based interaction patterns, and allow users to engage at varying emotional capacities.
+
+### Core Technical Capabilities
+
+Regulate is built as a fully relational, full-stack Django application with clearly separated architectural concerns and production-ready deployment practices.
+
+- **Relational Database Design:**  
+  Utilises PostgreSQL in production and SQLite in development, with Django ORM-managed relationships (ForeignKey and Many-to-Many) to enforce referential integrity and user-scoped data isolation.
+
+- **Authentication & Authorisation:**  
+  Secure user authentication is implemented using `django-allauth`, with view-level access control ensuring users can only access and modify their own data.
+
+- **Full CRUD Functionality:**  
+  Users can create, read, update, and delete mood entries, with automatic revision tracking and immediate UI reflection of data changes.
+
+- **Stripe Subscription Integration:**  
+  Implements Stripe Checkout, subscription tiers, trial management, and webhook-driven billing state updates to support controlled feature access.
+
+- **Validation & Testing Strategy:**  
+  Combines structured manual testing with automated backend tests covering subscription logic, permissions, and business rules to ensure reliability and regression protection.
 
 [Back to contents](#contents)
 

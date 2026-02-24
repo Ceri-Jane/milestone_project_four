@@ -63,8 +63,8 @@ These accounts contain no real personal data and can be safely used during asses
 | Role | Username | Email | Password | Notes |
 |------|----------|-------|----------|-------|
 | **Standard User 1** | TestSiteUser1 | testsiteuser1@testuser.com | Password98765 | Free plan user. |
-| **Standard User 2** | TestSiteUser2 | testsiteuser2@testuser.com | Password99999 | Used to test ownership and authorisation rules. |
-| **Standard User 3** | TestSiteUser3 | testsiteuser3@testuser.com | Password88888 | Can be used to test subscription / trial flows. |
+| **Standard User 2** | TestSiteUser2 | testsiteuser2@testuser.com | Password99999 | Free trial in use/used (depending on when tested). |
+| **Standard User 3** | TestSiteUser3 | testsiteuser3@testuser.com | Password88888 | Full subscription user. |
 
 
 [Back to contents](#contents)

@@ -153,6 +153,9 @@ Without an active dyno, the site will not run.
 Create a Stripe webhook endpoint pointing to:
 
     https://<your-heroku-app>.herokuapp.com/billing/webhook/
+    
+    *For this project the live endpoint is: https://regulate-ms4-ceri-a1ea7fce9e89.herokuapp.com/billing/webhook/
+
 
 Add the generated secret to Heroku Config Vars as:
 
