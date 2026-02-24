@@ -870,6 +870,8 @@ Access to this page is permanently available via the **“Regulate+” link in t
 
 ![Feature 22](readme-media/images/22regulate-plus-free-plan.png)
 
+![Feature 22a](readme-media/images/22aregulate-plus-subscription.png)
+
 ---
 
 ### Dynamic Plan State Behaviour
@@ -902,6 +904,20 @@ Once a user activates either:
 - A **Regulate+ subscription**
 
 The Regulate+ page automatically updates to reflect the new plan state.
+
+In addition to updating available actions, the page dynamically displays billing information relevant to the user's subscription state.
+
+When trialing:
+- Trial end date  
+- Remaining trial days  
+
+When actively subscribed:
+- Next billing date  
+- Remaining days in the current billing cycle  
+
+These values are synchronised with Stripe subscription data and calculated server-side to ensure accuracy.
+
+Dates are presented purely for transparency and clarity, not as urgency-driven countdown prompts. This aligns with Regulate’s commitment to informed user autonomy while maintaining calm, non-pressured design principles.
 
 Instead of upgrade buttons, the page displays:
 

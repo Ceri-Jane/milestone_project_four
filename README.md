@@ -1329,20 +1329,6 @@ This would provide insight without turning emotional tracking into performance t
 
 ---
 
-### Enhanced Subscription Controls
-
-- In-app subscription history display.
-- Display:
-  - Next billing date
-  - Trial countdown
-  - Cancellation confirmation summary.
-
-(Stripe remains the source of truth, but UX could be enhanced.)
-
-[Back to contents](#contents)
-
----
-
 ### Guided Emotional Prompts
 
 - Optional trauma-informed reflection prompts.

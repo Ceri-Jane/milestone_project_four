@@ -857,6 +857,44 @@ Rendering is fast, stable, and fully standards-compliant.
 
 This is particularly important for a subscription/payment page, where performance and accessibility directly influence user trust and conversion confidence.
 
+---
+
+### Subscription Date & Trial Countdown Verification
+
+During extended subscription flow testing, it was identified that Stripe does not consistently return `current_period_end` depending on API expansion and object state.
+
+To ensure deterministic behaviour, a fallback mechanism was implemented to derive the billing period end using:
+
+- `billing_cycle_anchor`
+- Subscription interval (`day`, `week`, `month`, `year`)
+- Interval count
+
+This guarantees that the Regulate+ page always displays:
+
+- Remaining trial days (when applicable)
+- Next billing date
+- Days remaining until renewal
+
+Manual verification was performed using:
+
+- TestSiteUser3 (trial flow)
+- Active paid subscription state
+- Stripe Dashboard comparison against stored Django model values
+- Post-checkout sync behaviour
+
+#### Tests Performed
+
+| Scenario | Expected Result | Actual Result |
+|----------|----------------|--------------|
+| Active trial | Trial end date displayed | ✔ Correct date shown |
+| Active subscription | Next billing date displayed | ✔ Correct date shown |
+| Active subscription | Remaining days calculated correctly | ✔ Matches Stripe dashboard timestamp |
+| Post-checkout redirect | Subscription dates populate without admin intervention | ✔ Verified |
+
+All Stripe timestamps were converted to UTC-aware Django datetimes before storage.
+
+This confirms that the Regulate+ screen now reliably displays accurate subscription timing information across trial and active states.
+
 </details>
 
 <details>
@@ -3699,6 +3737,29 @@ Return to [README.md](../README.md)
 | Active subscription shows plus banner | Paid plan recognised correctly | Passed |
 | Cancelled but period active shows ending soon | Grace-period messaging works | Passed |
 | Regulate+ context flags set correctly | Subscription state reflected in view context | Passed |
+
+#### Billing Period Derivation Logic
+
+Stripe does not always provide `current_period_end` directly depending on API expansion and object state.
+
+To ensure consistent behaviour, fallback logic was implemented to derive the billing period end using:
+
+- `billing_cycle_anchor`
+- Subscription interval
+- Interval count
+
+Unit and shell-based verification confirmed:
+
+- Derived billing dates match Stripe dashboard values
+- Month transitions handle variable month lengths correctly
+- UTC-aware datetime objects are stored in the database
+- Remaining days calculation never returns negative values
+
+This ensures deterministic billing display behaviour across:
+
+- Trial subscriptions
+- Active paid subscriptions
+- Post-checkout sync events
 
 [Back to contents](#contents)
 
