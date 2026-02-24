@@ -54,8 +54,14 @@
 
             {% if current_period_end %}
                 <p class="form-info small-text">
-                    Next billing date:
-                    <strong>{{ current_period_end|date:"j M Y" }}</strong>
+                    Next billing date: <strong>{{ current_period_end|date:"j M Y" }}</strong>
+                    {% if billing_days_left is not None %}
+                        — <strong>
+                            {{ billing_days_left }}
+                            {% if billing_days_left == 1 %}day{% else %}days{% endif %}
+                            left
+                        </strong>
+                    {% endif %}
                 </p>
             {% else %}
                 <p class="form-info small-text">

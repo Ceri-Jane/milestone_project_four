@@ -18,27 +18,29 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 logger = logging.getLogger(__name__)
 
 
-def _stripe_get(obj, key, default=None):
-    """
-    Safely read values from StripeObjects or dicts.
-    Stripe returns StripeObject instances which are dict-like, but using a helper
-    avoids edge cases where .get() doesn't behave as expected.
-    """
-    if obj is None:
-        return default
-    # StripeObject supports attribute access (obj.key) and dict-like access.
-    if hasattr(obj, "get"):
-        val = obj.get(key, default)
-        if val is not None:
-            return val
-    return getattr(obj, key, default)
-
-
 def _to_dt(ts):
     """Convert Stripe timestamps to timezone-aware datetimes."""
     if not ts:
         return None
     return datetime.fromtimestamp(ts, tz=dt_timezone.utc)
+
+
+def _stripe_get(obj, key):
+    """
+    Stripe objects sometimes behave like dicts, sometimes like attribute objects.
+    This helper safely supports both.
+    """
+    if obj is None:
+        return None
+    # dict-style
+    try:
+        val = obj.get(key)
+        if val is not None:
+            return val
+    except Exception:
+        pass
+    # attribute-style
+    return getattr(obj, key, None)
 
 
 def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
@@ -77,43 +79,60 @@ def _checkout_delayed_message(request):
     )
 
 
+def _days_left(dt_value):
+    """Return whole days left (ceil-ish), never negative; None if dt_value missing."""
+    if not dt_value:
+        return None
+    now = timezone.now()
+    seconds = (dt_value - now).total_seconds()
+    if seconds <= 0:
+        return 0
+    # round up partial days
+    return int((seconds + 86399) // 86400)
+
+
 @login_required
 def regulate_plus(request):
     """Regulate+ hub page (trial / upgrade / manage billing)."""
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
 
-    # Best-effort sync: active user but missing billing period end
-    if sub and status == "active" and not getattr(sub, "current_period_end", None):
-        stripe_sub_id = getattr(sub, "stripe_subscription_id", None)
-        if stripe_sub_id:
+    # ---------- Best-effort sync fallback ----------
+    # If user is active/trialing but dates are missing locally, fetch subscription from Stripe
+    # using stripe_subscription_id and update our DB so the page can show next billing / trial end.
+    if sub and sub.stripe_subscription_id and status in ["trialing", "active"]:
+        needs_trial_sync = status == "trialing" and not sub.trial_end
+        needs_billing_sync = status == "active" and not sub.current_period_end
+
+        # Some Stripe accounts set both on the subscription; if either is missing, sync.
+        if needs_trial_sync or needs_billing_sync:
             try:
-                stripe_sub = stripe.Subscription.retrieve(stripe_sub_id)
-                sub = _upsert_subscription(request.user, stripe_sub)
-                status = getattr(sub, "status", status)
+                stripe_sub = stripe.Subscription.retrieve(sub.stripe_subscription_id)
+                _upsert_subscription(
+                    request.user,
+                    stripe_sub,
+                    stripe_customer_id=getattr(sub, "stripe_customer_id", None),
+                )
+                # refresh local object after upsert
+                sub = Subscription.objects.filter(user=request.user).first()
+                status = getattr(sub, "status", None)
             except Exception:
-                # Use exception() so it always prints the traceback in Heroku logs
-                logger.exception("Stripe sync on Regulate+ page failed")
+                logger.warning("Regulate+ sync on page load failed", exc_info=True)
 
-    trial_end = getattr(sub, "trial_end", None)
-    period_end = getattr(sub, "current_period_end", None)
-
-    trial_days_left = None
-    if status == "trialing" and trial_end:
-        today = timezone.now().date()
-        end_date = trial_end.date()
-        trial_days_left = (end_date - today).days
-        if trial_days_left < 0:
-            trial_days_left = 0
+    trial_end = getattr(sub, "trial_end", None) if sub else None
+    current_period_end = getattr(sub, "current_period_end", None) if sub else None
 
     context = {
         "subscription": sub,
         "subscription_status": status,
         "is_active_plan": status in ["trialing", "active"],
         "has_had_trial": getattr(sub, "has_had_trial", False),
+
+        # For templates:
         "trial_end": trial_end,
-        "trial_days_left": trial_days_left,
-        "current_period_end": period_end,
+        "trial_days_left": _days_left(trial_end),
+        "current_period_end": current_period_end,
+        "billing_days_left": _days_left(current_period_end),
     }
     return render(request, "billing/regulate_plus.html", context)
 
@@ -239,8 +258,8 @@ def checkout_success(request):
 
     try:
         session = stripe.checkout.Session.retrieve(session_id)
-        sub_id = _stripe_get(session, "subscription")
-        cust_id = _stripe_get(session, "customer")
+        sub_id = session.get("subscription")
+        cust_id = session.get("customer")
 
         if sub_id:
             stripe_sub = stripe.Subscription.retrieve(sub_id)
