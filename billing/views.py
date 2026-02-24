@@ -7,8 +7,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_GET
+from django.utils import timezone
 
 from .models import Subscription
 
@@ -16,6 +16,22 @@ from .models import Subscription
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 logger = logging.getLogger(__name__)
+
+
+def _stripe_get(obj, key, default=None):
+    """
+    Safely read values from StripeObjects or dicts.
+    Stripe returns StripeObject instances which are dict-like, but using a helper
+    avoids edge cases where .get() doesn't behave as expected.
+    """
+    if obj is None:
+        return default
+    # StripeObject supports attribute access (obj.key) and dict-like access.
+    if hasattr(obj, "get"):
+        val = obj.get(key, default)
+        if val is not None:
+            return val
+    return getattr(obj, key, default)
 
 
 def _to_dt(ts):
@@ -27,12 +43,12 @@ def _to_dt(ts):
 
 def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     """Create/update a user's Subscription record from Stripe subscription data."""
-    sub_id = stripe_sub.get("id")
-    cust_id = stripe_customer_id or stripe_sub.get("customer")
-    status = stripe_sub.get("status")
+    sub_id = _stripe_get(stripe_sub, "id")
+    cust_id = stripe_customer_id or _stripe_get(stripe_sub, "customer")
+    status = _stripe_get(stripe_sub, "status")
 
-    current_period_end = _to_dt(stripe_sub.get("current_period_end"))
-    trial_end = _to_dt(stripe_sub.get("trial_end"))
+    current_period_end = _to_dt(_stripe_get(stripe_sub, "current_period_end"))
+    trial_end = _to_dt(_stripe_get(stripe_sub, "trial_end"))
 
     obj, _ = Subscription.objects.get_or_create(user=user)
 
@@ -67,7 +83,7 @@ def regulate_plus(request):
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
 
-    # Best-effort sync: if user is active but period dates are missing, fetch once from Stripe
+    # Best-effort sync: active user but missing billing period end
     if sub and status == "active" and not getattr(sub, "current_period_end", None):
         stripe_sub_id = getattr(sub, "stripe_subscription_id", None)
         if stripe_sub_id:
@@ -76,7 +92,8 @@ def regulate_plus(request):
                 sub = _upsert_subscription(request.user, stripe_sub)
                 status = getattr(sub, "status", status)
             except Exception:
-                logger.warning("Stripe sync on Regulate+ page failed", exc_info=True)
+                # Use exception() so it always prints the traceback in Heroku logs
+                logger.exception("Stripe sync on Regulate+ page failed")
 
     trial_end = getattr(sub, "trial_end", None)
     period_end = getattr(sub, "current_period_end", None)
@@ -222,8 +239,8 @@ def checkout_success(request):
 
     try:
         session = stripe.checkout.Session.retrieve(session_id)
-        sub_id = session.get("subscription")
-        cust_id = session.get("customer")
+        sub_id = _stripe_get(session, "subscription")
+        cust_id = _stripe_get(session, "customer")
 
         if sub_id:
             stripe_sub = stripe.Subscription.retrieve(sub_id)
