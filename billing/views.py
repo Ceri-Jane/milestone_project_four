@@ -91,11 +91,13 @@ def _days_left(dt_value):
     return int((seconds + 86399) // 86400)
 
 
-def _sync_period_end_from_upcoming_invoice(subscription_obj):
+def _sync_period_end_from_invoice_list(subscription_obj):
     """
-    Fallback sync: if Stripe subscription retrieve doesn't include current_period_end
-    (as seen in some sandbox/restricted responses), attempt to derive it from the
-    upcoming invoice for this customer+subscription.
+    Fallback sync for Stripe library versions that do not support Invoice.upcoming().
+
+    Derive billing cycle end from existing invoices:
+    - Prefer an invoice tied to this subscription (if present).
+    - Otherwise use the most recent invoice for the customer.
     """
     if not subscription_obj:
         return
@@ -104,20 +106,34 @@ def _sync_period_end_from_upcoming_invoice(subscription_obj):
         return
 
     try:
-        upcoming = stripe.Invoice.upcoming(
+        invoices = stripe.Invoice.list(
             customer=subscription_obj.stripe_customer_id,
-            subscription=subscription_obj.stripe_subscription_id,
+            limit=10,
         )
 
-        # Prefer invoice.period_end
-        invoice_period_end = _stripe_get(upcoming, "period_end")
+        data = _stripe_get(invoices, "data") or []
+        if not data:
+            return
 
-        # Fallback: first line item period end
+        # Prefer invoice belonging to this subscription
+        target = None
+        for inv in data:
+            if _stripe_get(inv, "subscription") == subscription_obj.stripe_subscription_id:
+                target = inv
+                break
+
+        # Otherwise fallback to most recent invoice
+        if target is None:
+            target = data[0]
+
+        invoice_period_end = _stripe_get(target, "period_end")
+
+        # Fallback: first line item period end (often most reliable)
         if not invoice_period_end:
-            lines = _stripe_get(upcoming, "lines")
-            data = _stripe_get(lines, "data") if lines else None
-            if data and len(data) > 0:
-                period = _stripe_get(data[0], "period")
+            lines = _stripe_get(target, "lines")
+            line_data = _stripe_get(lines, "data") if lines else None
+            if line_data and len(line_data) > 0:
+                period = _stripe_get(line_data[0], "period")
                 invoice_period_end = _stripe_get(period, "end") if period else None
 
         if invoice_period_end:
@@ -125,7 +141,7 @@ def _sync_period_end_from_upcoming_invoice(subscription_obj):
             subscription_obj.save(update_fields=["current_period_end"])
 
     except Exception:
-        logger.exception("Unable to derive billing period end from upcoming invoice")
+        logger.exception("Unable to derive billing period end from invoice list")
 
 
 @login_required
@@ -143,7 +159,6 @@ def regulate_plus(request):
 
         if needs_trial_sync or needs_billing_sync:
             try:
-                # Expand is harmless even if unused, and sometimes helps Stripe return nested data
                 stripe_sub = stripe.Subscription.retrieve(
                     sub.stripe_subscription_id,
                     expand=["latest_invoice", "customer"]
@@ -155,9 +170,9 @@ def regulate_plus(request):
                     stripe_customer_id=getattr(sub, "stripe_customer_id", None),
                 )
 
-                # Fallback: if active but still no period end, derive it from upcoming invoice
+                # Fallback: if active but still no period end, derive from invoice list
                 if updated.status == "active" and not updated.current_period_end:
-                    _sync_period_end_from_upcoming_invoice(updated)
+                    _sync_period_end_from_invoice_list(updated)
 
                 # refresh local object after upsert
                 sub = Subscription.objects.filter(user=request.user).first()
@@ -309,12 +324,15 @@ def checkout_success(request):
         cust_id = session.get("customer")
 
         if sub_id:
-            stripe_sub = stripe.Subscription.retrieve(sub_id, expand=["latest_invoice", "customer"])
+            stripe_sub = stripe.Subscription.retrieve(
+                sub_id,
+                expand=["latest_invoice", "customer"]
+            )
             updated = _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
 
             # Same fallback here so users see billing date immediately after checkout
             if updated.status == "active" and not updated.current_period_end:
-                _sync_period_end_from_upcoming_invoice(updated)
+                _sync_period_end_from_invoice_list(updated)
 
             messages.success(request, "Thanks — your plan is now active.")
         else:
