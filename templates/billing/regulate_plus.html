@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 
-{# Page-specific SEO overrides: custom title + meta tags #}
-
 {% block meta_description %}
 <meta name="description" content="Manage your Regulate+ subscription, free trial, or billing details.">
 {% endblock %}
@@ -41,10 +39,6 @@
                         </strong>
                     {% endif %}
                 </p>
-            {% else %}
-                <p class="form-info small-text">
-                    Trial timing will appear here once your plan sync completes.
-                </p>
             {% endif %}
 
         {% elif subscription_status == "active" %}
@@ -65,7 +59,7 @@
                 </p>
             {% else %}
                 <p class="form-info small-text">
-                    Billing timing will appear here once your plan sync completes.
+                    Next billing date is available in the billing portal.
                 </p>
             {% endif %}
 
@@ -91,7 +85,6 @@
                 <a href="{% url 'billing_details' %}" class="select-btn">
                     Manage Billing
                 </a>
-
             {% else %}
                 {% if has_had_trial %}
                     <p class="form-info small-text">

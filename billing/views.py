@@ -12,14 +12,12 @@ from django.utils import timezone
 
 from .models import Subscription
 
-# Stripe API configuration
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
 logger = logging.getLogger(__name__)
 
 
 def _to_dt(ts):
-    """Convert Stripe timestamps to timezone-aware datetimes."""
+    """Convert Stripe timestamps (seconds) to timezone-aware datetimes."""
     if not ts:
         return None
     return datetime.fromtimestamp(ts, tz=dt_timezone.utc)
@@ -41,6 +39,48 @@ def _stripe_get(obj, key):
         pass
     # attribute-style
     return getattr(obj, key, None)
+
+
+def _days_left(dt_value):
+    """Return whole days left (ceil-ish), never negative; None if dt_value missing."""
+    if not dt_value:
+        return None
+    now = timezone.now()
+    seconds = (dt_value - now).total_seconds()
+    if seconds <= 0:
+        return 0
+    return int((seconds + 86399) // 86400)
+
+
+def _add_billing_interval(start_dt, interval, interval_count=1):
+    """
+    Add a Stripe recurring interval to a datetime.
+    Supports month/year/week/day. Month/year use relativedelta if available.
+    """
+    if not start_dt or not interval:
+        return None
+
+    interval_count = interval_count or 1
+
+    # day/week are stable with timedelta
+    from datetime import timedelta
+    if interval == "day":
+        return start_dt + timedelta(days=interval_count)
+    if interval == "week":
+        return start_dt + timedelta(weeks=interval_count)
+
+    # month/year: use dateutil.relativedelta (usually available in Django envs)
+    try:
+        from dateutil.relativedelta import relativedelta
+        if interval == "month":
+            return start_dt + relativedelta(months=interval_count)
+        if interval == "year":
+            return start_dt + relativedelta(years=interval_count)
+    except Exception:
+        # If relativedelta isn't available, we fail gracefully
+        return None
+
+    return None
 
 
 def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
@@ -69,9 +109,6 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
 
 
 def _checkout_delayed_message(request):
-    """
-    Consistent message for the common webhook-delay case (assessor-friendly).
-    """
     messages.info(
         request,
         "Checkout completed. Your plan usually updates within a few seconds. "
@@ -79,86 +116,58 @@ def _checkout_delayed_message(request):
     )
 
 
-def _days_left(dt_value):
-    """Return whole days left (ceil-ish), never negative; None if dt_value missing."""
-    if not dt_value:
-        return None
-    now = timezone.now()
-    seconds = (dt_value - now).total_seconds()
-    if seconds <= 0:
-        return 0
-    # round up partial days
-    return int((seconds + 86399) // 86400)
-
-
-def _sync_period_end_from_invoice_list(subscription_obj):
+def _best_effort_sync_dates(sub_obj, user):
     """
-    Fallback sync for Stripe library versions that do not support Invoice.upcoming().
+    Best-effort sync for showing trial end / next billing date.
 
-    Derive the *next billing date* from the invoice's service period end:
-    - Prefer an invoice tied to this subscription
-    - Prefer status 'paid' or 'open'
-    - Use invoice.period_end OR max(line.period.end)
+    Order of attempts:
+    1) Stripe Subscription.retrieve -> current_period_end / trial_end
+    2) If current_period_end missing but current_period_start exists,
+       compute end from price recurring interval (monthly/yearly/etc).
     """
-    if not subscription_obj:
-        return
-
-    if not subscription_obj.stripe_customer_id or not subscription_obj.stripe_subscription_id:
-        return
+    if not sub_obj or not sub_obj.stripe_subscription_id:
+        return sub_obj
 
     try:
-        invoices = stripe.Invoice.list(
-            customer=subscription_obj.stripe_customer_id,
-            limit=20,
+        stripe_sub = stripe.Subscription.retrieve(
+            sub_obj.stripe_subscription_id,
+            # Expand price so we can compute billing end if Stripe omits current_period_end
+            expand=["items.data.price"]
         )
-        data = _stripe_get(invoices, "data") or []
-        if not data:
-            return
 
-        # Filter invoices for this subscription id
-        sub_invoices = [
-            inv for inv in data
-            if _stripe_get(inv, "subscription") == subscription_obj.stripe_subscription_id
-        ]
-        if not sub_invoices:
-            return
+        updated = _upsert_subscription(
+            user,
+            stripe_sub,
+            stripe_customer_id=getattr(sub_obj, "stripe_customer_id", None),
+        )
 
-        # Prefer paid/open invoices (avoid void/uncollectible)
-        preferred = []
-        for inv in sub_invoices:
-            status = _stripe_get(inv, "status")
-            if status in ("paid", "open", "draft"):
-                preferred.append(inv)
-        if not preferred:
-            preferred = sub_invoices
+        # If active but current_period_end still missing, compute it from start + interval.
+        if updated.status == "active" and not updated.current_period_end:
+            cps = _stripe_get(stripe_sub, "current_period_start")
+            cps_dt = _to_dt(cps)
 
-        # Use the most recent preferred invoice
-        target = preferred[0]
+            items = _stripe_get(stripe_sub, "items")
+            data = _stripe_get(items, "data") if items else None
 
-        # 1) Try invoice.period_end
-        end_ts = _stripe_get(target, "period_end")
+            price = None
+            if data and len(data) > 0:
+                price = _stripe_get(data[0], "price")
 
-        # 2) Else derive from max(line.period.end)
-        if not end_ts:
-            lines = _stripe_get(target, "lines")
-            line_data = _stripe_get(lines, "data") if lines else None
-            if line_data:
-                ends = []
-                for line in line_data:
-                    period = _stripe_get(line, "period")
-                    line_end = _stripe_get(period, "end") if period else None
-                    if line_end:
-                        ends.append(line_end)
-                if ends:
-                    end_ts = max(ends)
+            recurring = _stripe_get(price, "recurring") if price else None
+            interval = _stripe_get(recurring, "interval") if recurring else None
+            interval_count = _stripe_get(recurring, "interval_count") if recurring else 1
 
-        if end_ts:
-            subscription_obj.current_period_end = _to_dt(end_ts)
-            subscription_obj.save(update_fields=["current_period_end"])
+            computed_end = _add_billing_interval(cps_dt, interval, interval_count)
+
+            if computed_end:
+                updated.current_period_end = computed_end
+                updated.save(update_fields=["current_period_end"])
+
+        return updated
 
     except Exception:
-        logger.exception("Unable to derive billing period end from invoice list")
-
+        logger.exception("Regulate+ sync on page load failed")
+        return sub_obj
 
 
 @login_required
@@ -167,36 +176,14 @@ def regulate_plus(request):
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
 
-    # ---------- Best-effort sync fallback ----------
-    # If user is active/trialing but dates are missing locally, fetch subscription from Stripe
-    # using stripe_subscription_id and update our DB so the page can show next billing / trial end.
+    # Only sync if the user should have paid access AND we’re missing date fields.
     if sub and sub.stripe_subscription_id and status in ["trialing", "active"]:
         needs_trial_sync = status == "trialing" and not sub.trial_end
         needs_billing_sync = status == "active" and not sub.current_period_end
 
         if needs_trial_sync or needs_billing_sync:
-            try:
-                stripe_sub = stripe.Subscription.retrieve(
-                    sub.stripe_subscription_id,
-                    expand=["latest_invoice", "customer"]
-                )
-
-                updated = _upsert_subscription(
-                    request.user,
-                    stripe_sub,
-                    stripe_customer_id=getattr(sub, "stripe_customer_id", None),
-                )
-
-                # Fallback: if active but still no period end, derive from invoice list
-                if updated.status == "active" and not updated.current_period_end:
-                    _sync_period_end_from_invoice_list(updated)
-
-                # refresh local object after upsert
-                sub = Subscription.objects.filter(user=request.user).first()
-                status = getattr(sub, "status", None)
-
-            except Exception:
-                logger.exception("Regulate+ sync on page load failed")
+            sub = _best_effort_sync_dates(sub, request.user)
+            status = getattr(sub, "status", None)
 
     trial_end = getattr(sub, "trial_end", None) if sub else None
     current_period_end = getattr(sub, "current_period_end", None) if sub else None
@@ -207,9 +194,9 @@ def regulate_plus(request):
         "is_active_plan": status in ["trialing", "active"],
         "has_had_trial": getattr(sub, "has_had_trial", False),
 
-        # For templates:
         "trial_end": trial_end,
         "trial_days_left": _days_left(trial_end),
+
         "current_period_end": current_period_end,
         "billing_days_left": _days_left(current_period_end),
     }
@@ -341,15 +328,12 @@ def checkout_success(request):
         cust_id = session.get("customer")
 
         if sub_id:
-            stripe_sub = stripe.Subscription.retrieve(
-                sub_id,
-                expand=["latest_invoice", "customer"]
-            )
+            stripe_sub = stripe.Subscription.retrieve(sub_id, expand=["items.data.price"])
             updated = _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
 
-            # Same fallback here so users see billing date immediately after checkout
+            # If active but missing period end, compute it.
             if updated.status == "active" and not updated.current_period_end:
-                _sync_period_end_from_invoice_list(updated)
+                _best_effort_sync_dates(updated, request.user)
 
             messages.success(request, "Thanks — your plan is now active.")
         else:
