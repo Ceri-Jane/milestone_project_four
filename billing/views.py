@@ -66,15 +66,15 @@ def regulate_plus(request):
     """Regulate+ hub page (trial / upgrade / manage billing)."""
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
+
     trial_end = getattr(sub, "trial_end", None)
+    period_end = getattr(sub, "current_period_end", None)
 
     trial_days_left = None
     if status == "trialing" and trial_end:
         today = timezone.now().date()
         end_date = trial_end.date()
         trial_days_left = (end_date - today).days
-
-        # Prevent negative display in edge cases (timezone sync delays)
         if trial_days_left < 0:
             trial_days_left = 0
 
@@ -85,6 +85,7 @@ def regulate_plus(request):
         "has_had_trial": getattr(sub, "has_had_trial", False),
         "trial_end": trial_end,
         "trial_days_left": trial_days_left,
+        "current_period_end": period_end,
     }
     return render(request, "billing/regulate_plus.html", context)
 

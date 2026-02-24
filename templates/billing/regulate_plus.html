@@ -24,6 +24,7 @@
         {# -------------------------------------------------- #}
         {# CURRENT PLAN STATUS                               #}
         {# -------------------------------------------------- #}
+
         {% if subscription_status == "trialing" %}
             <p class="form-info small-text">
                 Current plan: <strong>Free trial active</strong>
@@ -50,6 +51,17 @@
             <p class="form-info small-text">
                 Current plan: <strong>Regulate+ active</strong>
             </p>
+
+            {% if current_period_end %}
+                <p class="form-info small-text">
+                    Next billing date:
+                    <strong>{{ current_period_end|date:"j M Y" }}</strong>
+                </p>
+            {% else %}
+                <p class="form-info small-text">
+                    Billing timing will appear here once your plan sync completes.
+                </p>
+            {% endif %}
 
         {% else %}
             <p class="form-info small-text">
