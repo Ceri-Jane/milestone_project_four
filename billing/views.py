@@ -95,9 +95,10 @@ def _sync_period_end_from_invoice_list(subscription_obj):
     """
     Fallback sync for Stripe library versions that do not support Invoice.upcoming().
 
-    Derive billing cycle end from existing invoices:
-    - Prefer an invoice tied to this subscription (if present).
-    - Otherwise use the most recent invoice for the customer.
+    Derive the *next billing date* from the invoice's service period end:
+    - Prefer an invoice tied to this subscription
+    - Prefer status 'paid' or 'open'
+    - Use invoice.period_end OR max(line.period.end)
     """
     if not subscription_obj:
         return
@@ -108,40 +109,56 @@ def _sync_period_end_from_invoice_list(subscription_obj):
     try:
         invoices = stripe.Invoice.list(
             customer=subscription_obj.stripe_customer_id,
-            limit=10,
+            limit=20,
         )
-
         data = _stripe_get(invoices, "data") or []
         if not data:
             return
 
-        # Prefer invoice belonging to this subscription
-        target = None
-        for inv in data:
-            if _stripe_get(inv, "subscription") == subscription_obj.stripe_subscription_id:
-                target = inv
-                break
+        # Filter invoices for this subscription id
+        sub_invoices = [
+            inv for inv in data
+            if _stripe_get(inv, "subscription") == subscription_obj.stripe_subscription_id
+        ]
+        if not sub_invoices:
+            return
 
-        # Otherwise fallback to most recent invoice
-        if target is None:
-            target = data[0]
+        # Prefer paid/open invoices (avoid void/uncollectible)
+        preferred = []
+        for inv in sub_invoices:
+            status = _stripe_get(inv, "status")
+            if status in ("paid", "open", "draft"):
+                preferred.append(inv)
+        if not preferred:
+            preferred = sub_invoices
 
-        invoice_period_end = _stripe_get(target, "period_end")
+        # Use the most recent preferred invoice
+        target = preferred[0]
 
-        # Fallback: first line item period end (often most reliable)
-        if not invoice_period_end:
+        # 1) Try invoice.period_end
+        end_ts = _stripe_get(target, "period_end")
+
+        # 2) Else derive from max(line.period.end)
+        if not end_ts:
             lines = _stripe_get(target, "lines")
             line_data = _stripe_get(lines, "data") if lines else None
-            if line_data and len(line_data) > 0:
-                period = _stripe_get(line_data[0], "period")
-                invoice_period_end = _stripe_get(period, "end") if period else None
+            if line_data:
+                ends = []
+                for line in line_data:
+                    period = _stripe_get(line, "period")
+                    line_end = _stripe_get(period, "end") if period else None
+                    if line_end:
+                        ends.append(line_end)
+                if ends:
+                    end_ts = max(ends)
 
-        if invoice_period_end:
-            subscription_obj.current_period_end = _to_dt(invoice_period_end)
+        if end_ts:
+            subscription_obj.current_period_end = _to_dt(end_ts)
             subscription_obj.save(update_fields=["current_period_end"])
 
     except Exception:
         logger.exception("Unable to derive billing period end from invoice list")
+
 
 
 @login_required
