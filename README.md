@@ -119,7 +119,6 @@ View the Project board [here](https://github.com/users/Ceri-Jane/projects/11) on
     - [Dark Mode](#dark-mode)
     - [Optional Account Email Verification](#optional-account-email-verification)
     - [Secure Production Logging](#secure-production-logging)
-    - [Enhanced Subscription Controls](#enhanced-subscription-controls)
     - [Guided Emotional Prompts](#guided-emotional-prompts)
     - [API Expansion](#api-expansion)
     - [Accessibility Enhancements](#accessibility-enhancements)

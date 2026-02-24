@@ -413,4 +413,9 @@ Return to [README.md](../README.md)
 - Add localisation support  
 - Update support pages dynamically  
 
-[Back to contents](#contents)
+Return to [README.md](../README.md)
+
+---
+---
+
+End of USER-STORIES
