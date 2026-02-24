@@ -1,9 +1,8 @@
 from datetime import datetime, timezone as dt_timezone
 import logging
+import calendar
 
 import stripe
-from dateutil.relativedelta import relativedelta
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -14,17 +13,15 @@ from django.utils import timezone
 
 from .models import Subscription
 
-# Stripe API configuration
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
 logger = logging.getLogger(__name__)
 
 
 def _to_dt(ts):
-    """Convert Stripe timestamps to timezone-aware datetimes."""
+    """Convert Stripe timestamps to timezone-aware datetimes (UTC)."""
     if not ts:
         return None
-    return datetime.fromtimestamp(ts, tz=dt_timezone.utc)
+    return datetime.fromtimestamp(int(ts), tz=dt_timezone.utc)
 
 
 def _stripe_get(obj, key):
@@ -54,61 +51,60 @@ def _days_left(dt_value):
     return int((seconds + 86399) // 86400)
 
 
-def _add_interval(dt_value, interval, interval_count):
-    """Add Stripe recurring interval to a datetime (month/year/week/day)."""
-    count = int(interval_count or 1)
+def _add_months(dt_utc, months):
+    """
+    Add months to a UTC datetime without external deps (handles month length).
+    """
+    year = dt_utc.year
+    month = dt_utc.month + months
+    # normalise year/month
+    year += (month - 1) // 12
+    month = (month - 1) % 12 + 1
 
-    if interval == "day":
-        return dt_value + relativedelta(days=count)
-    if interval == "week":
-        return dt_value + relativedelta(weeks=count)
-    if interval == "month":
-        return dt_value + relativedelta(months=count)
-    if interval == "year":
-        return dt_value + relativedelta(years=count)
-
-    # Unknown interval – safest: no change
-    return dt_value
+    day = min(dt_utc.day, calendar.monthrange(year, month)[1])
+    return dt_utc.replace(year=year, month=month, day=day)
 
 
 def _derive_period_end_from_anchor(stripe_sub):
     """
-    Stripe sometimes returns current_period_end=None in restricted/test responses.
-    We can still derive "next billing date" using:
-      - billing_cycle_anchor (timestamp)
-      - subscription item price recurring interval (+ interval_count)
+    Fallback when Stripe subscription doesn't include current_period_end:
+    Use billing_cycle_anchor + recurring interval from the subscription item.
     """
     anchor_ts = _stripe_get(stripe_sub, "billing_cycle_anchor")
     if not anchor_ts:
         return None
 
-    anchor_dt = _to_dt(anchor_ts)
-    if not anchor_dt:
-        return None
-
-    # Pull recurring interval from the first subscription item
     items = _stripe_get(stripe_sub, "items")
-    items_data = _stripe_get(items, "data") if items else None
-    if not items_data:
+    data = _stripe_get(items, "data") if items else None
+    if not data:
         return None
 
-    first_item = items_data[0]
-    price = _stripe_get(first_item, "price") or _stripe_get(first_item, "plan")
-
+    first_item = data[0]
+    price = _stripe_get(first_item, "price") or _stripe_get(first_item, "plan")  # older/newer
     recurring = _stripe_get(price, "recurring") if price else None
+
     interval = _stripe_get(recurring, "interval") if recurring else None
     interval_count = _stripe_get(recurring, "interval_count") if recurring else 1
+    try:
+        interval_count = int(interval_count or 1)
+    except Exception:
+        interval_count = 1
 
-    if not interval:
-        # Some older structures store interval on plan directly
-        interval = _stripe_get(price, "interval")
-        interval_count = _stripe_get(price, "interval_count") or interval_count
-
-    if not interval:
+    start_dt = _to_dt(anchor_ts)
+    if not start_dt or not interval:
         return None
 
-    # Next billing date = anchor + interval
-    return _add_interval(anchor_dt, interval, interval_count)
+    # Stripe intervals typically: day/week/month/year
+    if interval == "day":
+        return start_dt + timezone.timedelta(days=interval_count)
+    if interval == "week":
+        return start_dt + timezone.timedelta(weeks=interval_count)
+    if interval == "month":
+        return _add_months(start_dt, interval_count)
+    if interval == "year":
+        return _add_months(start_dt, 12 * interval_count)
+
+    return None
 
 
 def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
@@ -120,15 +116,19 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
     current_period_end = _to_dt(_stripe_get(stripe_sub, "current_period_end"))
     trial_end = _to_dt(_stripe_get(stripe_sub, "trial_end"))
 
-    obj, _ = Subscription.objects.get_or_create(user=user)
+    # Fallback: derive billing period end from billing_cycle_anchor + interval
+    if status == "active" and not current_period_end:
+        derived_end = _derive_period_end_from_anchor(stripe_sub)
+        if derived_end:
+            current_period_end = derived_end
 
+    obj, _ = Subscription.objects.get_or_create(user=user)
     obj.stripe_subscription_id = sub_id
     obj.stripe_customer_id = cust_id
     obj.status = status or obj.status
     obj.current_period_end = current_period_end
     obj.trial_end = trial_end
 
-    # Mark trial usage once a trial has occurred
     if trial_end or status == "trialing":
         obj.has_had_trial = True
 
@@ -137,7 +137,6 @@ def _upsert_subscription(user, stripe_sub, stripe_customer_id=None):
 
 
 def _checkout_delayed_message(request):
-    """Consistent message for the common webhook-delay case (assessor-friendly)."""
     messages.info(
         request,
         "Checkout completed. Your plan usually updates within a few seconds. "
@@ -151,9 +150,7 @@ def regulate_plus(request):
     sub = Subscription.objects.filter(user=request.user).first()
     status = getattr(sub, "status", None)
 
-    # Best-effort sync fallback:
-    # If user is active/trialing but dates are missing locally, fetch subscription from Stripe,
-    # then derive billing date from billing_cycle_anchor if needed.
+    # Best-effort sync on page load if dates missing
     if sub and sub.stripe_subscription_id and status in ["trialing", "active"]:
         needs_trial_sync = status == "trialing" and not sub.trial_end
         needs_billing_sync = status == "active" and not sub.current_period_end
@@ -162,25 +159,15 @@ def regulate_plus(request):
             try:
                 stripe_sub = stripe.Subscription.retrieve(
                     sub.stripe_subscription_id,
-                    expand=["latest_invoice", "customer", "items.data.price"]
+                    expand=["items.data.price", "latest_invoice"]
                 )
-
-                updated = _upsert_subscription(
+                _upsert_subscription(
                     request.user,
                     stripe_sub,
                     stripe_customer_id=getattr(sub, "stripe_customer_id", None),
                 )
-
-                # If active but still missing current_period_end, derive from anchor+interval
-                if updated.status == "active" and not updated.current_period_end:
-                    derived = _derive_period_end_from_anchor(stripe_sub)
-                    if derived:
-                        updated.current_period_end = derived
-                        updated.save(update_fields=["current_period_end"])
-
                 sub = Subscription.objects.filter(user=request.user).first()
                 status = getattr(sub, "status", None)
-
             except Exception:
                 logger.exception("Regulate+ sync on page load failed")
 
@@ -195,6 +182,7 @@ def regulate_plus(request):
 
         "trial_end": trial_end,
         "trial_days_left": _days_left(trial_end),
+
         "current_period_end": current_period_end,
         "billing_days_left": _days_left(current_period_end),
     }
@@ -231,13 +219,10 @@ def start_trial(request):
                 },
             },
             customer_email=request.user.email,
-            success_url=request.build_absolute_uri(
-                reverse("checkout_success")
-            ) + "?session_id={CHECKOUT_SESSION_ID}",
+            success_url=request.build_absolute_uri(reverse("checkout_success")) + "?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.build_absolute_uri(reverse("checkout_cancelled")),
         )
         return redirect(session.url)
-
     except Exception:
         logger.exception("Stripe Checkout Error (trial)")
         messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
@@ -269,13 +254,10 @@ def start_subscription(request):
                 },
             },
             customer_email=request.user.email,
-            success_url=request.build_absolute_uri(
-                reverse("checkout_success")
-            ) + "?session_id={CHECKOUT_SESSION_ID}",
+            success_url=request.build_absolute_uri(reverse("checkout_success")) + "?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.build_absolute_uri(reverse("checkout_cancelled")),
         )
         return redirect(session.url)
-
     except Exception:
         logger.exception("Stripe Checkout Error (subscribe)")
         messages.error(request, "Sorry — we couldn’t open Stripe Checkout. Please try again.")
@@ -288,10 +270,7 @@ def billing_details(request):
     stripe_customer_id = getattr(sub, "stripe_customer_id", None)
 
     if not stripe_customer_id:
-        messages.error(
-            request,
-            "We couldn’t find your billing details yet. Try refreshing and clicking again.",
-        )
+        messages.error(request, "We couldn’t find your billing details yet. Try refreshing and clicking again.")
         return redirect("regulate_plus")
 
     try:
@@ -300,7 +279,6 @@ def billing_details(request):
             return_url=request.build_absolute_uri(reverse("regulate_plus")),
         )
         return redirect(portal_session.url)
-
     except Exception:
         logger.exception("Stripe Portal Error")
         messages.error(request, "Couldn’t open billing page right now.")
@@ -326,22 +304,11 @@ def checkout_success(request):
         cust_id = session.get("customer")
 
         if sub_id:
-            stripe_sub = stripe.Subscription.retrieve(
-                sub_id, expand=["latest_invoice", "customer", "items.data.price"]
-            )
-            updated = _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
-
-            # If active but current_period_end missing, derive it for immediate display
-            if updated.status == "active" and not updated.current_period_end:
-                derived = _derive_period_end_from_anchor(stripe_sub)
-                if derived:
-                    updated.current_period_end = derived
-                    updated.save(update_fields=["current_period_end"])
-
+            stripe_sub = stripe.Subscription.retrieve(sub_id, expand=["items.data.price", "latest_invoice"])
+            _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
             messages.success(request, "Thanks — your plan is now active.")
         else:
             _checkout_delayed_message(request)
-
     except Exception:
         logger.warning("Stripe sync on success failed", exc_info=True)
         _checkout_delayed_message(request)
