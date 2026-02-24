@@ -91,6 +91,43 @@ def _days_left(dt_value):
     return int((seconds + 86399) // 86400)
 
 
+def _sync_period_end_from_upcoming_invoice(subscription_obj):
+    """
+    Fallback sync: if Stripe subscription retrieve doesn't include current_period_end
+    (as seen in some sandbox/restricted responses), attempt to derive it from the
+    upcoming invoice for this customer+subscription.
+    """
+    if not subscription_obj:
+        return
+
+    if not subscription_obj.stripe_customer_id or not subscription_obj.stripe_subscription_id:
+        return
+
+    try:
+        upcoming = stripe.Invoice.upcoming(
+            customer=subscription_obj.stripe_customer_id,
+            subscription=subscription_obj.stripe_subscription_id,
+        )
+
+        # Prefer invoice.period_end
+        invoice_period_end = _stripe_get(upcoming, "period_end")
+
+        # Fallback: first line item period end
+        if not invoice_period_end:
+            lines = _stripe_get(upcoming, "lines")
+            data = _stripe_get(lines, "data") if lines else None
+            if data and len(data) > 0:
+                period = _stripe_get(data[0], "period")
+                invoice_period_end = _stripe_get(period, "end") if period else None
+
+        if invoice_period_end:
+            subscription_obj.current_period_end = _to_dt(invoice_period_end)
+            subscription_obj.save(update_fields=["current_period_end"])
+
+    except Exception:
+        logger.exception("Unable to derive billing period end from upcoming invoice")
+
+
 @login_required
 def regulate_plus(request):
     """Regulate+ hub page (trial / upgrade / manage billing)."""
@@ -104,20 +141,30 @@ def regulate_plus(request):
         needs_trial_sync = status == "trialing" and not sub.trial_end
         needs_billing_sync = status == "active" and not sub.current_period_end
 
-        # Some Stripe accounts set both on the subscription; if either is missing, sync.
         if needs_trial_sync or needs_billing_sync:
             try:
-                stripe_sub = stripe.Subscription.retrieve(sub.stripe_subscription_id)
-                _upsert_subscription(
+                # Expand is harmless even if unused, and sometimes helps Stripe return nested data
+                stripe_sub = stripe.Subscription.retrieve(
+                    sub.stripe_subscription_id,
+                    expand=["latest_invoice", "customer"]
+                )
+
+                updated = _upsert_subscription(
                     request.user,
                     stripe_sub,
                     stripe_customer_id=getattr(sub, "stripe_customer_id", None),
                 )
+
+                # Fallback: if active but still no period end, derive it from upcoming invoice
+                if updated.status == "active" and not updated.current_period_end:
+                    _sync_period_end_from_upcoming_invoice(updated)
+
                 # refresh local object after upsert
                 sub = Subscription.objects.filter(user=request.user).first()
                 status = getattr(sub, "status", None)
+
             except Exception:
-                logger.warning("Regulate+ sync on page load failed", exc_info=True)
+                logger.exception("Regulate+ sync on page load failed")
 
     trial_end = getattr(sub, "trial_end", None) if sub else None
     current_period_end = getattr(sub, "current_period_end", None) if sub else None
@@ -262,8 +309,13 @@ def checkout_success(request):
         cust_id = session.get("customer")
 
         if sub_id:
-            stripe_sub = stripe.Subscription.retrieve(sub_id)
-            _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
+            stripe_sub = stripe.Subscription.retrieve(sub_id, expand=["latest_invoice", "customer"])
+            updated = _upsert_subscription(request.user, stripe_sub, stripe_customer_id=cust_id)
+
+            # Same fallback here so users see billing date immediately after checkout
+            if updated.status == "active" and not updated.current_period_end:
+                _sync_period_end_from_upcoming_invoice(updated)
+
             messages.success(request, "Thanks — your plan is now active.")
         else:
             _checkout_delayed_message(request)
