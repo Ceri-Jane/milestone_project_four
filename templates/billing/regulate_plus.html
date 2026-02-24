@@ -39,6 +39,10 @@
                         </strong>
                     {% endif %}
                 </p>
+            {% else %}
+                <p class="form-info small-text">
+                    Trial end date will appear shortly. If it doesn’t, use <strong>Manage Billing</strong>.
+                </p>
             {% endif %}
 
         {% elif subscription_status == "active" %}
@@ -59,7 +63,7 @@
                 </p>
             {% else %}
                 <p class="form-info small-text">
-                    Next billing date is available in the billing portal.
+                    Next billing date is available in Stripe — use <strong>Manage Billing</strong> to view it.
                 </p>
             {% endif %}
 
